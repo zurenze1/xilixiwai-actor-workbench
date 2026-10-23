@@ -1,0 +1,6 @@
+tide-sunlight-v1.png
+Original background generated with built-in imagegen on 2026-10-24 for this actor-workbench theme.
+User-supplied screenshot served as visual reference only (blue water, sunlight, a hand gesture).
+No source website logo, typography, UI or original media was copied into this asset.
+The hand is a generated scene, not a portrait or endorsement of any real actor.
+Prompt and implementation notes: practical/docs/日光水蓝主题.md
