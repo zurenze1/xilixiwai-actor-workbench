@@ -264,10 +264,30 @@ const PROVIDERS = [
 const providerName = () => (PROVIDERS.find(p => p[0] === S.provider) || PROVIDERS[0])[1];
 const handlingName = () => D.handlings.find(h => h.id === S.handling).k;
 
+/* Sidebar journey preference: independent of project records. */
+const JOURNEY_PREF = 'xilixiwai.nav.journey.collapsed.v1';
+let journeyCollapsed = false;
+try { journeyCollapsed = localStorage.getItem(JOURNEY_PREF) === '1'; } catch {}
+function toggleJourney() {
+  journeyCollapsed = !journeyCollapsed;
+  const button = $('#journeyToggle');
+  try {
+    localStorage.setItem(JOURNEY_PREF, journeyCollapsed ? '1' : '0');
+    button.title = '展开或收起八阶段流程';
+  } catch {
+    button.title = '当前页已切换；浏览器未允许保存此偏好，刷新后会恢复展开';
+  }
+  button.setAttribute('aria-expanded', String(!journeyCollapsed));
+  button.querySelector('.journey-action').textContent = journeyCollapsed ? '展开' : '收起';
+  button.querySelector('.journey-chevron').textContent = journeyCollapsed ? '▸' : '▾';
+  $('#stationJourney').hidden = journeyCollapsed;
+  $('#journeyCurrent').hidden = !journeyCollapsed;
+}
 function renderSide() {
   const rv = k => (S.reviews[k] || []).length ? ' <i class="revdot" title="已有人工决定">✍</i>' : '';
   const it = (k, ic, t, sub) => `<button class="st home-btn ${S[k] ? 'on' : ''}" data-act="go" data-i="${PAGES[k]}"><span class="st-dot">${ic}</span><span><b>${t}${rv(k)}</b><small>${sub}</small></span></button>`;
   const inSt = !onPage();
+  const currentStation = D.stations[S.st];
   $('#side').innerHTML = `
   <div class="brand" data-act="settings" title="点击更换名称">
     <div class="brand-mark">${name().name[0]}</div>
@@ -275,13 +295,18 @@ function renderSide() {
   </div>
   <div class="side-cap">今天</div>
   ${it('home', '📅', '日程总览', '今日 · 本月 · 新邀约')}
-  <div class="side-cap">戏里 · 一部戏的一生</div>
-  <ol class="journey">${D.stations.map((s, i) => `
+  <div class="journey-group">
+  <button type="button" class="journey-toggle" id="journeyToggle" data-act="journey-toggle" aria-expanded="${!journeyCollapsed}" aria-controls="stationJourney" title="展开或收起八阶段流程">
+    <span class="journey-label"><span class="journey-title">戏里 · 一部戏的一生</span><small class="journey-current" id="journeyCurrent" ${journeyCollapsed ? '' : 'hidden'}>当前阶段 · ${esc(currentStation.no)} ${esc(currentStation.name)}</small></span>
+    <span class="journey-toggle-action" aria-hidden="true"><span class="journey-action">${journeyCollapsed ? '展开' : '收起'}</span><span class="journey-chevron">${journeyCollapsed ? '▸' : '▾'}</span></span>
+  </button>
+  <ol class="journey" id="stationJourney" ${journeyCollapsed ? 'hidden' : ''}>${D.stations.map((s, i) => `
     <li><button class="st ${inSt && S.st === i ? 'on' : ''} ${stationDone(i) ? 'done' : ''}" data-act="go" data-i="${i}">
       <span class="st-dot">${stationDone(i) && !(inSt && S.st === i) ? '✓' : s.no}</span>
       <span><b>${s.name}${rv('st' + i)}</b><small>${s.title.split(' · ')[1] || s.title}</small></span>
     </button></li>`).join('')}
   </ol>
+  </div>
   <div class="side-cap">戏外 · 事业</div>
   ${it('portfolio', '🎞', '作品库与发展规划', '作品 · 雷达 · 年度规划')}
   ${it('deals', '📑', '合同与品牌', '资料库 · 代言 · 背调')}
@@ -1322,8 +1347,10 @@ const handle = fn => e => Promise.resolve(fn(e)).catch(showError);
 let actionBusy=false;
 const handleAction=fn=>handle(async e=>{if(actionBusy)return;actionBusy=true;document.body.dataset.busy='1';try{await fn(e);}finally{actionBusy=false;delete document.body.dataset.busy;}});
 document.addEventListener('click', handleAction(async e => {
+  const el = e.target.closest('[data-act]');
+  if (el?.dataset.act === 'journey-toggle') { toggleJourney(); return; }
   captureDraft();
-  const el = e.target.closest('[data-act]'); if (!el) return;
+  if (!el) return;
   const a = el.dataset.act, v = el.dataset.v, i = +el.dataset.i;
   switch (a) {
     case 'go': if (el.dataset.tab) { S.tab[i] = el.dataset.tab; await save(); } await go(i); if (el.dataset.tab) render(); break;

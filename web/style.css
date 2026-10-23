@@ -668,4 +668,23 @@ img.ph{width:100%;height:100%;object-fit:cover;display:block}
  .wts{grid-template-columns:1fr!important}.tbl,.heat{font-size:11px}.dlg{max-width:100%;overflow-wrap:anywhere} .grid3,.grid4{min-width:0}
 }
 
+/* A compact disclosure keeps the eight stages separate from other navigation. */
+.journey-group{flex:0 0 auto;min-width:0;margin-top:6px}
+.journey-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;padding:10px 8px;border:0;border-radius:8px;background:none;color:inherit;text-align:left;cursor:pointer;font:inherit;line-height:1.4}
+.journey-toggle:hover{background:#ffffff0d}
+.journey-toggle:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.journey-label{display:block;min-width:0}
+.journey-title{display:block;font-size:11px;letter-spacing:.12em;opacity:.7}
+.journey-current{display:block;margin-top:5px;font-size:12px;letter-spacing:0;opacity:.9}
+.journey-toggle-action{display:flex;align-items:center;gap:5px;flex:none;font-size:11px;opacity:.75;white-space:nowrap}
+.journey-chevron{font-size:13px}
+#stationJourney[hidden],#journeyCurrent[hidden]{display:none!important}
+@media(max-width:860px){
+ .side .journey-group{display:flex;align-items:center;gap:4px;margin:0;flex:0 0 auto}
+ .side .journey-toggle{width:auto;min-width:190px;max-width:240px;min-height:48px;padding:5px 10px}
+ .side .journey-title{white-space:nowrap}
+ .side .journey-current{margin-top:3px}
+ .side .journey-group .journey{flex:0 0 auto;align-items:center}
+}
+
 body[data-busy="1"] [data-act]{pointer-events:none;cursor:progress}
