@@ -295,10 +295,12 @@ function vCare() {
 }
 
 /* ---------- 时光机 ---------- */
+let albumOrbit = false;
+function photoViewControls(){return `<section class="card mt photo-view-controls"><div class="row between"><div><h3>把照片，转到眼前。</h3><p class="sub">照片网格便于找原件；环绕看图可以拖动、暂停和放大，只改变浏览方式。</p></div><div class="row"><button class="btn sm ${albumOrbit?'':'pri'}" data-a="album-view" data-v="grid">照片网格</button><button class="btn sm ${albumOrbit?'pri':''}" data-a="album-view" data-v="orbit">环绕看图 ✦</button></div></div></section><section id="petPhotoOrbit" data-photo-orbit data-orbit-source=".album .ph img" ${albumOrbit?'':'hidden'} aria-label="肉肉照片环绕视图"></section>`;}
 function vAlbum() {
   const base = [['12_maltese', '在家等你回来的一天'], ['16_maltese_walk', '第一次穿新的胸背带出去散步'], ['17_maltese_groom', '每天的梳毛时间'], ['18_maltese_sleep', '晒着太阳睡着了']];
   return `<div class="row between"><div><h3 style="font:600 20px var(--serif)">肉肉的时光机</h3><p class="sub">拍戏间隙，把和肉肉的日常存下来</p></div></div>
-  <div class="album mt">${base.map(([p, c], i) => `<div class="ph"><img src="../assets/photos/${p}.jpg" alt="" onerror="this.parentNode.style.display='none'"><div>${c}<small>${fmt(addDays(today, -i * 23 - 2))}</small></div></div>`).join('')}
+  ${photoViewControls()}<div class="album mt" id="petPhotoGrid" ${albumOrbit?'hidden':''}>${base.map(([p, c], i) => `<div class="ph"><img src="../assets/photos/${p}.jpg" alt="" onerror="this.parentNode.style.display='none'"><div>${c}<small>${fmt(addDays(today, -i * 23 - 2))}</small></div></div>`).join('')}
     ${S.photos.map((p, i) => `<div class="ph"><img ${p.file ? `data-original="${esc(p.file.id)}"` : `src="${p.src}"`} alt="${esc(p.c || '肉肉的照片')}" loading="lazy"><div>${esc(p.c)}<small>${esc(p.d)}</small><small>${p.file ? '已保存原件 · ' + esc(p.file.name) : '旧版照片副本，无法还原上传前原件'}</small><div class="file-actions"><button class="btn sm" data-a="photo-download" data-v="${i}">${p.file ? '下载照片原件' : '下载现存副本'}</button><button class="btn sm" data-a="photo-remove" data-v="${i}">移除照片</button></div></div></div>`).join('')}
     <label class="add"><input type="file" accept="image/*" id="ph" multiple hidden><div><div style="font-size:30px">＋</div>添加照片原件<br><small>保存在本机，支持完整备份</small></div></label></div>
     <div class="card mt"><h3>下一张照片的说明</h3><div class="grid2 mt8"><div class="field"><label for="photoCaption">照片说明</label><input id="photoCaption" maxlength="5000" value="${esc(draft().photoCaption || '')}" placeholder="今天发生了什么"></div><div class="field"><label for="photoDate">照片日期</label><input id="photoDate" type="date" value="${esc(draft().photoDate || T0)}"></div></div><p class="sub">上传时带入以上说明和日期；未填写说明时使用原文件名。</p></div>`;
@@ -344,7 +346,12 @@ document.addEventListener('click', async e => {
   el.disabled = true;
   try {
   switch (a) {
-    case 'tab': { const previous = S.tab; S.tab = v; try { await save(); } catch (error) { S.tab = previous; throw error; } render(); break; }
+    case 'album-view': {
+  albumOrbit=v==='orbit';$('#petPhotoGrid').hidden=albumOrbit;$('#petPhotoOrbit').hidden=!albumOrbit;
+  document.querySelectorAll('[data-a="album-view"]').forEach(b=>b.classList.toggle('pri',b.dataset.v===(albumOrbit?'orbit':'grid')));
+  window.ActorGalleryEffects?.refresh();break;
+ }
+ case 'tab': { const previous = S.tab; S.tab = v; try { await save(); } catch (error) { S.tab = previous; throw error; } render(); break; }
     case 'food': L.food.push({ t: now(), g: PROFILE.gram }); await save(); render(); toast('已记录喂食'); break;
     case 'water': L.water += 50; (L.waterLog = L.waterLog || []).push({ t: now(), ml: 50 }); await save(); render(); toast('已记录加水'); break;
     case 'walk': L.walk.push({ t: now(), m: 20 }); await save(); render(); toast('已记录遛弯'); break;

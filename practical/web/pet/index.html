@@ -151,8 +151,8 @@ button:disabled{cursor:wait;opacity:.65}
 @media (max-width:900px){.grid2,.grid3,.hgrid,.album{grid-template-columns:1fr}.grid4,.rings,.quick{grid-template-columns:repeat(2,minmax(0,1fr))}.risk{grid-template-columns:1fr}.hero h1{font-size:32px}.hero:after{background:linear-gradient(180deg,#fbf6ee00 0%,#fbf6eef2 70%)}.hero{min-height:360px}}
 @media print{.topbar,.tabs,.hero,.noprint{display:none!important}body{background:#fff}}
 
-body{overflow-wrap:anywhere}.embedded .topbar,.embedded .hero{display:none}.embedded .wrap{max-width:none;padding:16px 20px 40px}
-.hero{min-height:220px;background:linear-gradient(120deg,#f4e9db,#e5ede2)}.hero:after{display:none}.hero-in{position:relative;max-width:850px}.hero h1{font-size:38px}
+body{overflow-wrap:anywhere}.embedded .topbar a{display:none}.embedded .wrap{max-width:1180px;padding:16px 20px 40px}
+.hero{min-height:320px;box-shadow:0 14px 45px #72533a0a}.hero:after{display:block;background:linear-gradient(90deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 84%,transparent) 34%,transparent 68%)}.hero-in{position:relative;max-width:56%}.hero h1{font-size:38px}.hero img{object-position:66% 20%}.photo-caption{position:absolute;right:18px;top:16px;z-index:1;color:#5f5149;background:#fffdf9b8;border-radius:99px;padding:3px 9px;font-size:11px;letter-spacing:.05em}.hero .hero-whisper{color:var(--accent);font-family:var(--serif);font-size:15px;letter-spacing:.12em;margin-top:0}.hero .badges{gap:7px}.hero .badge{font-size:12px;padding:4px 10px}.topbar{margin-bottom:12px}
 h2{font:600 25px var(--serif);margin:0 0 8px}h4{margin:12px 0 6px}.field{margin-bottom:12px}
 input,select,textarea{width:100%;box-sizing:border-box}textarea{resize:vertical}input[type=color]{height:44px;padding:5px}
 .metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.metric{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:6px}
@@ -171,15 +171,15 @@ input,select,textarea{width:100%;box-sizing:border-box}textarea{resize:vertical}
 .card,.metric{background:var(--panel)}.hero{background:var(--soft)}
 </style>
 <link rel="stylesheet" href="../themes/tide.css">
-</head>
-<body>
+<link rel="stylesheet" href="./companion.css">
+<script src="/demo/gallery-effects.js?v=20261024-demo3" defer></script></head>
+<body data-stardust-cursor>
 <div class="wrap">
   <div class="topbar"><a href="../">← 回到戏里戏外</a><span class="sp"></span><span class="privacy">🐾 当前账号的私人肉肉资料</span></div>
-  <section class="hero">
-    <div class="hero-in"><div class="eyebrow">ROUROU'S LITTLE WORLD</div><h1>肉肉的小世界</h1>
+  <section class="hero"><img src="../../demo/assets/photos/12_maltese.jpg" alt="沙发上坐着一只白色马尔济斯犬"><span class="photo-caption">陪伴配图</span>
+    <div class="hero-in"><div class="eyebrow">ROUROU'S LITTLE WORLD</div><p class="hero-whisper">一只小狗，很多温柔的小事。</p><h1 id="petTitle" data-elastic>肉肉的小世界</h1>
       <p>日常陪伴、健康记录、出差交接、时光机和表情工坊，都在工作台里。</p>
       <div class="badges" id="badges"></div></div></section>
-  <section class="ocean-module-banner"><div class="eyebrow">LIFE, IN THE QUIET MOMENTS</div><h2>日常，值得被照顾。</h2><p>记录陪伴的时刻，也给生活留一点空白。</p></section>
   <p id="storageStatus" class="storage-line" role="status">正在连接当前账号…</p>
   <div class="storage-actions noprint"><button class="btn sm" data-a="backup">导出肉肉完整备份</button><label class="btn sm">导入肉肉备份<input type="file" id="petBackup" accept=".json,application/json" hidden></label><button class="btn sm" data-a="retry">重试保存</button><button class="btn sm" data-a="reload">重新读取保存记录</button></div>
   <p class="backup-summary noprint">备份包含本页草稿与所引用的原件。单个原件最多32 MB，每份备份原件合计最多160 MB。</p>
@@ -188,6 +188,7 @@ input,select,textarea{width:100%;box-sizing:border-box}textarea{resize:vertical}
   <p class="note">肉肉资料保存在当前账号的私人空间，切换影视项目仍可继续使用。需要离线留存时可导出包含原件的完整备份。</p>
 </div>
 <div class="toast" id="toast" role="status"></div>
+<script src="/demo/scene-art.js?v=20261024-demo3"></script>
 <script src="../bridge.js"></script>
 <script src="./schema.js"></script>
 <script src="./backup.js"></script>

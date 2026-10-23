@@ -45,7 +45,10 @@ const dayKey=()=>draft('today').date||today();
 const day=()=>Object.hasOwn(S.logs,dayKey())?S.logs[dayKey()]:{food:[],water:0,waterLog:[],walk:[],poop:[],care:{}};
 const number=(v,name,optional=false)=>{if(optional&&(v==null||v===''))return null;const n=Number(v);if(!String(v??'').trim()||!Number.isFinite(n)||n<=0)throw new Error(name+'请填写大于0的数值');return n;};
 const dueRows=()=>S.health.map(h=>({...h,next:PetSchema.nextDue(h)})).filter(h=>h.next).sort((a,b)=>a.next.localeCompare(b.next));
-function metric(label,value,unit,goal){return`<div class="metric"><small>${label}</small><strong>${value}<em>${unit}</em></strong><span>${goal?'自定目标 '+goal+unit:'尚未设置目标'}</span>${goal?`<progress value="${Math.min(value,goal)}" max="${goal}" aria-label="${label}"></progress>`:''}</div>`;}
+function ring(label,value,unit,goal,color,emoji,care=false){
+ const ratio=goal?Math.min(1,value/goal):0,circumference=2*Math.PI*40,n=Number(value.toFixed(2)),note=care?'已记护理类别 / 3 类':goal?'自定目标 '+goal+' '+unit:'尚未设置目标';
+ return`<article class="ring companion-ring" style="--ring-color:${color}" aria-label="${label}：${n}${unit}，${note}"><span class="ring-emoji" aria-hidden="true">${emoji}</span><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="40" fill="none" stroke="var(--line)" stroke-width="7"/><circle cx="50" cy="50" r="40" fill="none" stroke="var(--ring-color)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${circumference*ratio} ${circumference}" transform="rotate(-90 50 50)"/><text x="50" y="51" text-anchor="middle" class="ring-value">${n}</text><text x="50" y="67" text-anchor="middle" class="ring-unit">${unit}</text></svg><b>${label}</b><small>${note}</small></article>`;
+}
 function vToday(){
  const L=day(),P=S.profile,E=fval('entry',{kind:'food',amount:'',t:now(),s:'正常',note:''});
  const events=[];
@@ -55,13 +58,14 @@ function vToday(){
  events.sort((a,b)=>a.t.localeCompare(b.t));
  const reminders=dueRows().filter(h=>PetSchema.remaining(h.next)<=14);
  return`<div class="row between"><div><h2>日常陪伴</h2><p class="sub">按实际发生的日期、时间和数量记录，随时查看过去。</p></div><div class="field"><label for="logDate">查看日期</label><input id="logDate" type="date" value="${esc(dayKey())}"></div></div>
- <div class="metrics mt">${metric('喂食',L.food.reduce((n,x)=>n+x.g,0),'克',P.meals&&P.gram?P.meals*P.gram:null)}${metric('加水量',L.water,'毫升',P.water)}${metric('散步',L.walk.length,'次',P.walk)}</div>
- <p class="sub">加水量是向水碗加入的水量，不能直接当成实际饮水量。目标由你填写。</p>
- <div class="grid2 mt"><section class="card"><h3>记一笔</h3><div class="field mt8"><label for="entry-kind">类型</label><select id="entry-kind" data-form="entry" data-key="kind">${[['food','喂食（克）'],['waterLog','加水（毫升）'],['walk','散步（分钟）'],['poop','便便状态']].map(([k,n])=>`<option value="${k}" ${E.kind===k?'selected':''}>${n}</option>`).join('')}</select></div>
+ <div class="rings mt">${ring('吃饭',L.food.reduce((n,x)=>n+x.g,0),'克',P.meals&&P.gram?P.meals*P.gram:null,'#c9825b','🍚')}${ring('加水',L.water,'毫升',P.water,'#6aa6c9','💧')}${ring('遛弯',L.walk.length,'次',P.walk,'#6f9c75','🐾')}${ring('日常护理',Object.keys(L.care).length,'项',3,'#cb92aa','🪮',true)}</div>
+ <p class="sub ring-explainer">圆环来自所选日期的已保存记录；未设目标不计算完成比例。加水量不等于实际饮水量。</p>
+ <section class="card companion-quick mt"><div class="row between"><div><h3>小事，顺手记下来</h3><p class="sub">点图标先选好表单，再填写真实发生的内容。</p></div>${button('设定照护计划','tab','profile')}</div><div class="quick mt">${[['food','🍚','吃饭','填写克数'],['waterLog','💧','加水','填写毫升'],['walk','🐾','遛弯','填写时长'],['poop','💩','便便','记录状态']].map(([k,i,n,s])=>`<button class="q" data-a="entry-pick" data-v="${k}"><span class="ic" aria-hidden="true">${i}</span><b>${n}</b><small>${s}</small></button>`).join('')}${[['brush','🪮','梳毛'],['tear','🫧','眼周清洁'],['teeth','🦷','刷牙']].map(([k,i,n])=>`<button class="q ${L.care[k]?'done':''}" data-a="care-pick" data-v="${k}"><span class="ic" aria-hidden="true">${i}</span><b>${n}</b><small>${L.care[k]?'已记 '+L.care[k]:'选择护理项目'}</small></button>`).join('')}<button class="q photo-quick" data-a="tab" data-v="album"><span class="ic" aria-hidden="true">📷</span><b>留一张今天</b><small>照片与一句话</small></button></div></section>
+ <div class="grid2 mt"><section class="card" id="daily-entry"><h3>记一笔</h3><div class="field mt8"><label for="entry-kind">类型</label><select id="entry-kind" data-form="entry" data-key="kind">${[['food','喂食（克）'],['waterLog','加水（毫升）'],['walk','散步（分钟）'],['poop','便便状态']].map(([k,n])=>`<option value="${k}" ${E.kind===k?'selected':''}>${n}</option>`).join('')}</select></div>
  <div class="grid2 mt8">${field('数量（便便可留空）','entry','amount',E.amount,'number')}${field('发生时间','entry','t',E.t,'time')}</div>
  <div class="field mt8"><label for="entry-s">便便状态（仅便便记录使用）</label><select id="entry-s" data-form="entry" data-key="s">${['正常','偏软','稀便','其他 / 待观察'].map(s=>`<option ${s===E.s?'selected':''}>${s}</option>`).join('')}</select></div>${field('备注','entry','note',E.note)}
  ${button('保存这条记录','daily-add','','pri')}
- <h4 class="mt">护理完成记录</h4><p class="sub">使用上方时间；再次点击可撤销本次护理。</p><div class="row mt8">${Object.entries(careNames).map(([k,n])=>button((L.care[k]?'✓ ':'')+n+(L.care[k]?' '+L.care[k]:''),'care-toggle',k,L.care[k]?'selected':'')).join('')}</div></section>
+ <h4 class="mt" id="care-entry">护理完成记录</h4><p class="sub">确认实际完成后点击；使用上方时间，再次点击可撤销。</p><div class="row mt8">${Object.entries(careNames).map(([k,n])=>button((L.care[k]?'✓ ':'')+n+(L.care[k]?' '+L.care[k]:''),'care-toggle',k,L.care[k]?'selected':'')).join('')}</div></section>
  <section class="card"><h3>${dayKey()} 的记录</h3>${events.length?`<ul class="records">${events.map(x=>`<li><time>${esc(x.t)}</time><span>${esc(x.text)}</span>${button('移除','daily-remove',x.k+':'+x.i)}</li>`).join('')}</ul>`:empty('这一天还没有记录。')}
  ${reminders.length?`<h4 class="mt">按填写日期生成的提醒</h4><ul class="records">${reminders.map(h=>`<li><span>${esc(h.n)} · ${h.next}${PetSchema.remaining(h.next)<0?'（日期已过）':''}</span></li>`).join('')}</ul>${button('查看健康记录','tab','health')}`:''}</section></div>
  <div class="card mt"><h3>留下一张今天</h3><p class="sub">保存照片和一句话，再把同一张照片做成表情包。</p>${button('存进时光机','tab','album','','')} ${button('打开表情工坊','tab','studio')}</div>`;
@@ -116,12 +120,14 @@ function vCare(){
  <div><h4>托管期间到期的项目</h4>${due.length?due.map(h=>`<p>${esc(h.n)} · ${h.next}</p>`).join(''):'<p>暂无符合本次日期的已确认提醒。</p>'}<p class="pre">${esc(S.contacts.careNote)}</p></div></div>
  <p class="small muted">生成时间：${new Date().toLocaleString('zh-CN',{hour12:false})} · 仅含已保存内容</p></section>`;
 }
+let albumOrbit = false;
+function photoViewControls(){return `<section class="card mt photo-view-controls"><div class="row between"><div><h3>把照片，转到眼前。</h3><p class="sub">照片网格便于找原件；环绕看图可以拖动、暂停和放大，只改变浏览方式。</p></div><div class="row"><button class="btn sm ${albumOrbit?'':'pri'}" data-a="album-view" data-v="grid">照片网格</button><button class="btn sm ${albumOrbit?'pri':''}" data-a="album-view" data-v="orbit">环绕看图 ✦</button></div></div></section><section id="petPhotoOrbit" data-photo-orbit data-orbit-source=".album .ph img" ${albumOrbit?'':'hidden'} aria-label="肉肉照片环绕视图"></section>`;}
 function vAlbum(){
  const A=draft(),edit=A.editPhoto;
  return`<section class="card"><h2>时光机</h2><p class="sub">保存原照片、实际日期和一句话。选择照片可以直接进入表情工坊。</p><div class="grid2 mt8"><div class="field"><label for="photoCaption">这组照片的一句话</label><input id="photoCaption" value="${esc(A.photoCaption||'')}" maxlength="5000"></div><div class="field"><label for="photoDate">照片日期</label><input id="photoDate" type="date" value="${esc(A.photoDate||today())}"></div></div>
  <label class="btn pri mt8">添加照片原件<input type="file" id="ph" multiple accept="image/jpeg,image/png,image/webp,image/gif" hidden></label><p class="sub">JPG / PNG / WebP / GIF；保留上传原件。GIF生成表情包时导出静态PNG。</p></section>
  ${edit?`<section class="card mt"><h3>编辑照片说明</h3>${field('一句话','editPhoto','c',edit.c)}${field('照片日期','editPhoto','d',edit.d,'date')}<div class="row">${button('保存说明','photo-save','','pri')}${button('取消','form-clear','editPhoto')}</div></section>`:''}
- <div class="album mt">${S.photos.slice().sort((a,b)=>b.d.localeCompare(a.d)).map(p=>`<article class="ph"><img ${p.file?`data-original="${esc(p.file.id)}"`:`src="${p.src}"`} alt="${esc(p.c||'肉肉的照片')}" loading="lazy"><div><p class="pre">${esc(p.c)}</p><small>${esc(p.d)}</small><small>${p.file?'原件 · '+esc(p.file.name):'旧版照片副本，无法恢复上传前原件'}</small><div class="file-actions">${button('做成表情包','photo-sticker',p.id,'pri')}${button('编辑说明','photo-edit',p.id)}${button(p.file?'下载原件':'下载副本','photo-download',p.id)}${button('移除','photo-remove',p.id)}</div></div></article>`).join('')}</div>${!S.photos.length?empty('还没有照片。存下第一张，就能在这里按日期找回。'):''}`;
+ ${photoViewControls()}<div class="album mt" id="petPhotoGrid" ${albumOrbit?'hidden':''}>${S.photos.slice().sort((a,b)=>b.d.localeCompare(a.d)).map(p=>`<article class="ph"><img ${p.file?`data-original="${esc(p.file.id)}"`:`src="${p.src}"`} alt="${esc(p.c||'肉肉的照片')}" loading="lazy"><div><p class="pre">${esc(p.c)}</p><small>${esc(p.d)}</small><small>${p.file?'原件 · '+esc(p.file.name):'旧版照片副本，无法恢复上传前原件'}</small><div class="file-actions">${button('做成表情包','photo-sticker',p.id,'pri')}${button('编辑说明','photo-edit',p.id)}${button(p.file?'下载原件':'下载副本','photo-download',p.id)}${button('移除','photo-remove',p.id)}</div></div></article>`).join('')}</div>${!S.photos.length?empty('还没有照片。存下第一张，就能在这里按日期找回。'):''}`;
 }
 function vStudio(){
  const P=S.photos.find(x=>x.id===S.studio.photoId);
@@ -141,7 +147,8 @@ const TABS=[['today','🐾 日常陪伴'],['profile','📖 肉肉档案'],['heal
 const VIEWS={today:vToday,profile:vProfile,health:vHealth,beh:vBeh,care:vCare,album:vAlbum,studio:vStudio};
 function render(){
  const weight=S.weights.slice().sort((a,b)=>b.d.localeCompare(a.d))[0],P=S.profile;
- $('#badges').innerHTML=`<span class="badge">${esc(P.breed||'品种未填')}</span><span class="badge">生日 ${P.birth||'未填写'}</span><span class="badge">${weight?weight.kg+' 公斤 · '+weight.d:'体重未记录'}</span>`;
+ $('#petTitle').textContent=(P.name||'肉肉')+'的小世界';
+ $('#badges').innerHTML=`<span class="badge">🐶 ${esc(P.breed||'品种未填')}</span><span class="badge">🎂 ${P.birth?'生日 '+P.birth:'生日待填写'}</span><span class="badge">⚖️ ${weight?weight.kg+' 公斤 · '+weight.d:'体重待记录'}</span><span class="badge">🔒 私人陪伴档案</span>`;
  $('#tabs').innerHTML=TABS.map(([k,n])=>`<button data-a="tab" data-v="${k}" class="${S.tab===k?'on':''}" aria-current="${S.tab===k?'page':'false'}">${n}</button>`).join('');
  $('#main').innerHTML=(S.legacyNotice?`<div class="legacy-banner noprint">已保留旧版导入资料。旧版健康、行为记录可能含示例，核实保存后再作为真实记录使用。${button('已知晓','legacy-dismiss')}</div>`:'')+VIEWS[S.tab]()+notes();
  previews();if(S.tab==='studio')drawSticker().catch(e=>{if($('#stickerStatus'))$('#stickerStatus').textContent=e.message;});
@@ -186,7 +193,14 @@ document.addEventListener('click',async e=>{
  const a=el.dataset.a,v=el.dataset.v;busy=true;el.disabled=true;
  try{
  switch(a){
+ case 'album-view': {
+  albumOrbit=v==='orbit';$('#petPhotoGrid').hidden=albumOrbit;$('#petPhotoOrbit').hidden=!albumOrbit;
+  document.querySelectorAll('[data-a="album-view"]').forEach(b=>b.classList.toggle('pri',b.dataset.v===(albumOrbit?'orbit':'grid')));
+  window.ActorGalleryEffects?.refresh();break;
+ }
  case'tab':{const old=S.tab;S.tab=v;try{await save();}catch(error){S.tab=old;throw error;}render();break;}
+ case'entry-pick':{if(!['food','waterLog','walk','poop'].includes(v))break;draft('today').entry={...fval('entry',{amount:'',t:now(),s:'正常',note:''}),kind:v,amount:''};await save();render();$('#daily-entry').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});$(v==='poop'?'#entry-s':'#entry-amount').focus({preventScroll:true});toast('已选好类型，填写后点击保存');break;}
+ case'care-pick':{if(!['brush','tear','teeth'].includes(v))break;$('#care-entry').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'center'});const control=document.querySelector('[data-a="care-toggle"][data-v="'+v+'"]');control.focus({preventScroll:true});control.classList.add('care-focus');setTimeout(()=>control.classList.remove('care-focus'),1800);toast('确认实际完成与时间后，点击护理按钮记录');break;}
  case'legacy-dismiss':S.legacyNotice=false;await save();render();break;
  case'profile-save':{
   const P=fval('profile',S.profile);if(!P.name.trim())throw new Error('请填写名字');if(P.birth)validDate(P.birth,'生日',true);

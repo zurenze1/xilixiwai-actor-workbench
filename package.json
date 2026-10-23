@@ -11,8 +11,9 @@
     "test:practical": "node --test practical/tests/analysis.test.mjs practical/tests/business.test.mjs practical/tests/files.test.mjs practical/tests/jobs.test.mjs practical/tests/server.test.mjs practical/tests/review-actor4.test.mjs practical/tests/previs.schema.test.cjs practical/tests/cli.test.mjs practical/tests/pet-state.test.mjs practical/tests/review-file-cleanup.test.mjs practical/tests/forms-workflows.test.mjs practical/tests/social-model.test.mjs practical/tests/social-backup.test.mjs practical/tests/social-server.test.mjs",
     "test:browser": "node practical/tests/browser.mjs && node practical/tests/pet-browser.mjs",
     "build:guide": "node scripts/build-usage-guide.mjs",
-    "prestart": "npm run build:guide",
-    "prestart:practical": "npm run build:guide",
+    "build:demo-lab": "node scripts/build-demo-lab.mjs",
+    "prestart": "npm run build:demo-lab && npm run build:guide",
+    "prestart:practical": "npm run build:demo-lab && npm run build:guide",
     "test:social:browser": "node --test --test-concurrency=1 practical/tests/social-browser.test.mjs practical/tests/social-coordination.test.mjs"
   },
   "dependencies": {

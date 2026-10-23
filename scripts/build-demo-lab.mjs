@@ -1,0 +1,15 @@
+import { readFile, writeFile, mkdir, copyFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const output = resolve(root, 'web/demo-lab');
+await mkdir(output, { recursive: true });
+const sources = ['practical/web/forms.js','practical/web/business/model.js','practical/web/social/model.js'];
+await copyFile(resolve(root, sources[0]), resolve(output, 'forms.js'));
+await copyFile(resolve(root, 'node_modules/papaparse/papaparse.min.js'), resolve(output, 'csv.min.js'));
+await copyFile(resolve(root, 'node_modules/papaparse/LICENSE'), resolve(output, 'PAPAPARSE-LICENSE.txt'));
+const hashes = {};
+for (const file of sources) hashes[file] = createHash('sha256').update(await readFile(resolve(root, file))).digest('hex');
+await writeFile(resolve(output, 'sources.json'), JSON.stringify({ schemaVersion: 1, sourceHashes: hashes, csv: 'PapaParse 5.5.3 (MIT)' }, null, 2) + '\n');
+console.log('演示资料实验室：18 类实战字段已镜像，CSV 解析库已本地化。');

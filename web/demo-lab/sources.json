@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "sourceHashes": {
+    "practical/web/forms.js": "5ded067def271d29527b197df3159cef324a59cd054d87b3382dd4e8b88f3d25",
+    "practical/web/business/model.js": "8592a5c0ca5a64623dee9e794af5bb4a7d8b4eb7666ad6f187ce7da7afb26c6c",
+    "practical/web/social/model.js": "dac5bfeca6fe2b26b22ff651cc8d6d50669c36195d7c43e490af05bf945be752"
+  },
+  "csv": "PapaParse 5.5.3 (MIT)"
+}

@@ -11,7 +11,7 @@ export const mainSchema=z.object({
  reviews:z.record(z.string(),z.array(review)).optional(),files:z.record(z.string(),z.array(file)).optional(),
  archives:z.array(z.object({title:z.string(),at:z.string(),snap:z.string().optional()}).passthrough()).max(200).optional(),
  userEvents:z.array(z.object({id:z.string().regex(/^[A-Za-z0-9_-]+$/),n:z.string(),t:z.enum(['shoot','promo','film','biz','variety','train','fan','rest']),a:z.number().int().min(1).max(31),b:z.number().int().min(1).max(31),time:z.string(),note:z.string()}).refine(v=>v.a<=v.b)).optional(),
- tasks:z.array(z.object({id:z.union([z.string(),z.number()]).optional(),col:z.number().int().min(0).max(2)}).passthrough()).optional(),
+ tasks:z.array(z.object({id:z.union([z.string(),z.number()]).optional(),col:z.number().int().min(0).max(2),sourceText:z.string().max(2000).optional(),sourceLine:z.number().int().positive().optional(),timeHint:z.string().max(1000).optional()}).passthrough()).optional(),
  tab:texts.optional(),ran:bools.optional(),seen:bools.optional(),checks:bools.optional(),
  adopt:z.number().int().min(0).max(2).nullable().optional(),
  formDrafts:z.record(z.string(),z.record(z.string(),z.union([z.string(),z.boolean()]))).optional(),
@@ -25,6 +25,9 @@ export const mainSchema=z.object({
  wts:z.object({role:z.number().min(0).max(50),dir:z.number().min(0).max(50),team:z.number().min(0).max(50),sched:z.number().min(0).max(50),fee:z.number().min(0).max(50)}).optional(),
  userWorks:z.array(z.object({title:z.string(),year:z.string(),role:z.string(),genre:z.string(),note:z.string()})).optional(),
  projectInfo:z.object({director:z.string(),producer:z.string(),team:z.string(),notes:z.string()}).optional()
+ ,experience:z.object({active:z.boolean(),step:z.number().int().min(0).max(7),checks:bools}).optional()
+ ,replySubmissions:z.record(z.string(),z.object({text,tone:z.enum(['warm','play','formal']),at:z.string(),risk:z.boolean(),edited:z.boolean()})).optional()
+ ,lab:z.boolean().optional(),labKind:z.string().max(100).optional(),visionPreferences:texts.optional()
 }).passthrough();
 export function validateMain(raw,fresh) {
  const inspect=(x,depth=0)=>{if(depth>60)throw Error('资料层级过深');if(x&&typeof x==='object')for(const [k,v]of Object.entries(x)){if(['__proto__','constructor','prototype'].includes(k))throw Error('资料含有无效字段');inspect(v,depth+1);}};inspect(raw);

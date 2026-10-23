@@ -10,13 +10,14 @@
   <script src="player.js" defer></script>
   <script src="export.js" defer></script>
   <script src="app.js" defer></script>
-</head>
-<body>
+<script src="/demo/scene-art.js?v=20261024-demo3" defer></script><script src="/demo/gallery-effects.js?v=20261024-demo3" defer></script><link rel="stylesheet" href="/demo/editorial-theme.css?v=20261024-layout2"></head>
+<body data-stardust-cursor>
 <main id="app" aria-busy="true">
-  <header class="module-head">
+  <header class="module-head" data-illustration="previs" data-rising-lines>
     <div><p class="eyebrow">SCENE / STYLE / RHYTHM</p><h1>造型与分镜</h1><p class="intro">把画面、台词与节奏，排成自己的方案。</p></div>
     <div class="save-tools"><span id="save-status" role="status">连接项目…</span><button id="save-now">保存</button><button id="reload">重新读取</button></div>
   </header>
+  <details class="note visual-preview"><summary>先玩一个角色氛围切换示例</summary><p>预置配图的光边揭图效果；你的分镜、造型与原图仍在下方真实编辑。</p><div data-ember-reveal data-images='[{"src":"/demo/assets/photos/01_bookshop.jpg","alt":"书店氛围 · 示例配图"},{"src":"/demo/assets/photos/02_window.jpg","alt":"窗光氛围 · 示例配图"},{"src":"/demo/assets/photos/07_rooftop.jpg","alt":"天台氛围 · 示例配图"}]'></div></details>
   <div id="error" class="error" role="alert" hidden></div>
   <div id="notice" class="notice" role="status" hidden></div>
   <div class="plan-bar"><label class="title-label">方案名称<input id="plan-title" maxlength="300" placeholder="为当前项目起一个方案名" autocomplete="off"></label><label>画幅<select id="aspect"><option>16:9</option><option>9:16</option><option>1:1</option></select></label><div class="plan-stats"><strong id="shot-count">0</strong><span>个镜头</span><strong id="total-time">0.00s</strong><span>总时长</span></div></div>

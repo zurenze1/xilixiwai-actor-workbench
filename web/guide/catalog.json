@@ -1,10 +1,14 @@
 {
   "version": 1,
-  "sourceHash": "281759504d0772da283a1e8311752f4818fccfe5088c40bf719f4ee17afa21fe",
+  "sourceHash": "52af0846eaeb22c65d9c3f4e4cbcaeccee1b7ff29193c9aa2ec2a8071806b085",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
-      "sha256": "d7723c6b7b8394808c0e5ea10a3001d6232f22d47bb573621da158d65ac05e89"
+      "sha256": "9ed262af62176b6fbcb48743a60e13bbea29995b290fd9ab093bcf78be91f4cd"
+    },
+    {
+      "path": "practical/web/auth-reference.css",
+      "sha256": "41baa1dc67b93d7fd2a222e93641d6e78a30562b1b7efe343f7f7148632f2b57"
     },
     {
       "path": "practical/web/bridge.js",
@@ -16,7 +20,7 @@
     },
     {
       "path": "practical/web/business/index.html",
-      "sha256": "4beb1811bef36b8363ff35e9bec99d19dd2d1d88e2b31f8c96f09918322171b3"
+      "sha256": "9ec533bd8c6a4566374ec892c572af58abf346c3bc5e33960ef6cbd4c9d4523a"
     },
     {
       "path": "practical/web/business/model.js",
@@ -32,19 +36,23 @@
     },
     {
       "path": "practical/web/index.html",
-      "sha256": "7e06d3aa1b80a8e8dfd7df2862ef12c40f2dbb22333c6af1a0618deb55aab8eb"
+      "sha256": "141bf4cfc1e337a19b27d31e03286893d1d1e9a49366c6cdd5cf12b0155f4f09"
     },
     {
       "path": "practical/web/pet/app.js",
-      "sha256": "3db08c1756ee5d706886e8eaee3f0ce0ce4fcb91e15c6e91fd3207f29b339ddb"
+      "sha256": "3bbac8f8a4ea3d0d4a831e5e45c5e5e3c0a2372ff20a5e9ec2248684fdf7eae9"
     },
     {
       "path": "practical/web/pet/backup.js",
       "sha256": "9d2950ee71406244e46dc0f8c6ddda2fa1ae002a34b74d87256e27299123fb62"
     },
     {
+      "path": "practical/web/pet/companion.css",
+      "sha256": "4d8bb526f519b14e5c3d24fc3535f1ccd8fe28b3ce94bd2d0b9c08ee1ad21db6"
+    },
+    {
       "path": "practical/web/pet/index.html",
-      "sha256": "ffff1e8db4afbac3eb5726ee42895628763606caa079b016c0fd74d4203a337c"
+      "sha256": "c99150cf839a87b4c9be4045c66698c75e4424f9b529d17973a33c0b3f53ef4a"
     },
     {
       "path": "practical/web/pet/schema.js",
@@ -64,7 +72,7 @@
     },
     {
       "path": "practical/web/previs/index.html",
-      "sha256": "b86f61ca8a60cde615bc6a87c8906bc00e1b0fbded8252bb1f08bcee55fce2ea"
+      "sha256": "0cdd36dc302de50b65c251f327fd8c440f9c88bcd369868214adde3a28c3b849"
     },
     {
       "path": "practical/web/previs/player.js",
@@ -92,7 +100,7 @@
     },
     {
       "path": "practical/web/social/index.html",
-      "sha256": "32b5e6afb683b0285c8b7b103d99e40c42eba711b18e8e08a0933785347965ea"
+      "sha256": "3905cbae46e3751151ed09f88055ed678df105889fe03bf1dd806b0304559f76"
     },
     {
       "path": "practical/web/social/model.js",
@@ -104,7 +112,7 @@
     },
     {
       "path": "practical/web/style.css",
-      "sha256": "46c6bab3bd3758a7e72ec7299a049ec75f1ee42480f8a16f7d125ff174048f5c"
+      "sha256": "4c011e117422848ade1f6a0b9648e0ccf6c1c01cf2d4e0ff079165800539d57d"
     },
     {
       "path": "practical/web/themes/tide.css",
@@ -112,35 +120,75 @@
     },
     {
       "path": "web/app.js",
-      "sha256": "a614feec6b6d8eadb0b576dc9cb4a25cc98c50aaf387d42b52cecfa87315c5f3"
+      "sha256": "15780819492f955e69e2225a4b8285bb7efaa842c4d1dfdf30ea7105c25db516"
     },
     {
       "path": "web/data.js",
       "sha256": "0f07245eeeea8439123080a89463af00493d22c70e212bd67be02c1380978c6b"
     },
     {
+      "path": "web/demo-experience.js",
+      "sha256": "30cd0a5c1c008c1a1c2917611739c2a2826e6a8748afd901eb979d84cc55ddf2"
+    },
+    {
+      "path": "web/demo-lab/app.js",
+      "sha256": "783fcb740ad099dfae5ad366f5a6c187b2d27b7e92864b2732147102714dbc67"
+    },
+    {
+      "path": "web/demo-lab/catalog.js",
+      "sha256": "3b83e1f741e1cf84081de612bf5014674d2201176b90d64b10d7425c3389a7d9"
+    },
+    {
+      "path": "web/demo-lab/csv.min.js",
+      "sha256": "3553fb8bdf5b8004ce5531e6827e81c8b34e7b3992677967754544064e97b016"
+    },
+    {
+      "path": "web/demo-lab/forms.js",
+      "sha256": "5ded067def271d29527b197df3159cef324a59cd054d87b3382dd4e8b88f3d25"
+    },
+    {
+      "path": "web/demo-lab/index.html",
+      "sha256": "52e3e6c504c47ef60ecfa6fcb2e23f6ddaba0342f800cc2fa6e4abc90f227e7b"
+    },
+    {
+      "path": "web/demo-lab/style.css",
+      "sha256": "4b41aaae8e8fa0073a990684824db850050babc746b4d6d4c09922ecc17f22e7"
+    },
+    {
+      "path": "web/editorial-theme.css",
+      "sha256": "8ca5630ef83fe5ed0b8f5ea18861b8aead6562865c0dd01359a8b3d1dd05d6d4"
+    },
+    {
       "path": "web/film.html",
       "sha256": "9951b388b2d7dfdf9725dbf7b230983289db58e78312927a021846192584686e"
     },
     {
+      "path": "web/gallery-effects.css",
+      "sha256": "ddfca8e3360cdafab2d5e709c39b962cda801c5acbf7acc2d0cd9c0e41945fb2"
+    },
+    {
+      "path": "web/gallery-effects.js",
+      "sha256": "7a42831b2bf7f215f326a508bd1a9fdadf67a2be4567f37e328fdb962808ad77"
+    },
+    {
       "path": "web/guide/app.js",
-      "sha256": "26043e9dd103fb0cf1f24038b5c7c5efc818005dad33234e2b6f95beeca4b0ce"
+      "sha256": "4a16ec7e7a0219351a34267f7c88d3dd7467209c9f0222a83014d33fcb546049"
     },
     {
       "path": "web/guide/content.mjs",
-      "sha256": "b876265bd12b0ebc0b973069f063ce350101f8e8eaa80979adfb1c755c89719d"
+      "sha256": "8980d9a98f8d016477809d3cb0051c1f3732febe9935becc990f6ec15f6ce0ca"
     },
     {
       "path": "web/guide/index.html",
-      "sha256": "ce42a73e8237f93d43f2d43eafa2928831e1ca35e3cd4cfcbddebac519fffca0"
+      "sha256": "fcc21c933a13b04bd1957f5105d5c55a0768a3039c18c6810934e29c4841db08"
     },
     {
       "path": "web/guide/style.css",
-      "sha256": "52f3d8d553faa43f6a9905e4cfeaecb1ecf6c3f54666edb1840e8ffae48825d8"
+      "sha256": "18576f21e5a24517eb5a9502b736c8617a8904709d8fe48fcbb7b4eb194c05b1"
     },
     {
       "path": "web/index.html",
-      "sha256": "d282b04ea3f2b86521cb3decf3ace2d7913aebb59f7d285c602879536e1d87ff"
+      "sha256": "3795a3388381d2d3eff0aa1bcd00eaa2f183f0e5e5bb0ca053826ef1f698a348"
     },
     {
       "path": "web/launch.html",
@@ -152,7 +200,7 @@
     },
     {
       "path": "web/reliable-store.js",
-      "sha256": "cd2b634ea82c7011dc761420f8d3da210bedc0fb3f9a57eaf1672c8a477c2856"
+      "sha256": "410129bde8bccd94e9fce5b10f8b99639e80542c02a6f0f1a1188c6e69770f38"
     },
     {
       "path": "web/reset.html",
@@ -160,7 +208,7 @@
     },
     {
       "path": "web/rourou/app.js",
-      "sha256": "13f17086f95ae3cca7594276cca34254b57e19a364d118c416c4447eefa85d2a"
+      "sha256": "83ac21361649408c0952e61a6c4db6715b6197f02ffe5d8ffe72f57fe3a38c26"
     },
     {
       "path": "web/rourou/backup.js",
@@ -168,15 +216,35 @@
     },
     {
       "path": "web/rourou/index.html",
-      "sha256": "8ce3c6e22904cc1729a36ddcac7c856d2774f09cd29a0c888482ee45649cf9d1"
+      "sha256": "d24315a1575720a4cbad272f70ebfb85f0ecde3b49f4b2a2763497edca6caa53"
     },
     {
       "path": "web/rourou/schema.js",
       "sha256": "aba226f486e575fefeaf5b0c9a56deab68fe40f22b578d9110c0f9d4d8eb2e17"
     },
     {
+      "path": "web/scene-art.css",
+      "sha256": "512d27baf85c98549b8aca3783ea41230249e58d508fbf71cbe00191a80b61cf"
+    },
+    {
+      "path": "web/scene-art.js",
+      "sha256": "5e2e28402967385c0179f0b37136e5c79d8d9c87cd98047643e6b29ddd37377a"
+    },
+    {
+      "path": "web/showcase-widgets.css",
+      "sha256": "0b32c479e4ab0fdca9f7e3c780637213578491207d3ecb86123e36d2272e1f3a"
+    },
+    {
+      "path": "web/showcase-widgets.js",
+      "sha256": "5f0f9224a0d613b875d522037c626d823b3cfa83610002a571d7a78ab5c79d87"
+    },
+    {
       "path": "web/style.css",
-      "sha256": "bec4d2e04744a74dca0b87dd54aac965adff2b35d5ff10b307b6b0c3391de50b"
+      "sha256": "aa540e57d47df0446af1666cf9f45a957644604dbdc9e0090a7c3d3fac848f39"
+    },
+    {
+      "path": "web/task-extract.js",
+      "sha256": "c652c7d42a80852d6d57ecbd7ded8369ed1267d7ea4df11f469d9c34592574c7"
     },
     {
       "path": "web/weather-snapshot.js",
@@ -2235,27 +2303,28 @@
       "name": "日程总览",
       "icon": "calendar",
       "category": "team",
-      "lead": "看今日与整月安排，新增日程后检查重叠。",
+      "lead": "先完成一条主线，再自由探索整个工作台。",
       "curated": true,
       "fields": [],
       "steps": [
         {
           "title": "点哪里",
-          "body": "侧栏打开「日程总览」。"
+          "body": "首页点「开始8步体验」；需要时点「完整能力与愿景」。"
         },
         {
           "title": "怎么填",
-          "body": "看今日与整月安排，新增日程后检查重叠。"
+          "body": "按任务卡点「去操作」定位控件。亲手拖权重、选演法、编辑任务和回复；下方仍可使用日程。"
         },
         {
           "title": "如何保存",
-          "body": "按页面提供的保存入口确认，留意错误和未保存提示。"
+          "body": "每步以实际操作判断完成。可收起引导、刷新后继续；不用清空原有记录。"
         },
         {
           "title": "保存 / 输出",
-          "body": "使用当前页面的导出入口；完整备份可保留原件，文字导出只包含文字。"
+          "body": "点「我的体验成果」下载Markdown，含实际选择、批注、回复审核快照和复盘。规划预览会明确标出尚未接入。"
         }
-      ]
+      ],
+      "kinds": []
     },
     {
       "id": "demo-page-trip",
@@ -2556,12 +2625,43 @@
           "body": "使用当前页面的导出入口；完整备份可保留原件，文字导出只包含文字。"
         }
       ]
+    },
+    {
+      "id": "demo-page-lab",
+      "mode": "demo",
+      "key": "lab",
+      "page": -12,
+      "name": "业务资料实验室",
+      "icon": "folder",
+      "category": "team",
+      "lead": "用自己的输入，体验业务资料如何留下来。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏「业务资料实验室」，或完整能力页点「自己填一条」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "选择25类表单之一；可先载入虚构示例，再新增或修改负责人、日期、状态和具体内容。"
+        },
+        {
+          "title": "如何保存",
+          "body": "点保存，刷新核对；搜索、归档与CSV导入预览都在模块内。未保存草稿会在离开前保存。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "在实验室内导出CSV或含原件JSON备份。它的资料独立存储，主线与肉肉的备份不包含实验室记录。"
+        }
+      ],
+      "kinds": []
     }
   ],
   "notes": {
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "7a73bbec8f338246c51219abf0b366ea6d938730698d58b6b141ec00f4c5e775",
-  "generatedAt": "2026-10-23T17:24:34.605Z"
+  "contentHash": "128afc26e9510380775e4a18736031058135d94475cfabb6fe10ab49791050b9",
+  "generatedAt": "2026-10-23T19:24:48.226Z"
 }
