@@ -13,7 +13,7 @@ function initializer(source,name){
  throw Error('源码定义不完整：'+name);
 }
 function evaluate(expression,context={}){return vm.runInNewContext('('+expression+')',context,{timeout:1500});}
-async function sourcePaths(directory){const entries=await readdir(resolve(ROOT,directory),{withFileTypes:true}),paths=[];for(const e of entries){if(e.isDirectory()&&!['assets','vendor','node_modules'].includes(e.name))paths.push(...await sourcePaths(directory+'/'+e.name));else if(e.isFile()&&/\.(?:m?js|html|css)$/.test(e.name))paths.push(directory+'/'+e.name);}return paths;}
+async function sourcePaths(directory){const entries=await readdir(resolve(ROOT,directory),{withFileTypes:true}),paths=[];for(const e of entries){if(e.isDirectory()&&!['assets','vendor','node_modules','scripts','qa'].includes(e.name)&&!e.name.startsWith('.')&&!e.name.endsWith('-artifacts'))paths.push(...await sourcePaths(directory+'/'+e.name));else if(e.isFile()&&/\.(?:m?js|html|css)$/.test(e.name))paths.push(directory+'/'+e.name);}return paths;}
 function fallback(name,kinds,mod){const first=mod[kinds[0]],fields=first?.fields?.filter(f=>f.required).slice(0,4).map(f=>f.label)||[];return{icon:'folder',category:'team',kinds,lead:'从本板块的真实表单开始，逐项填写并保存。',curated:false,steps:[{title:'点哪里',body:'在侧栏打开「'+name+'」，选择当前页面提供的新增或编辑入口。'},{title:'怎么填',body:fields.length?'先填写：'+fields.join('、')+'；下方列出源码中实际存在的字段。':'按页面的实际字段填写；没有资料的项目先保持未知。'},{title:'如何保存',body:'点击页面的保存按钮，确认保存成功，再刷新核对。'},{title:'保存 / 输出',body:'以页面当前提供的导出入口为准；精细操作说明待补写。'}]};}
 export async function buildUsageGuide(){
  const paths=[...await sourcePaths('web'),...await sourcePaths('practical/web')].sort(),contents=await Promise.all(paths.map(p=>readFile(resolve(ROOT,p),'utf8'))),byPath=Object.fromEntries(paths.map((p,i)=>[p,contents[i]]));

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "c641c46048534d0e349efe1aa05c4ef9ebe8e862768ddd67670333661ea728cf",
+  "sourceHash": "e3bb6d8bef515c49b746c44adae1fabb6035198521bee37b4232994e74e77875",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -173,70 +173,6 @@
     {
       "path": "web/rourou/schema.js",
       "sha256": "aba226f486e575fefeaf5b0c9a56deab68fe40f22b578d9110c0f9d4d8eb2e17"
-    },
-    {
-      "path": "web/scripts/actor3-render/film-butter/index.html",
-      "sha256": "f63225d942f0ef76ff5da68c3c06bd2ceda2f3b5d6b6a67066cbe46f7646c80d"
-    },
-    {
-      "path": "web/scripts/actor3-render/film-moss/index.html",
-      "sha256": "2f1135c8bacb1a18df5f6ac6d62b20e5d66a038e8aab9896d32b601f3e3df924"
-    },
-    {
-      "path": "web/scripts/actor3-render/film-tide/index.html",
-      "sha256": "fbeb0b2d9d7af97f781aff283523e1d77f327d826990144d210cbab10457229f"
-    },
-    {
-      "path": "web/scripts/actor3-render/original-html/film.html",
-      "sha256": "03d81f811a204e547973dbcabce2c5b6a4fa31f9151bdc5ca2d2009380d2a1a2"
-    },
-    {
-      "path": "web/scripts/actor3-render/original-html/launch.html",
-      "sha256": "40514adf528237b266df1425f5572d458e095c8f09815536add3d19f7c8186de"
-    },
-    {
-      "path": "web/scripts/actor3-render/original-html/outro.html",
-      "sha256": "96fefee6ff5120764acb14dfb4145f23d9a4b4d83c9c53310df2824e66925204"
-    },
-    {
-      "path": "web/scripts/actor3-render/outro-butter/index.html",
-      "sha256": "2d93b8271be9cc8961f542914f3539d97d7905eab36bedc62ec81fe1665ddeff"
-    },
-    {
-      "path": "web/scripts/actor3-render/outro-moss/index.html",
-      "sha256": "b119adab6efff63e2d3fd2c1ba29952cbe0953f43511fa101d0764101a41985b"
-    },
-    {
-      "path": "web/scripts/actor3-render/outro-tide/index.html",
-      "sha256": "2266dca9eb7e1b36cd59502e2f1717c5f55560e03a18631178247e96f593ea43"
-    },
-    {
-      "path": "web/scripts/actor3-render/qa/syntax-film-0.js",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
-      "path": "web/scripts/actor3-render/qa/syntax-film-1.js",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
-      "path": "web/scripts/actor3-render/qa/syntax-film-2.js",
-      "sha256": "a986d750d7f3979a856b960188c627cff54b8a087f88c876aa1bfb0c41810cb1"
-    },
-    {
-      "path": "web/scripts/actor3-render/qa/syntax-launch-0.js",
-      "sha256": "4d66906c2cfb6221a2c802685f4e5cecba258cfaeeb54ef22795ee100195f529"
-    },
-    {
-      "path": "web/scripts/actor3-render/qa/syntax-outro-0.js",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
-      "path": "web/scripts/actor3-render/qa/syntax-outro-1.js",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
-      "path": "web/scripts/actor3-render/qa/syntax-outro-2.js",
-      "sha256": "ba13e0b0952ef876431c0c2425b5d8d5b0d53f76c47de6e648e52e9e4de3692c"
     },
     {
       "path": "web/style.css",
@@ -2626,6 +2562,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "e019fe30a79aff3727a298ba049b6b40a346b4b34ed6e28366ecffe00b916165",
-  "generatedAt": "2026-10-23T17:09:51.102Z"
+  "contentHash": "eed26799c0ad076a206bc46156f2c2b30214784619fdb4da5c9039e192a25fa2",
+  "generatedAt": "2026-10-23T17:15:57.136Z"
 }
