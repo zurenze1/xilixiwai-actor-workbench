@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "b89939e8187774020e17b60819a92c3a175ef663858913641006ddb7cf3c9188",
+  "sourceHash": "281759504d0772da283a1e8311752f4818fccfe5088c40bf719f4ee17afa21fe",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -112,7 +112,7 @@
     },
     {
       "path": "web/app.js",
-      "sha256": "28221d1689f17791616053532cc46d0c0e274e111642242c304fcca0a40baf22"
+      "sha256": "a614feec6b6d8eadb0b576dc9cb4a25cc98c50aaf387d42b52cecfa87315c5f3"
     },
     {
       "path": "web/data.js",
@@ -140,7 +140,7 @@
     },
     {
       "path": "web/index.html",
-      "sha256": "080d0557e17a04cbc41fe6ca89241e4902a80a084314bfe21a83369fbb2f5483"
+      "sha256": "d282b04ea3f2b86521cb3decf3ace2d7913aebb59f7d285c602879536e1d87ff"
     },
     {
       "path": "web/launch.html",
@@ -176,7 +176,7 @@
     },
     {
       "path": "web/style.css",
-      "sha256": "c22851427057679ef99b6a04b3b4ffca4c2c310ae0a77d347a0d61eb079c5b61"
+      "sha256": "bec4d2e04744a74dca0b87dd54aac965adff2b35d5ff10b307b6b0c3391de50b"
     },
     {
       "path": "web/weather-snapshot.js",
@@ -2562,6 +2562,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "1138b3c0c32cb71fe9cb19c44e172c3ceca412d6d5d1f869299d26ccafcff917",
-  "generatedAt": "2026-10-23T17:22:55.784Z"
+  "contentHash": "7a73bbec8f338246c51219abf0b366ea6d938730698d58b6b141ec00f4c5e775",
+  "generatedAt": "2026-10-23T17:24:34.605Z"
 }

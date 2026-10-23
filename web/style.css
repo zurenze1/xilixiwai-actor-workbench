@@ -713,3 +713,5 @@ body[data-busy="1"] [data-act]{pointer-events:none;cursor:progress}
 
 /* A closed mobile drawer must not cast a shadow over the work area. */
 @media(max-width:1280px){.app:not(.folder-open) .folder{visibility:hidden;pointer-events:none;box-shadow:none}.app.folder-open .folder{visibility:visible;pointer-events:auto}}
+
+.folder-close{display:none}@media(max-width:1280px){.folder-close{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;margin-left:6px;font-size:22px;padding:4px}}

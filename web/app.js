@@ -358,7 +358,7 @@ function renderTop() {
 function renderFolder() {
   const items = Object.entries(FOLDER);
   $('#folder').innerHTML = `
-  <div class="folder-head"><h3>这部戏的资料夹 <span class="tag">${S.folder.length}/${items.length}</span></h3>
+  <div class="folder-head"><h3>这部戏的资料夹 <span class="tag">${S.folder.length}/${items.length}</span><button type="button" class="btn sm folder-close" data-act="folder" aria-label="关闭资料夹">×</button></h3>
   <p>每一站的成果都存在这里，下一站接着用。</p></div>
   <div class="folder-list">${items.map(([k, v]) => has(k)
     ? `<div class="fi ${newFolder === k ? 'new' : ''}" data-act="go" data-i="${v.st}" data-tab="${v.tab || ''}"><span class="fi-no">${D.stations[v.st].no}</span><div><b>${v.t}</b><small>${v.d}</small></div></div>`
