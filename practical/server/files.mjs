@@ -12,7 +12,7 @@ export function fileService(store,dataDir){
  async function put({pid,studio,user,name,type,bytes,visibility='team'}){
   store.project(pid,studio,user,true);if(bytes instanceof Uint8Array&&!Buffer.isBuffer(bytes))bytes=Buffer.from(bytes);if(!Buffer.isBuffer(bytes)||bytes.length>MAX_FILE)fail('单个文件最多32 MB',413);if(!name||name.length>500)fail('文件名无效');if(!['team','private'].includes(visibility))fail('附件可见范围无效');if(!/^[a-zA-Z0-9!#$&^_.+-]+\/[a-zA-Z0-9!#$&^_.+-]+$/.test(type||''))type='application/octet-stream';
   const fileId='file-'+id(),path=join(root,fileId);await mkdir(root,{recursive:true,mode:0o700});
-  try{await writeFile(path,bytes,{mode:0o600,flag:'wx'});return store.transaction(()=>{const p=store.project(pid,studio,user,true);if(p.data.internal)visibility='private';store.run('INSERT INTO files VALUES(?,?,?,?,?,?,?,?,?,?,?)',fileId,studio,pid,user,visibility,name,type||'application/octet-stream',bytes.length,hash(bytes),path,now());store.audit(studio,user,'file.upload',fileId,{name,size:bytes.length},pid);return meta(store.get('SELECT * FROM files WHERE id=?',fileId));});}catch(e){if(e.code!=='EEXIST')await unlink(path).catch(()=>{});throw e;}
+  try{await writeFile(path,bytes,{mode:0o600,flag:'wx'});return store.transaction(()=>{const p=store.project(pid,studio,user,true);if(p.data.internal===true||p.data.internal==='business')visibility='private';store.run('INSERT INTO files VALUES(?,?,?,?,?,?,?,?,?,?,?)',fileId,studio,pid,user,visibility,name,type||'application/octet-stream',bytes.length,hash(bytes),path,now());store.audit(studio,user,'file.upload',fileId,{name,size:bytes.length},pid);return meta(store.get('SELECT * FROM files WHERE id=?',fileId));});}catch(e){if(e.code!=='EEXIST')await unlink(path).catch(()=>{});throw e;}
  }
  function entry(fid,studio,user){const row=store.get("SELECT * FROM files WHERE id=? AND studio_id=? AND (visibility='team' OR owner_id=?)",fid,studio,user);if(!row)fail('附件不存在或无权查看',404);store.project(row.project_id,studio,user);return row;}
  async function get(fid,studio,user){const row=entry(fid,studio,user);const bytes=await readFile(row.path);if(hash(bytes)!==row.sha256)fail('原件校验失败，已阻止返回损坏内容',409);return {meta:meta(row),bytes};}
@@ -21,7 +21,7 @@ export function fileService(store,dataDir){
 }
 export async function extract(bytes,name,type){
  let text='',metadata={format:'text'};
- if(/\.docx$/i.test(name)){const result=await mammoth.extractRawText({buffer:bytes});text=result.value;metadata={format:'docx',messages:result.messages.map(m=>m.message)};}
+ if(/\.docx$/i.test(name)){let result;try{result=await mammoth.extractRawText({buffer:bytes});}catch{fail('Word原件已保留，但文件损坏或不是有效DOCX，未提取到文字');}text=result.value;metadata={format:'docx',messages:result.messages.map(m=>m.message)};}
  else if(/\.pdf$/i.test(name)||type==='application/pdf'){
   const pdf=await import('pdfjs-dist/legacy/build/pdf.mjs');const loading=pdf.getDocument({data:new Uint8Array(bytes),useSystemFonts:true,isEvalSupported:false,disableFontFace:true}),document=await loading.promise;
   if(document.numPages>500)fail('PDF超过500页，请分册导入',413);const pages=[];

@@ -44,7 +44,11 @@ p{margin:0}
 [data-theme="butter"] .brand-mark{color:#26251e}
 .brand b{display:block;font:600 19px/1.2 var(--serif);letter-spacing:.06em}
 .brand small{opacity:.6;font-size:11px;letter-spacing:.12em}
-.side-cap{font-size:11px;letter-spacing:.16em;opacity:.55;margin:14px 8px 8px}
+.side a.brand{color:inherit;text-decoration:none}
+.side button.brand{border:0;background:none;color:inherit;text-align:left}
+.side button.brand:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:8px}
+.side a.brand:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:8px}
+.side-cap{font-size:16px;font-weight:700;line-height:1.4;letter-spacing:.05em;opacity:1;margin:18px 8px 10px}
 .journey{list-style:none;margin:0;padding:0;position:relative}
 .journey:before{content:"";position:absolute;left:23px;top:18px;bottom:18px;width:1px;background:#ffffff26}
 .st{position:relative;display:flex;gap:12px;align-items:center;width:100%;border:0;background:none;padding:8px 8px;border-radius:10px;text-align:left;color:inherit;opacity:.72;transition:.2s}
@@ -64,10 +68,13 @@ p{margin:0}
 .side-btns button:hover{opacity:1;background:#ffffff12}
 
 /* ---------- 顶栏 ---------- */
-.top{display:flex;align-items:center;gap:14px;padding:14px 36px;border-bottom:1px solid var(--line);background:var(--panel);min-height:64px}
-.crumb{display:flex;gap:10px;align-items:baseline;min-width:0;flex:1}
-.crumb b{font:600 17px var(--serif);white-space:nowrap}
-.crumb span{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top{display:flex;align-items:center;flex-wrap:wrap;gap:12px 14px;padding:14px 36px;border-bottom:1px solid var(--line);background:var(--panel);min-height:64px}
+.crumb{display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:0;flex:1 1 280px}
+.crumb b{font:600 17px var(--serif);white-space:normal}
+.crumb span{color:var(--muted);font-size:13px;white-space:normal;overflow-wrap:anywhere;line-height:1.5}
+.top>.prog,.top>.chip,.top>.themes,.top>.folder-toggle{flex:0 0 auto}
+.main.module-view{padding:0}
+.workbench-frame{display:block;width:100%;height:calc(100dvh - 140px);min-height:640px;border:0;background:var(--bg)}
 .prog{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);white-space:nowrap}
 .prog i{display:block;width:120px;height:6px;border-radius:9px;background:var(--line);overflow:hidden}
 .prog i em{display:block;height:100%;background:var(--accent);transition:width .6s}
@@ -284,6 +291,8 @@ dialog::backdrop{background:#0009;backdrop-filter:blur(3px)}
 .dlg{padding:24px 26px}
 .dlg h2{font:600 20px var(--serif);display:flex;justify-content:space-between;align-items:center}
 .dlg h2 button{border:0;background:none;font-size:22px;color:var(--muted)}
+.deployment-info .row{flex-wrap:wrap}
+.deployment-info a{color:inherit;white-space:normal;overflow-wrap:anywhere;text-decoration:none}
 .opt{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .opt button{border:1px solid var(--line);background:var(--panel2);border-radius:99px;padding:6px 14px;font-size:13.5px}
 .opt button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -316,6 +325,8 @@ dialog::backdrop{background:#0009;backdrop-filter:blur(3px)}
   .journey{display:flex;gap:2px}.journey:before{display:none}
   .st{padding:6px}.st span{display:none}
   .top{padding:10px 16px;flex-wrap:wrap}.prog i{width:70px}
+  .crumb{flex-basis:100%}
+  .workbench-frame{height:calc(100dvh - 190px);min-height:560px}
   .main{padding:18px 16px 50px;overflow:visible}
   .grid2,.grid3,.split,.kanban,.buckets{grid-template-columns:1fr}
   .grid4,.dims{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -419,6 +430,11 @@ img.ph{width:100%;height:100%;object-fit:cover;display:block}
 .rt small{color:var(--muted);font-size:11.5px;line-height:1.35}
 .rt small.ev{color:var(--ink)}
 .rt-arrow{display:grid;place-items:center;color:var(--muted);font-size:18px;padding:0 2px}
+.trip-summary .result-head>div{min-width:0;max-width:100%}
+.weather-actions{min-width:0;max-width:100%}
+.weather-status{min-width:0;max-width:100%;white-space:normal;line-height:1.45;border-radius:12px}
+.weather-status .led{flex:0 0 8px}
+.weather-status-text{min-width:0;overflow-wrap:anywhere}
 .wxchart{width:100%;height:auto}
 .rainbar{fill:color-mix(in srgb,var(--accent) 35%,transparent)}
 .legs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
@@ -674,15 +690,21 @@ img.ph{width:100%;height:100%;object-fit:cover;display:block}
 .journey-toggle:hover{background:#ffffff0d}
 .journey-toggle:focus-visible{outline:2px solid currentColor;outline-offset:2px}
 .journey-label{display:block;min-width:0}
-.journey-title{display:block;font-size:11px;letter-spacing:.12em;opacity:.7}
-.journey-current{display:block;margin-top:5px;font-size:12px;letter-spacing:0;opacity:.9}
-.journey-toggle-action{display:flex;align-items:center;gap:5px;flex:none;font-size:11px;opacity:.75;white-space:nowrap}
+.journey-title{display:block;font-size:16px;font-weight:700;letter-spacing:.05em;opacity:1}
+.journey-subtitle{display:block;margin-top:2px;font-size:11.5px;font-weight:400;letter-spacing:.04em;opacity:.8}
+.journey-current{display:block;margin-top:5px;font-size:12px;letter-spacing:0;opacity:1}
+.journey-toggle-action{display:flex;align-items:center;gap:5px;flex:none;font-size:12px;font-weight:600;opacity:1;white-space:nowrap}
 .journey-chevron{font-size:13px}
 #stationJourney[hidden],#journeyCurrent[hidden]{display:none!important}
 @media(max-width:860px){
  .side .journey-group{display:flex;align-items:center;gap:4px;margin:0;flex:0 0 auto}
  .side .journey-toggle{width:auto;min-width:190px;max-width:240px;min-height:48px;padding:5px 10px}
  .side .journey-title{white-space:nowrap}
+ .side .side-cap{display:block;flex:0 0 auto;font-size:14px;white-space:nowrap;margin:0 4px 0 8px}
+ .side .brand{min-height:48px;padding:4px 6px}
+ .side .brand>div:not(.brand-mark){display:block}
+ .side .brand b{font-size:16px;white-space:nowrap}
+ .side .brand small{display:block;font-size:9px;opacity:.8}
  .side .journey-current{margin-top:3px}
  .side .journey-group .journey{flex:0 0 auto;align-items:center}
 }

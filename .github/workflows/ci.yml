@@ -15,5 +15,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run test:practical
+      - run: npm run build:guide
+      - run: git diff --exit-code -- web/guide/catalog.json
       - run: npm run build:store
       - run: git diff --exit-code -- web/reliable-store.js

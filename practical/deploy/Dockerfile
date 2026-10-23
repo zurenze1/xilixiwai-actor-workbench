@@ -5,6 +5,8 @@ RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 COPY practical ./practical
 COPY server ./server
 COPY web ./web
+COPY scripts ./scripts
+RUN node scripts/build-usage-guide.mjs
 RUN mkdir -p /data && chown node:node /data
 USER node
 ENV NODE_ENV=production DATA_DIR=/data PORT=4930 PRACTICAL_MODE=online
