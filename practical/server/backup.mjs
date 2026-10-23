@@ -1,0 +1,17 @@
+import {unzipSync,strFromU8} from 'fflate';import {id,hash,fail} from './database.mjs';
+export function prepareImport(data,kinds){
+ if(typeof data!=='string'||data.length>240_000_000)fail('备份过大，请按项目分册',413);const encoded=Buffer.from(data,'base64');if(encoded.toString('base64')!==data)fail('备份编码不完整');let total=0,count=0;const names=new Set();let archive;
+ try{archive=unzipSync(encoded,{filter:f=>{if(names.has(f.name))fail('备份含重复路径');names.add(f.name);total+=f.originalSize;if(!Number.isSafeInteger(f.originalSize)||f.originalSize<0||total>160*1024*1024||++count>1000)fail('备份解压后超过限制',413);return true;}});}catch(e){if(e.status)throw e;fail('ZIP文件损坏或格式不受支持');}
+ let m;try{if(!archive['manifest.json']||archive['manifest.json'].length>20*1024*1024)fail('清单缺失或过大');m=JSON.parse(strFromU8(archive['manifest.json']));}catch(e){if(e.status)throw e;fail('备份清单不是有效JSON');}
+ const text=(s,label,max=500)=>{if(typeof s!=='string'||s.length>max)fail(label+'无效');return s;},title=(s,label)=>{text(s,label);if(!s.trim())fail(label+'不能为空');return s;};
+ if(m?.app!=='xilixiwai-practical'||m.version!==1||!m.project||m.project.data?.internal||!Array.isArray(m.records)||!Array.isArray(m.documents)||!Array.isArray(m.files)||m.records.length>10000||m.documents.length>1000||m.files.length>999)fail('备份结构不正确，只能在这里导入影视项目');
+ title(m.project.title,'项目名称');text(m.project.actor||'','演员');if(!Number.isInteger(m.project.phase)||m.project.phase<0||m.project.phase>7)fail('项目阶段无效');const projectData={director:text(m.project.data?.director||'','导演'),production:text(m.project.data?.production||'','制作团队'),notes:text(m.project.data?.notes||'','备注',20000)};
+ const map=new Map(),unique=(old,next)=>{title(old,'资料编号');if(map.has(old))fail('备份资料编号重复');map.set(old,next);};unique(m.project.id,id());
+ for(const f of m.files){unique(f.id,'file-'+id());title(f.name,'附件名');text(f.type,'附件类型',200);if(!['team','private'].includes(f.visibility)||!Number.isSafeInteger(f.size)||f.size<0||f.size>32*1024*1024)fail('附件说明无效');const bytes=archive['originals/'+f.id];if(!bytes||bytes.length!==f.size||hash(bytes)!==f.sha256)fail('原始附件校验失败：'+f.name);}
+ const fileIds=new Set(m.files.map(f=>f.id));
+ for(const d of m.documents){unique(d.id,id());title(d.name,'资料名');text(d.text,'资料原文',1_200_000);text(d.source_url||'','资料来源',10000);if(d.file_id&&!fileIds.has(d.file_id))fail('备份缺少文档原件');if(!d.metadata||typeof d.metadata!=='object'||Array.isArray(d.metadata))fail('资料元数据无效');}
+ for(const r of m.records){unique(r.id,id());if(!kinds.has(r.kind)||r.kind==='health')fail('备份含不适用的记录类型');title(r.title,'记录名称');if(!r.body||typeof r.body!=='object'||Array.isArray(r.body)||JSON.stringify(r.body).length>2_000_000)fail('记录内容无效或过长');if(r.kind==='module'&&r.body.key!=='previs-v1')fail('经营与私人模块不能混入影视项目');if(!['team','private'].includes(r.visibility))fail('记录可见范围无效');}
+ const remap=v=>{if(typeof v==='string')return map.get(v)||v;if(Array.isArray(v))return v.map(remap);if(v&&typeof v==='object'){const pairs=Object.entries(v);if(pairs.some(([k])=>['__proto__','constructor','prototype'].includes(k)))fail('备份含不支持的键名');return Object.fromEntries(pairs.map(([k,x])=>[k,remap(x)]));}return v;};
+ const normalized={...m,project:{...m.project,data:projectData},records:m.records.map(r=>({...r,body:remap(r.body)})),documents:m.documents.map(d=>({...d,visibility:m.files.find(f=>f.id===d.file_id)?.visibility==='private'?'private':d.visibility==='team'?'team':'private',metadata:remap(d.metadata)}))};
+ return {manifest:normalized,archive,map,pid:map.get(m.project.id)};
+}

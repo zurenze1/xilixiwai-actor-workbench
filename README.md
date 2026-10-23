@@ -1,75 +1,65 @@
 # 戏里戏外 · 演员与工作室工作台
 
-面向演员与工作室的可操作演示：用虚构演员「把子肉」和虚构项目《逆光来信》，从接本、读本、入角、预演、开机、宣传、商务走到复盘。另有作品库、日程、粉丝沟通、出行和独立的肉肉生活页。三套主题同时用于工作台、发布会及网页视频预览。
+同一套代码包含可实际保存资料、连接使用者自己模型的**实战版**，以及保留原样的**演示版/发布会**。验收材料均为虚构，不代表真实演员、团队、品牌的经历或背书。
 
-**此项目包含预置示例。未代表任何真实演员、工作室、品牌或项目的经历、使用及背书。**
+## 先用本机版
 
-## 打开体验
-
-[在线工作台](https://zurenze1.github.io/xilixiwai-actor-workbench/) · [交互发布会](https://zurenze1.github.io/xilixiwai-actor-workbench/launch.html) · [肉肉的小世界](https://zurenze1.github.io/xilixiwai-actor-workbench/rourou/)
-
-- 工作台：本站首页 `index.html`
-- 交互发布会：`launch.html`
-- 宣发片网页预览：`film.html`
-- 14.5秒结尾网页预览：`outro.html`
-- 肉肉的小世界：`rourou/`
-
-公开网页用于演示和本机浏览器记录，不包含服务器密钥，也不连接开发者账号。发布会的「打开工作台」链接可跳入实际操作页面。
-
-## 本机运行
-
-需要 Node.js 22 或更新版本。
+需要 **Node.js 24 或更新版本**。在源码目录运行：
 
 ```sh
-npm ci
-npm start
+npm ci --ignore-scripts
+npm run start:practical
 ```
 
-打开 `http://127.0.0.1:4890/`。端口被占用时，可使用 `PORT=4898 npm start`（macOS / Linux）。Windows PowerShell：先 `$env:PORT=4898`，再 `npm start`。
+打开 <http://127.0.0.1:4930/practical/>，自行注册账号。初始资料为空；可以明确导入虚构《逆光来信》原文验收，不预置分析结果。Mac也可双击`practical/启动实战工作台.command`。
 
-## 使用自己的模型
+本机版可以在演员自己的电脑直接使用。**跨设备、团队在线访问才需要云服务器或支持后台与持久存储的全栈托管账号，以及HTTPS域名。** [GitHub Pages](https://zurenze1.github.io/xilixiwai-actor-workbench/) 继续作为静态演示，不能运行实战账号、私密资料库与模型后台。设置页、登录页均有提示。
 
-默认「演示模式」展示预置结果，不会假装读取新附件或检索外部平台。
+## 实战操作
 
-在本人电脑运行后，打开「设置」，选择 DeepSeek、OpenAI、Claude 或其他 OpenAI 兼容服务，点击「配置 / 测试自己的连接」。填写本人账号可用的模型 ID 和 API Key；兼容服务另填公开 HTTPS API 地址。密钥仅在当前页面内存中使用，刷新后清除，不进入备份、GitHub 或浏览器持久存储。API 使用可能由模型服务商收费。
+| 业务 | 实际操作 |
+| --- | --- |
+| 从接戏到复盘 | 多项目、八阶段、导演/制作团队、评估、合同、日历、任务、作品与复盘 |
+| 剧本和表演 | TXT/MD/DOCX/文字PDF提取、原件保存、规则拆场/对白；九类模型任务、长资料分段、逐字引用校验、报告编辑、采纳决定、行动项转任务 |
+| 宣传与工作室 | 留言CSV/人工录入、分类和回复草稿、人工审核与发布记录；会议、FAQ、网页/RSS资料、目标、公益与公共沟通 |
+| 造型与镜头 | 上传实际图片、编辑造型/镜头/台词/声音/时长、排序、暂停/拖动；JSON、CSV和内嵌原图的可播放HTML |
+| 公司与品牌 | 多经营主体/合作关系、分期应收应付、部分实收实付、票据、资产领还盘点、会计确认与税务凭证、品牌/SKU库存/渠道 |
+| 私人生活 | 出行、私人健康记录；肉肉实际日常/体重/行为/托管、原照片、同图加字720PNG、含原件备份 |
+| 保存与权限 | Better Auth账号、SQLite持久保存、管理员/编辑/只读、私人空间、经营隔离、旧版本写入409、历史版本、SHA-256原件与备份恢复 |
 
-「发送资料并分析」只发送明确显示在输入框内的文本。可以编辑附件提取的文本、填写分析要求；结果能导出并保存为待人工复核记录。上传附件原件不会自动上传到模型。TXT / Markdown / CSV 可提取文字，DOCX 通过 Mammoth 提取文字；PDF等其他文件保留原件供下载，本版不做OCR或PDF文字解析。
+AI结果来自使用者明确选中的原文/业务记录与自己配置的模型。事实引文逐字检查，匹配不上的事实降为待核实。规则拆场不冒充人物动机分析；分段分析保留各段结论，不能把拼接当成全局成长线判断。
 
-Codex、Claude Code 由演员本人安装并登录后，以以下命令启动：
+## 自己连接模型
+
+设置支持DeepSeek、OpenAI、Anthropic及公开HTTPS的OpenAI兼容文本API。填写使用者账号实际可用的模型ID和密钥；服务端加密保存，浏览器不回传密钥，项目/模块导出不含密钥。共享连接仅共享调用能力。分析前显示所选文字量及调用次数，由使用者确认，服务商可能收费。
+
+使用者在自己的电脑安装并登录Codex / Claude Code后，可显式启动：
 
 ```sh
-npm start -- --local-tools
+npm run start:practical -- --local-tools
 ```
 
-本机工具默认关闭。开启后仅接受本机同源主动请求，使用禁止工具执行的参数运行；不同 CLI 版本可能需要调整参数。本次未调用开发者账号进行真实付费模型测试。API适配已通过模拟服务契约测试，实际账号权限、模型可用性与CLI兼容性需由使用者连接后测试。
+仅本机部署的首位注册主人可用，不共享给团队，在线模式禁止；输入走stdin，不经shell执行，禁用工具执行/MCP。实际CLI版本与账号权限需本人点击测试确认。本轮未使用开发者个人账号或真实付费调用。ChatGPT网页登录不等于API密钥。
 
-GitHub Pages 只有静态网页，不能运行这些本机接口。ChatGPT网页订阅和API账号额度是不同连接方式，不能用网页登录状态代替API密钥。
+## 部署、备份与边界
 
-## 保存、恢复和导出
+- [部署与演员交接](practical/docs/部署与演员交接.md)：本机入口、数据目录、HTTPS Docker Compose、备份与验收。
+- [验收记录](practical/docs/验收记录.md)、[独立代码复核](practical/docs/REVIEW-actor4.md)。
+- [原演示说明](docs/演示版使用说明.md)；`npm start`仍启动原演示服务4890。
+- [发布会](https://zurenze1.github.io/xilixiwai-actor-workbench/launch.html)与视频预览保留。
 
-- 记录与附件原件存入当前浏览器的 IndexedDB；旧版 localStorage 保留，首次打开通过校验后迁移。换域名、浏览器或设备不会自动同步，请先导出完整备份。
-- 双窗口写入遇到旧版本会明确阻止覆盖；先导出当前草稿，再刷新读取最新保存内容。
-- 工作台「设置 → 导出完整备份」包含项目记录、已有肉肉资料、附件原件和SHA-256。恢复前校验所有内容，并下载当前备份以便撤回。
-- 肉肉页有独立的完整备份入口；独立恢复不改主工作台。
-- 单个原件最多32 MB，单份备份原件合计最多160 MB。浏览器空间不足时明确报错，不能把成功提示视为备份。
-- 项目归档可查看、导出和恢复；Markdown资料包用于文字交付，完整JSON备份用于恢复原件与记录。
-- 主创资料、人物小传、回复草稿、人工决定、作品CSV导入和团队清单可实际填写或导出。外发仍由人决定。
-- 本版没有登录隔离、云同步、团队权限、自动发帖、平台留言抓取和实时舆情监测。身体与宠物资料也属于当前浏览器记录；完整备份可能包含这些内容，分享前请自行检查。
-- 作品CSV只更新片单；示例能力雷达、行业报告、评分和发展建议不会冒充根据导入内容生成。可通过自己的模型另行分析。
+单原件32MiB；项目备份含清单后解压总量160MiB、清单20MiB、最多999附件。模块备份仅带所引用原件。项目恢复新建项目并重映射引用，原项目保留；肉肉、经营在各自模块完整备份恢复。
 
-## 验证与开发
+扫描PDF需先OCR；视频/音频保留原件和人工观察/转写，不自动理解未读取内容。没有自动发帖、平台私信抓取、自动报税或后台推送。税额由会计确认，动作安全由专业老师判断。云部署由演员决定，本轮只做本机验收与部署包。
+
+## 开发验证
 
 ```sh
 npm test
-npm run build:store
+npm run test:practical
+npm run test:browser
 ```
 
-浏览器回归脚本在 `tests/browser-regression.cjs`、`tests/browser-extended.cjs`。先运行本机服务，再安装 Playwright Chromium；可用 `BASE_URL` 指定服务地址，`CHROME_BIN` 指定已有Chrome，`QA_DIR`指定结果目录。默认结果保存到忽略的 `.runtime/qa/`。
+浏览器检查需Chrome或Playwright Chromium，macOS默认已安装Chrome，其他平台可设`CHROME_BIN`。模块浏览器命令见README/复核报告。测试用户、照片和模型runner均为合成夹具；接口契约通过不等于真实模型质量通过。
 
-本次修复范围和已验证结果见 [修复记录](docs/修复记录.md)。原版独立保留，源码历史可用Git提交追溯。
-
-## 素材与第三方组件
-
-应用代码、演示数据、图片、音乐和生成视觉的权利状态分别处理，不代表所有素材均可任意商用。图片及音乐的原始署名在 `web/assets/PHOTO-CREDITS.txt`、`web/assets/music/CREDITS.txt`；请在再发布时保留。
-
-复用 [idb-keyval](https://github.com/jakearchibald/idb-keyval)、[Zod](https://github.com/colinhacks/zod)、[Mammoth](https://github.com/mwilliamson/mammoth.js)、[Papa Parse](https://github.com/mholt/PapaParse)。第三方许可副本在 `docs/licenses/`。模型适配沿用本项目早期实现，官方接口资料见 [DeepSeek](https://api-docs.deepseek.com/)、[OpenAI](https://platform.openai.com/docs/api-reference/responses)、[Claude](https://platform.claude.com/docs/en/api/messages/create)。
+复用Better Auth、PDF.js、Mammoth、Papa Parse、fflate、Readability、linkedom、Zod、idb-keyval，许可在`docs/licenses/`。经营流程参考[ERPNext](https://github.com/frappe/erpnext)，未引入其服务或复制GPL实现。分镜保留GSAP许可头；演示媒体署名在`web/assets/PHOTO-CREDITS.txt`及音乐目录，不代表全部素材可任意商用。

@@ -1,1 +1,33 @@
-{"name":"xilixiwai-actor-workbench","version":"2.0.0","private":true,"type":"module","scripts":{"build:store":"esbuild src/reliable-store.js --bundle --format=iife --global-name=ActorStore --minify --outfile=web/reliable-store.js","test":"node --test tests/*.test.mjs","start":"node server/index.mjs"},"dependencies":{"idb-keyval":"6.2.2","mammoth":"^1.11.0","papaparse":"^5.5.3","zod":"4.1.12"},"devDependencies":{"esbuild":"0.25.11","fake-indexeddb":"6.2.6","playwright":"1.62.1"}}
+{
+  "name": "xilixiwai-actor-workbench",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:store": "esbuild src/reliable-store.js --bundle --format=iife --global-name=ActorStore --minify --outfile=web/reliable-store.js",
+    "test": "node --test tests/*.test.mjs",
+    "start": "node server/index.mjs",
+    "start:practical": "node practical/server/index.mjs",
+    "test:practical": "node --test practical/tests/analysis.test.mjs practical/tests/business.test.mjs practical/tests/files.test.mjs practical/tests/jobs.test.mjs practical/tests/server.test.mjs practical/tests/review-actor4.test.mjs practical/tests/previs.schema.test.cjs practical/tests/cli.test.mjs practical/tests/pet-state.test.mjs practical/tests/review-file-cleanup.test.mjs",
+    "test:browser": "node practical/tests/browser.mjs && node practical/tests/pet-browser.mjs"
+  },
+  "dependencies": {
+    "@mozilla/readability": "0.6.0",
+    "better-auth": "1.7.12",
+    "fflate": "0.8.3",
+    "idb-keyval": "6.2.2",
+    "linkedom": "0.18.14",
+    "mammoth": "^1.11.0",
+    "papaparse": "^5.5.3",
+    "pdfjs-dist": "6.4.299",
+    "zod": "4.1.12"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.11",
+    "fake-indexeddb": "6.2.6",
+    "playwright": "1.62.1"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

@@ -1,0 +1,4 @@
+{$WORKBENCH_DOMAIN} {
+  encode zstd gzip
+  reverse_proxy workbench:4930
+}

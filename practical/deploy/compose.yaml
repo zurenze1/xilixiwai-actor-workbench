@@ -1,0 +1,35 @@
+services:
+  workbench:
+    build:
+      context: ../..
+      dockerfile: practical/deploy/Dockerfile
+    restart: unless-stopped
+    environment:
+      PUBLIC_URL: https://${WORKBENCH_DOMAIN:?请设置工作台域名}
+      PRACTICAL_MODE: online
+      DATA_DIR: /data
+      PORT: 4930
+    volumes:
+      - workbench-data:/data
+    expose:
+      - '4930'
+    security_opt:
+      - no-new-privileges:true
+  https:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      WORKBENCH_DOMAIN: ${WORKBENCH_DOMAIN:?请设置工作台域名}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - workbench
+volumes:
+  workbench-data:
+  caddy-data:
+  caddy-config:
