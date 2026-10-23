@@ -36,7 +36,7 @@ export function validateMain(raw,fresh) {
   else if(typeof value==='object'){if(!raw[key]||typeof raw[key]!=='object'||Array.isArray(raw[key]))throw Error(key+'应为对象');}
   else if(typeof raw[key]!==typeof value)throw Error(key+'类型不正确');
  }
- for(const key of ['home','trip','body','charity','fans','deals','crisis','portfolio','brief','cycleOn','scopeTried'])if(raw[key]!==undefined&&typeof raw[key]!=='boolean')throw Error(key+'应为开关');
+ for(const key of ['home','trip','body','charity','fans','deals','crisis','portfolio','brief','rourou','guide','cycleOn','scopeTried'])if(raw[key]!==undefined&&typeof raw[key]!=='boolean')throw Error(key+'应为开关');
  const result=mainSchema.safeParse(raw);if(!result.success)throw Error('工作台资料校验失败：'+result.error.issues.map(i=>i.path.join('.')+' '+i.message).slice(0,3).join('；'));
  return {...defaults,formDrafts:{},bioEdits:{},replyEdits:{},userWorks:[],projectInfo:{director:'',producer:'',team:'',notes:''},...result.data};
 }

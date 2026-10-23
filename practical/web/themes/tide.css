@@ -1,0 +1,96 @@
+/* Tide / sunlit water — scoped skin; no business or storage behavior. */
+.ocean-intro,.ocean-only,.ocean-module-banner{display:none}
+:root[data-theme=tide]{color-scheme:light;--bg:#f0f6fa;--panel:#fff;--ink:#153c54;--muted:#5c7789;--accent:#23668c;--button:#23668c;--soft:#e5f1f8;--line:#d7e5ed;--warm:#a38e72;--panel2:#f1f7fb;--accent2:#83b4d1;--stage:#173d57;--stage-alt:#417c9e;--radius:16px;--tide-photo:url('../assets/tide-sunlight-v1.png')}
+html[data-theme=tide] body{background:var(--bg)}
+html[data-theme=tide] :is(input,textarea,select){background:#fcfeff;border-color:var(--line)}
+html[data-theme=tide] :is(input,textarea,select):focus-visible{outline:2px solid #75a8c7;outline-offset:3px}
+html[data-theme=tide] :is(.card,.panel,.editor-panel,.look-card){box-shadow:0 9px 30px #174a6c04;border-color:#dbe7ee;border-radius:16px}
+html[data-theme=tide] :is(button,.file-button){transition:background .18s,border-color .18s,box-shadow .18s,transform .18s}
+html[data-theme=tide] body.workbench-app .auth{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(380px,.8fr);min-height:100svh;background:#f8fbfd;align-items:stretch}
+html[data-theme=tide] .ocean-intro{display:flex;position:relative;isolation:isolate;overflow:hidden;flex-direction:column;justify-content:space-between;padding:40px 54px;min-height:100svh;color:#fff;background:#437f9d var(--tide-photo) 58% center/cover no-repeat}
+html[data-theme=tide] .ocean-intro:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#0b355b9c 0%,#13395e18 90%),linear-gradient(0deg,#0a2c506b,transparent 65%)}
+html[data-theme=tide] .ocean-brand{font:500 28px/1.2 'Songti SC','STSong',serif;letter-spacing:4px}
+html[data-theme=tide] .ocean-brand small{display:block;color:#fff9;font:9px/1.3 sans-serif;letter-spacing:3px;margin-top:12px}
+html[data-theme=tide] .ocean-intro-copy{margin:50px 0 auto;padding-top:15vh;max-width:540px}
+html[data-theme=tide] .ocean-intro-copy .eyebrow{color:#fff9;font-size:10px;letter-spacing:3px}
+html[data-theme=tide] .ocean-intro-copy h2{font:400 clamp(36px,4.3vw,66px)/1.4 'Songti SC','STSong',serif;letter-spacing:3px;margin:22px 0 20px;text-shadow:0 2px 30px #183e5d26}
+html[data-theme=tide] .ocean-intro-copy p{color:#ffffffe8;font-size:14px;line-height:2.1;letter-spacing:1px}
+html[data-theme=tide] .ocean-bottom{display:flex;gap:14px;align-items:center;font-size:10px;letter-spacing:2px;color:#ffffffb8;margin-top:50px}
+html[data-theme=tide] .ocean-bottom:before{content:'';width:44px;height:1px;background:#ffffff87}
+html[data-theme=tide] body.workbench-app .auth-card{align-self:center;justify-self:center;margin:40px 28px;padding:35px 12px;width:calc(100% - 100px);max-width:410px;border:0;box-shadow:none;background:transparent;border-radius:0}
+html[data-theme=tide] .auth-card>.eyebrow{color:#7893a5;letter-spacing:2px;font-size:9px}
+html[data-theme=tide] .auth-card>h1{font-size:34px;letter-spacing:2px;margin:14px 0 6px}
+html[data-theme=tide] .auth-card>p{color:var(--muted);font-size:12px;margin-bottom:27px}
+html[data-theme=tide] .auth-card label{color:#426178;font-size:12px;gap:9px;margin:18px 0}
+html[data-theme=tide] .auth-card input{background:#fff;padding:12px;border-radius:8px;border-color:#d1e0ea}
+html[data-theme=tide] .auth-card small{font-size:10px;color:#668195}
+html[data-theme=tide] .auth-card .actions{margin-top:24px}
+html[data-theme=tide] .auth-card .actions button{flex:1;padding:12px}
+html[data-theme=tide] .auth-card .note{font-size:10px;line-height:1.8;padding:12px 14px;background:#eaf2f7;color:#527185}
+html[data-theme=tide] .auth-card>a{font-size:11px}
+html[data-theme=tide] #shell aside{background:linear-gradient(160deg,#fffffffa,#f5fafeed);border-color:#dce7ef;width:256px;padding:30px 21px}
+html[data-theme=tide] #shell .main{margin-left:256px}
+html[data-theme=tide] #shell .brand{letter-spacing:3px;font-size:27px;margin-bottom:28px}
+html[data-theme=tide] #shell .brand span{letter-spacing:1px;font-size:10px;color:#6d8798;margin-top:10px}
+html[data-theme=tide] #shell .small-label{font-size:10px;letter-spacing:.5px;margin:10px 0}
+html[data-theme=tide] #shell .small-label select{padding:11px 9px;font-size:11px;background:#f9fcfe}
+html[data-theme=tide] #shell #new-project{font-size:12px;margin-top:8px;padding:11px}
+html[data-theme=tide] #shell nav{margin-top:22px}
+html[data-theme=tide] #shell nav a{font-size:12px;padding:11px 14px;margin:3px 0;position:relative;letter-spacing:.5px}
+html[data-theme=tide] #shell nav a.active{background:linear-gradient(100deg,#dcecf6,#edf6fb);color:#1f5b80;font-weight:600}
+html[data-theme=tide] #shell nav a.active:before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:3px;background:#4f8db3;border-radius:3px}
+html[data-theme=tide] #shell .nav-label{letter-spacing:2px;font-size:8px;color:#8198a8;margin-top:22px}
+html[data-theme=tide] #shell>.main>header{background:#ffffffc9;backdrop-filter:blur(15px);border-color:#e1ebf1;height:76px;padding-inline:38px;font-size:11px}
+html[data-theme=tide] #shell #content{padding:26px 38px 60px;max-width:1600px}
+html[data-theme=tide] #content>.hero{position:relative;isolation:isolate;overflow:hidden;min-height:214px;border-radius:17px;margin-bottom:26px;padding:30px 32px;background:#39789b var(--tide-photo) 56% 57%/cover no-repeat;color:white;box-shadow:0 15px 45px #3d719915;align-items:flex-end}
+html[data-theme=tide] #content>.hero:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#0c355cdb 0%,#143e637d 49%,#183e5a18 100%),linear-gradient(0deg,#0b385c55,transparent 70%)}
+html[data-theme=tide] #content>.hero:after{content:'';position:absolute;top:20px;right:24px;width:36px;height:36px;border:1px solid #ffffff50;border-radius:50%;pointer-events:none}
+html[data-theme=tide] #content>.hero .eyebrow{color:#d5e8f5;letter-spacing:1.7px;font-size:9px;line-height:1.8}
+html[data-theme=tide] #content>.hero h1{color:#fff;font-family:'Songti SC','STSong',serif;font-weight:400;font-size:37px;letter-spacing:2px;margin:14px 0 10px;line-height:1.3}
+html[data-theme=tide] #content>.hero p{color:#e3eff8;font-size:12px;letter-spacing:.5px;margin:10px 0 0;line-height:1.8;max-width:470px}
+html[data-theme=tide] #content>.hero>.secondary{position:relative;flex-shrink:0;color:#fff;border-color:#ffffff6b;background:#ffffff16;backdrop-filter:blur(12px);font-size:11px;padding:11px 15px;border-radius:7px}
+html[data-theme=tide] #content>.hero>.secondary:hover{background:#ffffff2c}
+html[data-theme=tide] #content[data-page=today]>.hero{min-height:330px;padding:36px 37px;background-position:55% 48%}
+html[data-theme=tide] #content[data-page=today]>.hero h1{font-size:48px;letter-spacing:3px}
+html[data-theme=tide] #content[data-page=today]>.hero .ocean-only{display:block;font:11px/1.6 -apple-system,sans-serif;letter-spacing:3px;color:#ffffffbf;margin-bottom:20px}
+html[data-theme=tide] #content .cards{gap:17px}
+html[data-theme=tide] #content>.cards .card{padding:23px 24px;border-color:#dce9f1;border-radius:14px;position:relative}
+html[data-theme=tide] #content>.cards .card:before{content:'';height:2px;width:30px;background:#8db7d1;display:block;margin-bottom:15px}
+html[data-theme=tide] #content>.cards .card small{font-size:11px}
+html[data-theme=tide] #content>.cards .card a{font-size:11px;color:#3f799d}
+html[data-theme=tide] #content>.cards .metric{font:400 35px/1.2 'Avenir Next',sans-serif;color:#285e7d;margin:10px 0 14px}
+html[data-theme=tide] #content .card>.hero{min-height:0;background:none;color:var(--ink);padding:0;box-shadow:none;margin-bottom:17px;border-radius:0}
+html[data-theme=tide] #content :is(h2,h3){font-family:-apple-system,'PingFang SC',sans-serif;font-weight:500;color:#244d67}
+html[data-theme=tide] #content h2{font-size:19px;letter-spacing:.5px}
+html[data-theme=tide] #content .card .hero h2{margin-bottom:0}
+html[data-theme=tide] #content .card{padding:25px;border-color:#dce7ee}
+html[data-theme=tide] #content .workflow{gap:7px}
+html[data-theme=tide] #content .workflow button{padding:10px 11px;font-size:11px;background:#f7fbfe;border-color:#e1ebf1;color:#55768c;border-radius:7px}
+html[data-theme=tide] #content .workflow .selected{color:#fff;background:#347ca6;border-color:#347ca6;box-shadow:0 4px 12px #367ca61c}
+html[data-theme=tide] #content :is(.note,.pill){background:#eaf3f9;color:#476e87}
+html[data-theme=tide] #content .pretext{color:#32546b}
+html[data-theme=tide] #content .empty{background:#fbfdff;border-color:#d8e7f0;color:#6c879a}
+html[data-theme=tide] #content table th{background:#f5fafd;color:#617e92;font-size:10px;letter-spacing:.5px}
+html[data-theme=tide] #content table td{padding-block:16px}
+html[data-theme=tide] #content .module-frame{border:1px solid #d9e8f2;box-shadow:0 10px 35px #255f7e06}
+html[data-theme=tide] #content.embed-main{padding-top:18px}
+html[data-theme=tide] .module-head,html[data-theme=tide] .ocean-module-banner{position:relative;isolation:isolate;border:0!important;border-radius:16px;padding:24px 27px!important;background:linear-gradient(90deg,#10395dd9,#245b7b60),var(--tide-photo) 56% 50%/cover no-repeat;min-height:148px;margin-bottom:22px;color:#fff}
+html[data-theme=tide] .module-head h1,html[data-theme=tide] .ocean-module-banner h2{color:#fff;font:400 30px/1.5 'Songti SC','STSong',serif;letter-spacing:2px;margin:6px 0}
+html[data-theme=tide] .module-head :is(.eyebrow,p,#status,#save-status),html[data-theme=tide] .ocean-module-banner p{color:#e1eef8;font-size:11px;line-height:1.8}
+html[data-theme=tide] .module-head :is(button,.file-button){background:#f5faffed;color:#295879;border-color:#ffffff70;box-shadow:none}
+html[data-theme=tide] .ocean-module-banner{display:block;min-height:145px;padding-block:22px!important}
+html[data-theme=tide] .ocean-module-banner .eyebrow{color:#d3e7f6;font-size:9px;letter-spacing:2px;margin-bottom:10px}
+html[data-theme=tide] .tabs button.on,html[data-theme=tide] #tabs button.active{background:#2e7096;border-color:#2e7096;color:#fff}
+html[data-theme=tide] .privacy,html[data-theme=tide] .storage-line{color:#56778d}
+html[data-theme=tide] :is(.privacy,.plan-bar){background:#e7f2f9;border-color:#d5e7f2}
+@media(min-width:1100px){html[data-theme=tide] #content[data-page=today]>.cards{margin-top:-1px}}
+@media(max-width:1100px){html[data-theme=tide] #shell aside{width:215px;padding-inline:16px}html[data-theme=tide] #shell .main{margin-left:215px}html[data-theme=tide] #shell #content{padding-inline:25px}html[data-theme=tide] body.workbench-app .auth{grid-template-columns:1fr 1fr}html[data-theme=tide] .ocean-intro{padding-inline:35px}html[data-theme=tide] body.workbench-app .auth-card{width:calc(100% - 60px);margin-inline:20px}}
+@media(max-width:900px){html[data-theme=tide] #shell aside{width:200px;padding-inline:14px}html[data-theme=tide] #shell .main{margin-left:200px}html[data-theme=tide] #content>.hero{padding:25px;min-height:220px;display:flex;flex-direction:column;align-items:flex-start;gap:20px}html[data-theme=tide] #content[data-page=today]>.hero{min-height:300px;padding:30px}html[data-theme=tide] #content[data-page=today]>.hero h1{font-size:38px}html[data-theme=tide] .ocean-intro-copy h2{font-size:42px}html[data-theme=tide] .ocean-intro-copy{padding-top:18vh}}
+@media(max-width:700px){html[data-theme=tide] body.workbench-app .auth{display:block}html[data-theme=tide] .ocean-intro{min-height:330px;height:42svh;max-height:430px;padding:25px 28px;background-position:center 46%}html[data-theme=tide] .ocean-intro-copy{padding-top:0;margin:18px 0 0}html[data-theme=tide] .ocean-brand{font-size:20px}html[data-theme=tide] .ocean-brand small{display:none}html[data-theme=tide] .ocean-intro-copy h2{font-size:31px;margin:8px 0 12px}html[data-theme=tide] .ocean-intro-copy h2 br{display:none}html[data-theme=tide] .ocean-intro-copy p{font-size:11px;margin:0}html[data-theme=tide] .ocean-intro-copy .eyebrow{font-size:8px;letter-spacing:2px}html[data-theme=tide] .ocean-bottom{margin-top:20px;font-size:8px}html[data-theme=tide] body.workbench-app .auth-card{margin:0 auto;padding:30px 0 40px;width:calc(100% - 52px);max-width:430px}html[data-theme=tide] .auth-card>h1{font-size:27px}}
+@media(max-width:640px){html[data-theme=tide] #shell aside{position:static;width:100%;max-height:310px;padding:17px 19px 10px;background:#ffffffed}html[data-theme=tide] #shell .main{margin-left:0}html[data-theme=tide] #shell .brand{font-size:23px;margin:0 0 15px;display:block}html[data-theme=tide] #shell .brand span{display:inline;font-size:9px;margin-left:12px;letter-spacing:0}html[data-theme=tide] #shell .small-label{margin:2px 0 7px;width:48%}html[data-theme=tide] #shell #new-project{margin-top:4px;padding:9px}html[data-theme=tide] #shell nav{display:flex;margin:13px 0 0;gap:4px;overflow-x:auto;padding-bottom:4px}html[data-theme=tide] #shell nav a{padding:10px 13px;font-size:11px}html[data-theme=tide] #shell nav a.active:before{display:none}html[data-theme=tide] #shell>.main>header{height:auto;min-height:56px;padding:9px 19px;gap:8px}html[data-theme=tide] #shell #content{padding:18px 16px 40px}html[data-theme=tide] #content>.hero{min-height:205px;padding:24px 23px;border-radius:12px;background-position:61% 53%}html[data-theme=tide] #content>.hero h1{font-size:30px;margin:12px 0 5px}html[data-theme=tide] #content>.hero:before{background:linear-gradient(90deg,#0c355cdb,#1643658c 62%,#16436538)}html[data-theme=tide] #content[data-page=today]>.hero{min-height:270px;padding:26px 24px;justify-content:flex-end}html[data-theme=tide] #content[data-page=today]>.hero h1{font-size:34px}html[data-theme=tide] #content[data-page=today]>.hero .ocean-only{font-size:8px;letter-spacing:2px;margin-bottom:10px}html[data-theme=tide] #content>.hero>.secondary{font-size:10px;padding:8px 10px}html[data-theme=tide] #content .card{padding:20px}html[data-theme=tide] #content .card>.hero{padding:0;min-height:0;gap:10px}html[data-theme=tide] #content .card .hero>.actions{gap:6px}html[data-theme=tide] #content .card .hero button{padding:8px 11px;font-size:11px}html[data-theme=tide] #content .cards{gap:12px}html[data-theme=tide] .module-head,html[data-theme=tide] .ocean-module-banner{padding:20px!important;min-height:140px}html[data-theme=tide] .module-head h1,html[data-theme=tide] .ocean-module-banner h2{font-size:25px}}
+@media(prefers-reduced-motion:reduce){html[data-theme=tide] :is(button,.file-button){transition:none}}
+@media print{html[data-theme=tide] :is(.ocean-intro,.ocean-module-banner){display:none}html[data-theme=tide] .module-head{background:none!important;color:#153c54!important;min-height:0}html[data-theme=tide] .module-head h1{color:#153c54}}
+html[data-theme=tide] body.workbench-app .auth{place-items:stretch}
+html[data-theme=tide] .ocean-intro{justify-self:stretch;width:100%;min-width:0}
+html[data-theme=tide] #content>.hero>.secondary{background:#123f639c;border-color:#ffffff8c}
+html[data-theme=tide] .preview-empty{color:#e7f4fc}

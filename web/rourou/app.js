@@ -2,11 +2,16 @@
 (async () => {
 const KEY = 'rourou-world-v1';
 const $ = s => document.querySelector(s);
+const params=new URLSearchParams(location.search);
+document.body.classList.toggle('embedded',params.get('embedded')==='1');
+const setTheme=theme=>{if(['tide','butter','moss'].includes(theme))document.documentElement.dataset.theme=theme;};
+setTheme(params.get('theme')||'butter');
+addEventListener('message',e=>{if(e.origin===location.origin&&e.source===parent&&e.data?.type==='workbench:theme')setTheme(e.data.theme);});
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const today = new Date(); const ymd = d => d.toISOString().slice(0, 10);
 const T0 = ymd(today);
 const toast = t => { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 2000); };
-let S, client, draftTimer, writes = Promise.resolve(), importing = false, dirty = false, pending = 0;
+let S, client, draftTimer, writes = Promise.resolve(), importing = false, dirty = false, pending = 0, changeVersion=0;
 const status = (text, error = false) => { $('#storageStatus').textContent = text; $('#storageStatus').classList.toggle('error', error); };
 const failed = error => {
   const detail = error?.name === 'QuotaExceededError' ? '本机存储空间不足，内容尚未保存。请先导出备份，再释放空间后重试。'
@@ -26,18 +31,21 @@ try {
 async function save() {
   clearTimeout(draftTimer); draftTimer = 0;
   dirty = true;
+  const version=++changeVersion;
   const snapshot = PetSchema.validate(S);
   const work = writes.then(() => client.save(snapshot));
   writes = work.catch(() => {});
   pending++;
-  try { await work; dirty = false; status('已保存到本机可靠存储 · 换设备前请导出完整备份'); }
+  try { await work; if(version===changeVersion)dirty = false; status(dirty?'新修改待保存…':'已保存到本机可靠存储 · 换设备前请导出完整备份'); }
   finally { pending--; }
 }
 function saveDraft() {
   dirty = true;
+  changeVersion++;
   status('草稿待保存…');
   clearTimeout(draftTimer); draftTimer = setTimeout(() => save().catch(failed), 350);
 }
+window.PetModule=Object.freeze({async whenIdle(){if(importing)throw Error('肉肉正在保存文件，请稍候再切换');if(dirty||draftTimer)await save();await writes;if(dirty)throw Error('肉肉资料尚未保存，请先重试或导出备份');}});
 const draft = (tab = S.tab) => (S.drafts[tab] = S.drafts[tab] || {});
 const stamp = () => new Date().toLocaleString('zh-CN', { hour12: false });
 const objectURLs = new Map();

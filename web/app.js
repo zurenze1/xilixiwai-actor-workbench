@@ -5,8 +5,8 @@ const $ = (s, el = document) => el.querySelector(s);
 
 /* ---------------- 状态 ---------------- */
 const fresh = () => ({
-  theme: 'tide', nameIdx: 0, st: 0, userEvents: [], hiddenEv: {}, evDone: {}, todayDone: {}, home: true, trip: false, body: false, charity: false, fans: false, deals: false, crisis: false, portfolio: false, meals: [], check: {}, reviews: {}, files: {}, archives: [], cycleOn: false, cycle: { lastStart: -24, len: 28, dur: 5 }, sym: {}, inv: {}, selDay: 12, pack: {}, packAdd: {}, tab: {}, ran: {}, folder: [], provider: 'demo',
-  rel: 'xia', adopt: null, handling: 'probe', tasks: D.tasks.map(t => ({ ...t })),
+  theme: 'tide', nameIdx: 0, st: 0, userEvents: [], hiddenEv: {}, evDone: {}, todayDone: {}, home: true, trip: false, body: false, charity: false, fans: false, deals: false, crisis: false, portfolio: false, rourou: false, meals: [], check: {}, reviews: {}, files: {}, archives: [], cycleOn: false, cycle: { lastStart: -24, len: 28, dur: 5 }, sym: {}, inv: {}, selDay: 12, pack: {}, packAdd: {}, tab: {}, ran: {}, folder: [], provider: 'demo',
+  guide: false, rel: 'xia', adopt: null, handling: 'probe', tasks: D.tasks.map(t => ({ ...t })),
   sel: null, tone: 'warm', submitted: {}, scope: 'ad', scopeTried: false, checks: {}, faqQ: '', seen: {}, pick: 'nl'
 });
 const esc = x => String(x ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -23,7 +23,7 @@ catch (error) {
   const b = document.createElement('button'); b.textContent = '导出原始记录供恢复'; b.onclick = async () => ActorStore.download('原始记录.json',await ActorStore.exportRaw(KEY)); document.querySelector('#main').append(b); const r=document.createElement('button');r.textContent='保留原记录，开始新演示';r.onclick=async()=>{if(!confirm('先下载原始记录，然后开始新演示？原始记录也会在本机保留恢复副本。'))return;ActorStore.download('原始记录.json',await ActorStore.exportRaw(KEY));await ActorStore.startFresh(KEY,validateMain(fresh()));location.reload();};document.querySelector('#main').append(r);return;
 }
 let S = client.state;
-const chosenTheme=new URLSearchParams(location.search).get('theme')||localStorage.getItem('xilixiwai.theme.v2');if(['tide','butter','moss'].includes(chosenTheme)){S.theme=chosenTheme;localStorage.setItem('xilixiwai.theme.v2',chosenTheme);}
+const requestedTheme=new URLSearchParams(location.search).get('theme'),chosenTheme=requestedTheme||localStorage.getItem('xilixiwai.theme.v2');if(['tide','butter','moss'].includes(chosenTheme)){S.theme=chosenTheme;localStorage.setItem('xilixiwai.theme.v2',chosenTheme);}if(['tide','butter','moss'].includes(requestedTheme)){const clean=new URL(location.href);clean.searchParams.delete('theme');history.replaceState(null,'',clean.pathname+clean.search+clean.hash);}
 let renderedPage=null, draftTimer;
 function captureDraft() {
  if(!renderedPage)return;
@@ -223,6 +223,7 @@ async function importFiles(files) {
 /* ---------------- 归档 / 备份 / 导入 ---------------- */
 const download = ActorStore.download;
 async function exportBackup() {
+  await flushPet();
   captureDraft();await save();const bundle=await ActorStore.exportBundle();await ActorStore.validateBundle(bundle,{validateMain,validatePet:PetSchema.validate});
   download(`戏里戏外-备份-${new Date().toLocaleDateString('sv')}.json`,JSON.stringify(bundle),'application/json');toast('已导出工作台、肉肉资料及附件原件');
 }
@@ -234,12 +235,14 @@ async function importBackup(file) {
   await ActorStore.restoreBundle(doc,{mainClient:client,validateMain,validatePet:PetSchema.validate});S=await client.reload();renderedPage=null;render();toast('备份已恢复，原件已校验');if($('#dlg').open)settings();
 }
 async function archiveProject() {
+  await flushPet();
   const n=Object.values(S.reviews).reduce((a,l)=>a+l.length,0);captureDraft();
   const snapshot={...structuredClone(S),archives:[]};
   S.archives.unshift({title:`《${D.project.title}》`,at:new Date().toLocaleString('zh-CN'),folder:S.folder.length,reviews:n,snap:JSON.stringify(snapshot)});
   await save();toast('已归档完整项目快照，可查看、恢复和导出');if($('#dlg').open)settings();
 }
 async function archiveAction(i,action) {
+  await flushPet();
   const archive=S.archives[i];if(!archive?.snap)throw Error('此归档没有可恢复的快照');const raw=JSON.parse(archive.snap);
   if(action==='view'){const dlg=$('#dlg');dlg.innerHTML='<div class="dlg"><h2>'+esc(archive.title)+'<button data-act="close">×</button></h2><pre style="white-space:pre-wrap">'+esc(JSON.stringify(raw,null,2))+'</pre></div>';return;}
   if(!raw.st&&raw.st!==0)throw Error('旧版归档只保存了部分资料，无法完整恢复；可查看或导出旧快照');
@@ -250,10 +253,25 @@ async function archiveAction(i,action) {
 }
 
 /* ---------------- 页面结构：今天 / 戏里 / 戏外·事业 / 戏外·生活 ---------------- */
-const PAGES = { home: -1, trip: -2, body: -3, charity: -4, fans: -5, deals: -6, crisis: -7, portfolio: -8, brief: -9 };
+const PAGES = { home: -1, trip: -2, body: -3, charity: -4, fans: -5, deals: -6, crisis: -7, portfolio: -8, brief: -9, rourou: -10, guide: -11 };
 const onPage = () => Object.keys(PAGES).find(k => S[k]) || '';
 const VIEWP = { home: () => vHome(), trip: () => vTrip(), body: () => vBody(), charity: () => vCharity(), fans: () => vFans(), deals: () => vDeals(), crisis: () => vCrisis(), portfolio: () => vPortfolio(), brief: () => vBrief() };
-const CRUMB = { home: () => `<b>日程总览</b><span>示例：拍摄期 ${D.sched.year}年${D.sched.month}月 · 当天 ${D.sched.month}月${D.sched.today}日 · ${D.actor.name}</span>`, trip: () => `<b>出行与天气</b><span>${D.trip.title}</span>`, body: () => `<b>身体与状态</b><span>角色：许知夏 · 定妆前 6 周</span>`, charity: () => `<b>公益与影响力</b><span>把热爱变成看得见的善意</span>`, fans: () => `<b>粉丝与社群</b><span>真诚对待粉丝，也守住边界</span>`, deals: () => `<b>合同与品牌</b><span>AI 先背调评估，人来做决定</span>`, crisis: () => `<b>危机公关与舆情</b><span>先核实，再回应</span>`, portfolio: () => `<b>作品库与发展规划</b><span>适合什么角色，下一步往哪走</span>`, brief: () => `<b>行业简报</b><span>${D.brief2.week} · 逐条核验来源</span>` };
+const CRUMB = { home: () => `<b>日程总览</b><span>示例：拍摄期 ${D.sched.year}年${D.sched.month}月 · 当天 ${D.sched.month}月${D.sched.today}日 · ${D.actor.name}</span>`, trip: () => `<b>出行与天气</b><span>${D.trip.title}</span>`, body: () => `<b>身体与状态</b><span>角色：许知夏 · 定妆前 6 周</span>`, charity: () => `<b>公益与影响力</b><span>把热爱变成看得见的善意</span>`, fans: () => `<b>粉丝与社群</b><span>真诚对待粉丝，也守住边界</span>`, deals: () => `<b>合同与品牌</b><span>AI 先背调评估，人来做决定</span>`, crisis: () => `<b>危机公关与舆情</b><span>先核实，再回应</span>`, portfolio: () => `<b>作品库与发展规划</b><span>适合什么角色，下一步往哪走</span>`, brief: () => `<b>行业简报</b><span>${D.brief2.week} · 逐条核验来源</span>`, rourou: () => '<b>肉肉的小世界</b><span>日常陪伴 · 健康 · 时光机 · 照护记录</span>' };
+async function flushPet() {
+  const module = $('#rourouFrame')?.contentWindow?.PetModule;
+  if (module?.whenIdle) await module.whenIdle();
+}
+function renderEmbeddedPage(main) {
+  const pet = S.rourou, id = pet ? 'rourouFrame' : 'guideFrame';
+  const src = pet ? 'rourou/?embedded=1' : 'guide/?embedded=1&mode=demo';
+  let frame = $('#'+id);
+  if (!frame) {
+    main.innerHTML = `<iframe id="${id}" class="workbench-frame" title="${pet ? '肉肉的小世界' : '使用说明'}" src="${src}&theme=${encodeURIComponent(S.theme)}"></iframe>`;
+    frame = $('#'+id);
+  }
+  frame.contentWindow?.postMessage({type:'workbench:theme',theme:S.theme},location.origin);
+}
+CRUMB.guide = () => '<b>使用说明</b><span>图示 · 功能地图 · 操作卡</span>';
 
 /* ---------------- 框架渲染 ---------------- */
 const name = () => D.names[0];
@@ -264,24 +282,50 @@ const PROVIDERS = [
 const providerName = () => (PROVIDERS.find(p => p[0] === S.provider) || PROVIDERS[0])[1];
 const handlingName = () => D.handlings.find(h => h.id === S.handling).k;
 
+/* Sidebar journey preference: independent of project records. */
+const JOURNEY_PREF = 'xilixiwai.nav.journey.collapsed.v1';
+let journeyCollapsed = false;
+try { journeyCollapsed = localStorage.getItem(JOURNEY_PREF) === '1'; } catch {}
+function toggleJourney() {
+  journeyCollapsed = !journeyCollapsed;
+  const button = $('#journeyToggle');
+  try {
+    localStorage.setItem(JOURNEY_PREF, journeyCollapsed ? '1' : '0');
+    button.title = '展开或收起八阶段流程';
+  } catch {
+    button.title = '当前页已切换；浏览器未允许保存此偏好，刷新后会恢复展开';
+  }
+  button.setAttribute('aria-expanded', String(!journeyCollapsed));
+  button.querySelector('.journey-action').textContent = journeyCollapsed ? '展开' : '收起';
+  button.querySelector('.journey-chevron').textContent = journeyCollapsed ? '▸' : '▾';
+  $('#stationJourney').hidden = journeyCollapsed;
+  $('#journeyCurrent').hidden = !journeyCollapsed;
+}
 function renderSide() {
   const rv = k => (S.reviews[k] || []).length ? ' <i class="revdot" title="已有人工决定">✍</i>' : '';
   const it = (k, ic, t, sub) => `<button class="st home-btn ${S[k] ? 'on' : ''}" data-act="go" data-i="${PAGES[k]}"><span class="st-dot">${ic}</span><span><b>${t}${rv(k)}</b><small>${sub}</small></span></button>`;
   const inSt = !onPage();
+  const currentStation = D.stations[S.st];
+  const publicDemo = isPublicDemo(), demoHost = !publicDemo && location.pathname.startsWith('/demo/'), brandTag = publicDemo ? 'button' : demoHost ? 'a' : 'div';
   $('#side').innerHTML = `
-  <div class="brand" data-act="settings" title="点击更换名称">
+  <${brandTag} class="brand" ${publicDemo ? 'type="button" data-act="deployment-info" title="实战部署说明"' : demoHost ? `href="/practical/?theme=${encodeURIComponent(S.theme)}#today" data-act="switch-practical" title="切换到实战版"` : 'data-act="settings" title="点击更换名称"'}>
     <div class="brand-mark">${name().name[0]}</div>
     <div><b>${name().name}</b><small>${name().en}</small></div>
-  </div>
+  </${brandTag}>
   <div class="side-cap">今天</div>
   ${it('home', '📅', '日程总览', '今日 · 本月 · 新邀约')}
-  <div class="side-cap">戏里 · 一部戏的一生</div>
-  <ol class="journey">${D.stations.map((s, i) => `
+  <div class="journey-group">
+  <button type="button" class="journey-toggle" id="journeyToggle" data-act="journey-toggle" aria-expanded="${!journeyCollapsed}" aria-controls="stationJourney" title="展开或收起八阶段流程">
+    <span class="journey-label"><span class="journey-title">戏里<span class="journey-subtitle"> · 一部戏的一生</span></span><small class="journey-current" id="journeyCurrent" ${journeyCollapsed ? '' : 'hidden'}>当前阶段 · ${esc(currentStation.no)} ${esc(currentStation.name)}</small></span>
+    <span class="journey-toggle-action" aria-hidden="true"><span class="journey-action">${journeyCollapsed ? '展开' : '收起'}</span><span class="journey-chevron">${journeyCollapsed ? '▸' : '▾'}</span></span>
+  </button>
+  <ol class="journey" id="stationJourney" ${journeyCollapsed ? 'hidden' : ''}>${D.stations.map((s, i) => `
     <li><button class="st ${inSt && S.st === i ? 'on' : ''} ${stationDone(i) ? 'done' : ''}" data-act="go" data-i="${i}">
       <span class="st-dot">${stationDone(i) && !(inSt && S.st === i) ? '✓' : s.no}</span>
       <span><b>${s.name}${rv('st' + i)}</b><small>${s.title.split(' · ')[1] || s.title}</small></span>
     </button></li>`).join('')}
   </ol>
+  </div>
   <div class="side-cap">戏外 · 事业</div>
   ${it('portfolio', '🎞', '作品库与发展规划', '作品 · 雷达 · 年度规划')}
   ${it('deals', '📑', '合同与品牌', '资料库 · 代言 · 背调')}
@@ -292,8 +336,9 @@ function renderSide() {
   <div class="side-cap">戏外 · 生活</div>
   ${it('trip', '🧳', '出行与天气', '天气 · 交通 · 携带清单')}
   ${it('body', '💪', '身体与状态', '体重 · 饮食 · 运动 · 睡眠')}
-  <a class="st extra" href="rourou/" target="_blank" rel="noopener"><span class="st-dot">🐾</span><span><b>肉肉的小世界</b><small>吃喝 · 疫苗 · 行为解读</small></span></a>
-  <div class="side-cap">发布会</div>
+  ${it('rourou', '🐾', '肉肉的小世界', '日常 · 健康 · 时光机')}
+  <div class="side-cap">发布会与使用说明</div>
+  ${it('guide', '📖', '使用说明', '图示 · 功能地图 · 操作卡')}
   <a class="st extra" href="launch.html" target="_blank" rel="noopener"><span class="st-dot">▶</span><span><b>发布会页</b><small>暖场 · 宣发片 · 讲解</small></span></a>
   <div class="side-foot">
     <div class="me"><div class="avatar">${D.actor.initial}</div><div><b>${D.actor.name}</b><small>${D.actor.role}</small></div></div>
@@ -302,10 +347,11 @@ function renderSide() {
 }
 function renderTop() {
   const s = D.stations[S.st], done = D.stations.filter((_, i) => stationDone(i)).length;
+  const publicDemo = isPublicDemo(), demoHost = !publicDemo && location.pathname.startsWith('/demo/');
   $('#top').innerHTML = `
   <div class="crumb">${onPage() ? CRUMB[onPage()]() : `<b>《${D.project.title}》</b><span>${D.project.role} · 第 ${s.no} 站 / 08 · ${s.title}</span>`}</div>
   <div class="prog" title="已完成站数"><i><em style="width:${done / 8 * 100}%"></em></i>${done}/8</div>
-  <button class="chip" data-act="settings" title="连接模型"><span class="led ${aiConnected ? 'live' : ''}"></span>${S.provider === 'demo' ? '演示模式 · 示例结果' : providerName() + (aiConnected?' · 已测试连接':' · 待配置')}</button>
+  <button class="chip" data-act="${publicDemo ? 'deployment-info' : demoHost ? 'switch-practical' : 'settings'}" title="${publicDemo ? '查看实战版使用与部署说明' : demoHost ? '保存当前草稿并切换实战版' : '连接模型'}"><span class="led ${!publicDemo && aiConnected ? 'live' : ''}"></span>${publicDemo ? '演示版 · 实战部署说明' : demoHost ? '演示版 · 切换实战' : S.provider === 'demo' ? '演示模式 · 示例结果' : providerName() + (aiConnected?' · 已测试连接':' · 待配置')}</button>
   <div class="themes" title="切换主题">${[['tide', '#2e3a6b', '深蓝潮汐'], ['butter', '#e7dcc3', '奶油便签'], ['moss', '#34541f', '山野片场']].map(([k, c, n]) => `<button data-act="theme" data-v="${k}" title="${n}" class="${S.theme === k ? 'on' : ''}" style="background:${c}"></button>`).join('')}</div>
   <button class="icon-btn folder-toggle" data-act="folder">资料夹 ${S.folder.length}</button>`;
 }
@@ -1099,8 +1145,8 @@ function vTrip() {
   return `<section class="hero has-img" style="--img:url('assets/photos/08_station.jpg')"><div class="eyebrow">TRAVEL & WEATHER</div><h1>出行与天气</h1>
     <p>演员每天在不同城市之间奔波。接入天气预报，AI 帮你判断怎么走、几点出发、穿什么，团队各自带什么也不会落下。</p>
     <div class="needs"><span class="need">实时天气</span><span class="need">交通判断</span><span class="need">穿搭提醒</span><span class="need">团队携带清单</span></div></section>
-  <div class="card"><div class="result-head"><div><h3>${T.title}</h3><p class="sub">${days.length} 天 · ${[days[0].from, ...days.map(x => x.city)].filter((c, i, a) => c !== a[i - 1]).join(' → ')}</p></div>
-    <div class="row"><span class="chip"><span class="led ${st[0]}"></span>${st[1]}</span><button class="btn sm" data-act="wx">↻ 刷新天气</button></div></div>
+  <div class="card trip-summary"><div class="result-head"><div><h3>${T.title}</h3><p class="sub">${days.length} 天 · ${[days[0].from, ...days.map(x => x.city)].filter((c, i, a) => c !== a[i - 1]).join(' → ')}</p></div>
+    <div class="row weather-actions"><span class="chip weather-status"><span class="led ${st[0]}"></span><span class="weather-status-text">${esc(st[1])}</span></span><button class="btn sm" data-act="wx">↻ 刷新天气</button></div></div>
     <div class="route">${days.map((x, i) => `<div class="rt"><div class="rt-wx">${x.w ? WXC(x.w.code)[0] : '·'}</div><b>${x.city}</b><small>${x.w ? `${x.w.date} 周${x.w.wk}` : 'D+' + x.d}</small><small class="ev">${x.ev.split('（')[0]}</small>${x.w ? `<span class="tag ${x.w.rain >= 60 ? 'warn' : ''}">${x.w.min}–${x.w.max}° · ☂${x.w.rain}%</span>` : ''}</div>${i < days.length - 1 ? `<div class="rt-arrow">${days[i + 1].from ? (T.legs.find(l => l.d === days[i + 1].d) ? '→' : '→') : '·'}</div>` : ''}`).join('')}</div>
   </div>
   <div class="grid2 mt">
@@ -1213,7 +1259,13 @@ function render(keepScroll) {
   document.documentElement.dataset.theme = S.theme;
   document.title = `${name().name} · 演员AI工作台`;
   const m = $('#main'), y = m.scrollTop;
+  m.classList.toggle('module-view', onPage() === 'rourou' || onPage() === 'guide');
   renderSide(); renderTop(); renderFolder();
+  if (['rourou','guide'].includes(onPage())) {
+    renderEmbeddedPage(m);
+    renderedPage = null;
+    return;
+  }
   if (onPage()) { m.innerHTML = VIEWP[onPage()]() + reviewBlock(); renderedPage=pageKey();restoreDraft(); if (keepScroll) m.scrollTop = y; return; }
   const tdef = GUIDE[S.st].find(g => g[1]);
   if (tdef) S.seen[S.st + ':' + (S.tab[S.st] || tdef[1])] = true;
@@ -1223,6 +1275,7 @@ function render(keepScroll) {
   if (keepScroll) m.scrollTop = y;
 }
 async function go(i) {
+  await flushPet();
   captureDraft();
   const pk = Object.keys(PAGES).find(k => PAGES[k] === i);
   if (pk) { if (S[pk]) return; clearTimers(); Object.keys(PAGES).forEach(k => S[k] = k === pk); await save(); render(); $('#main').scrollTop = 0; $('#app').classList.remove('folder-open'); return; }
@@ -1274,7 +1327,23 @@ function exportMd() {
 
 // The recipient owns the account. Credentials are intentionally never persisted or backed up.
 let aiConnection={model:'',apiKey:'',baseUrl:''},aiConnected=false,aiTask='自由分析',aiBusy=false,aiText='';
+function isPublicDemo() {
+ return !['localhost','127.0.0.1','[::1]','::1'].includes(location.hostname);
+}
+function deploymentDialog() {
+ const dlg=$('#dlg');
+ dlg.innerHTML=`<div class="dlg deployment-info"><h2>实战版怎么使用<button data-act="close" aria-label="关闭">×</button></h2><p class="mt8">当前是静态演示版，可体验八阶段流程与肉肉模块。</p><div class="note mt"><b>在演员自己的电脑上</b><p>启动本机实战版，使用自己的账号保存资料、连接模型。</p></div><div class="note mt"><b>团队跨设备使用</b><p>需要云服务器或支持后台的全栈托管，并配置持久存储与 HTTPS。</p></div><div class="row mt"><a class="btn" href="https://github.com/zurenze1/xilixiwai-actor-workbench/blob/main/README.md" target="_blank" rel="noopener">查看源码与启动说明 ↗</a><a class="btn" href="https://github.com/zurenze1/xilixiwai-actor-workbench/blob/main/practical/docs/部署与演员交接.md" target="_blank" rel="noopener">查看部署与交接文档 ↗</a></div><p class="small muted mt">此演示入口不接收密码或模型密钥。</p></div>`;
+ if(!dlg.open)dlg.showModal();
+}
 function aiDialog(task) {
+ if(isPublicDemo()){deploymentDialog();return;}
+ if(location.pathname.startsWith('/demo/')){
+  if(task)aiTask=task;
+  const dlg=$('#dlg'),source=aiText||((S.files[pageKey()]||[]).filter(f=>f.text).map(f=>f.text).join('\n\n')).slice(0,150000);
+  const prompt='任务：'+aiTask+'\n'+source;
+  dlg.innerHTML=`<div class="dlg"><h2>独立演示入口<button data-act="close" aria-label="关闭">×</button></h2><p>这里用于体验预置示例。真实资料与模型连接，请进入实战版，在自己的账号下配置。</p><p class="mt"><a class="btn pri" href="/practical/#settings" target="_blank" rel="noopener">进入实战版配置模型 ↗</a></p><div class="field mt"><label for="demoAiPrompt">本次资料提示词（可复制）</label><textarea id="demoAiPrompt" rows="8" readonly>${esc(prompt)}</textarea></div><button class="btn" data-act="aipromptcopy">复制本次资料提示词</button><p class="small muted mt8">资料不会由此演示入口发送至模型；复制后可在实战版按需使用。</p></div>`;
+  if(!dlg.open)dlg.showModal();return;
+ }
  if(S.provider==='demo'){toast('先在设置里选择要连接的模型服务');return;}
  if(task)aiTask=task;const dlg=$('#dlg');const cli=['codex','claudecode'].includes(S.provider);
  const source=aiText||((S.files[pageKey()]||[]).filter(f=>f.text).map(f=>f.text).join('\n\n')).slice(0,150000);
@@ -1288,6 +1357,8 @@ function aiDialog(task) {
  if(!dlg.open)dlg.showModal();
 }
 async function callModel(test) {
+ if(isPublicDemo()){deploymentDialog();return;}
+ if(location.pathname.startsWith('/demo/')){aiDialog();return;}
  if(aiBusy)return;const status=$('#aiStatus');
  if(!['localhost','127.0.0.1'].includes(location.hostname)){status.textContent='此处是公开演示页。请下载源码，在自己的电脑运行 npm start 后连接。';return;}
  const provider={claude:'anthropic',claudecode:'claude-code'}[S.provider]||S.provider;
@@ -1320,12 +1391,15 @@ async function importWorks(file) {
 /* ---------------- 事件 ---------------- */
 const handle = fn => e => Promise.resolve(fn(e)).catch(showError);
 let actionBusy=false;
-const handleAction=fn=>handle(async e=>{if(actionBusy)return;actionBusy=true;document.body.dataset.busy='1';try{await fn(e);}finally{actionBusy=false;delete document.body.dataset.busy;}});
+const handleAction=fn=>handle(async e=>{if(e.target.closest?.('[data-act="switch-practical"]'))e.preventDefault();if(actionBusy)return;actionBusy=true;document.body.dataset.busy='1';try{await fn(e);}finally{actionBusy=false;delete document.body.dataset.busy;}});
 document.addEventListener('click', handleAction(async e => {
+  const el = e.target.closest('[data-act]');
+  if (el?.dataset.act === 'journey-toggle') { toggleJourney(); return; }
   captureDraft();
-  const el = e.target.closest('[data-act]'); if (!el) return;
+  if (!el) return;
   const a = el.dataset.act, v = el.dataset.v, i = +el.dataset.i;
   switch (a) {
+    case 'switch-practical': if(location.pathname.startsWith('/demo/')){await flushPet();await save();location.assign('/practical/?theme='+encodeURIComponent(S.theme)+'#today');}break;
     case 'go': if (el.dataset.tab) { S.tab[i] = el.dataset.tab; await save(); } await go(i); if (el.dataset.tab) render(); break;
     case 'tab': clearTimers(); S.tab[el.dataset.st] = v; await save(); render(true); break;
     case 'run': runAI(el.dataset.k); break;
@@ -1338,9 +1412,16 @@ document.addEventListener('click', handleAction(async e => {
     case 'exportedit': download('编辑草稿.txt',$('#editText').value,'text/plain');break;
     case 'teamlist': {const team=D.trip.team||[];const lines=['# 团队携带清单（待人工发送）',...team.flatMap(r=>['## '+r.role,...[...(r.items||[]),...(r.ai||[]),...(S.packAdd[r.role]||[])].map(item=>'- ['+(S.pack[r.role+'|'+item]?'x':' ')+'] '+item)])];download('团队携带清单.md',lines.join('\n'),'text/markdown');toast('已下载清单，可自行审核后发送');break;}
     case 'directorquestions': download('给导演的问题清单.md','# 围读沟通问题\n\n'+D.take.questions.map(x=>'- '+x).join('\n'),'text/markdown');break;
-    case 'theme': S.theme = v; localStorage.setItem('xilixiwai.theme.v2',v); await save(); render(true); if ($('#dlg').open) settings(); break;
+    case 'theme': await flushPet();S.theme = v; localStorage.setItem('xilixiwai.theme.v2',v); await save(); render(true); if ($('#dlg').open) settings(); break;
+    case 'deployment-info': deploymentDialog(); break;
     case 'settings': settings(); break;
     case 'aiconnect': aiDialog();break;
+    case 'aipromptcopy': {
+      const field=$('#demoAiPrompt');if(!field)break;
+      try { if(!navigator.clipboard?.writeText)throw Error('clipboard unavailable');await navigator.clipboard.writeText(field.value);toast('本次资料提示词已复制'); }
+      catch { field.focus();field.select();toast('已选中提示词，请按 ⌘C 或 Ctrl+C 复制'); }
+      break;
+    }
     case 'aitest': await callModel(true);break;
     case 'aicall': await callModel(false);break;
     case 'airesult': download('模型分析结果.txt',$('#aiResult').textContent,'text/plain');break;
@@ -1350,7 +1431,7 @@ document.addEventListener('click', handleAction(async e => {
     case 'prov': aiConnected=false;S.provider = v; await save(); render(true); settings(); break;
     case 'reset':
       if (confirm('恢复原状、重新演示？\n工作台演示改动会清空，肉肉的独立资料保留，回到「日程总览」首页（主题保留）。')) {
-        const keep = { theme: S.theme, nameIdx: S.nameIdx }; clearTimers(); S = validateMain(Object.assign(fresh(), keep)); renderedPage=null;await save();
+        await flushPet();const keep = { theme: S.theme, nameIdx: S.nameIdx }; clearTimers(); S = validateMain(Object.assign(fresh(), keep)); renderedPage=null;await save();
         if ($('#dlg').open) $('#dlg').close(); render(); toast('已重置，可以重新演示');
       } break;
     case 'folder': $('#app').classList.toggle('folder-open'); break;
@@ -1432,14 +1513,21 @@ document.addEventListener('keydown', handle(async e => {
     const r = e.target.dataset.role; (S.packAdd[r] = S.packAdd[r] || []).push(e.target.value.trim()); await save(); render(true); toast('已添加到「' + r + '」'); return;
   }
   if ((e.target.closest && e.target.closest('input,textarea,select')) || $('#dlg').open || e.metaKey || e.ctrlKey || e.altKey) return;
-  const SEQ = [-1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -6, -5, -7, -4, -9, -2, -3], cur = onPage() ? PAGES[onPage()] : S.st, k = SEQ.indexOf(cur);
+  const SEQ = [-1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -6, -5, -7, -4, -9, -2, -3, -10, -11], cur = onPage() ? PAGES[onPage()] : S.st, k = SEQ.indexOf(cur);
   if (e.key === 'ArrowRight' && k < SEQ.length - 1) await go(SEQ[k + 1]);
   if (e.key === 'ArrowLeft' && k > 0) await go(SEQ[k - 1]);
 }));
 $('#dlg').addEventListener('click', e => { if (e.target === $('#dlg')) $('#dlg').close(); });
 
 const fromHash = async () => { const h = location.hash.slice(1), hm = h.match(/st=(\d)/); if (hm) { Object.keys(PAGES).forEach(k => S[k] = false); S.st = Math.min(7, +hm[1]); } else if (PAGES[h]) Object.keys(PAGES).forEach(k => S[k] = k === h); else return; await save(); history.replaceState(null, '', location.pathname); };
+addEventListener('message', handle(async event => {
+  const frame = $('#guideFrame');
+  if (!frame || event.origin !== location.origin || event.source !== frame.contentWindow || event.data?.type !== 'actor:guide-open') return;
+  const page = event.data.page;
+  if (!Number.isInteger(page) || !(page >= 0 && page <= 7 || Object.values(PAGES).includes(page))) return;
+  await go(page);
+}));
 await fromHash();
-addEventListener('hashchange', handle(async () => { captureDraft(); await fromHash(); clearTimers(); render(); $('#main').scrollTop = 0; }));
+addEventListener('hashchange', handle(async () => { await flushPet();captureDraft(); await fromHash(); clearTimers(); render(); $('#main').scrollTop = 0; }));
 render();
 })().catch(error => { console.error(error); document.querySelector("#main").textContent="启动失败："+error.message; });

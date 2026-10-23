@@ -150,9 +150,13 @@ button:disabled{cursor:wait;opacity:.65}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 @media (max-width:900px){.grid2,.grid3,.hgrid,.album{grid-template-columns:1fr}.grid4,.rings,.quick{grid-template-columns:repeat(2,minmax(0,1fr))}.risk{grid-template-columns:1fr}.hero h1{font-size:32px}.hero:after{background:linear-gradient(180deg,#fbf6ee00 0%,#fbf6eef2 70%)}.hero{min-height:360px}}
 @media print{.topbar,.tabs,.hero,.noprint{display:none!important}body{background:#fff}}
+:root[data-theme=tide]{--bg:#edf5f9;--panel:#fff;--panel2:#e3f0f7;--ink:#173c57;--muted:#59758a;--line:#cddfe9;--accent:#297ca9;--accent2:#90bed8;--soft:#dcecf6}
+:root[data-theme=moss]{--bg:#edf1e8;--panel:#fbfdf8;--panel2:#e0e8d7;--ink:#30452d;--muted:#677b5f;--line:#d3dfc9;--accent:#52784a;--accent2:#b1c79a;--soft:#e3ebd9}
+.embedded .topbar,.embedded .hero{display:none}.embedded .wrap{padding-top:10px}.embedded-heading{display:none}.embedded .embedded-heading{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 18px}.embedded-heading h1{font-size:28px;margin:0}
 </style>
 </head>
 <body>
+<div class="embedded-heading wrap"><h1>肉肉的小世界</h1><span class="tag">独立演示记录 · 本机保存</span></div>
 <div class="wrap">
   <div class="topbar"><a href="../index.html">← 回到戏里戏外</a><span class="sp"></span><span class="privacy">🔒 肉肉的记录保存在当前浏览器，不上传</span></div>
   <section class="hero"><img src="../assets/photos/12_maltese.jpg" alt="马尔济斯犬">
@@ -167,9 +171,9 @@ button:disabled{cursor:wait;opacity:.65}
   <p class="note">页面中的生日、体重、疫苗日期等为示例数据，请替换为肉肉的真实记录。AI 解读只做参考，涉及健康问题请以宠物医生的判断为准。</p>
 </div>
 <div class="toast" id="toast" role="status"></div>
-<script src="../reliable-store.js"></script>
-<script src="./schema.js"></script>
-<script src="./backup.js"></script>
-<script src="./app.js"></script>
+<script src="../reliable-store.js?v=20261024-3.1.0"></script>
+<script src="./schema.js?v=20261024-3.1.0"></script>
+<script src="./backup.js?v=20261024-3.1.0"></script>
+<script src="./app.js?v=20261024-3.1.0"></script>
 </body>
 </html>

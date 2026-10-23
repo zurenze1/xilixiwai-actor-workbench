@@ -1,0 +1,2567 @@
+{
+  "version": 1,
+  "sourceHash": "e3bb6d8bef515c49b746c44adae1fabb6035198521bee37b4232994e74e77875",
+  "sourceFiles": [
+    {
+      "path": "practical/web/app.js",
+      "sha256": "d7723c6b7b8394808c0e5ea10a3001d6232f22d47bb573621da158d65ac05e89"
+    },
+    {
+      "path": "practical/web/bridge.js",
+      "sha256": "c6c846fc3e460ad0a5c76c1c17fdcb9a48d80d52825f662ea3019fff7ab11415"
+    },
+    {
+      "path": "practical/web/business/app.js",
+      "sha256": "04d37f61186b27b0d3f3f72528010f662fb5c797d4ec23198bd0b993d89d3b05"
+    },
+    {
+      "path": "practical/web/business/index.html",
+      "sha256": "4beb1811bef36b8363ff35e9bec99d19dd2d1d88e2b31f8c96f09918322171b3"
+    },
+    {
+      "path": "practical/web/business/model.js",
+      "sha256": "8592a5c0ca5a64623dee9e794af5bb4a7d8b4eb7666ad6f187ce7da7afb26c6c"
+    },
+    {
+      "path": "practical/web/business/style.css",
+      "sha256": "9980769e680a86966d4acf379bdaa7ef26a58c180422929b35657016a8eec3a5"
+    },
+    {
+      "path": "practical/web/forms.js",
+      "sha256": "5ded067def271d29527b197df3159cef324a59cd054d87b3382dd4e8b88f3d25"
+    },
+    {
+      "path": "practical/web/index.html",
+      "sha256": "7e06d3aa1b80a8e8dfd7df2862ef12c40f2dbb22333c6af1a0618deb55aab8eb"
+    },
+    {
+      "path": "practical/web/pet/app.js",
+      "sha256": "3db08c1756ee5d706886e8eaee3f0ce0ce4fcb91e15c6e91fd3207f29b339ddb"
+    },
+    {
+      "path": "practical/web/pet/backup.js",
+      "sha256": "9d2950ee71406244e46dc0f8c6ddda2fa1ae002a34b74d87256e27299123fb62"
+    },
+    {
+      "path": "practical/web/pet/index.html",
+      "sha256": "ffff1e8db4afbac3eb5726ee42895628763606caa079b016c0fd74d4203a337c"
+    },
+    {
+      "path": "practical/web/pet/schema.js",
+      "sha256": "9f1dd225aaf891ca80336440931de148f7fb02eac5c6b045d0fd28f81a699946"
+    },
+    {
+      "path": "practical/web/pet/sticker.js",
+      "sha256": "09aa44da10a3810b9893be1b1c16c36782bd76f8459205f57cbbdfa03bc0184e"
+    },
+    {
+      "path": "practical/web/previs/app.js",
+      "sha256": "83347cda025a450fdbec2d1957750531218ac6a9a2a8c3d72ab59db67cb3dff3"
+    },
+    {
+      "path": "practical/web/previs/export.js",
+      "sha256": "4fdf19bc9e72df693789efe8607492a1ac322c6983ee8d3a8840df0d5ae11687"
+    },
+    {
+      "path": "practical/web/previs/index.html",
+      "sha256": "b86f61ca8a60cde615bc6a87c8906bc00e1b0fbded8252bb1f08bcee55fce2ea"
+    },
+    {
+      "path": "practical/web/previs/player.js",
+      "sha256": "b7a2d73b4057c3475de8ed38b6a6bf2fe996500d32e492c949de165cca2cac11"
+    },
+    {
+      "path": "practical/web/previs/schema.js",
+      "sha256": "f3097a4728397319fbc0f0199ce253831524b02c714e220ef17d90422d8c70c1"
+    },
+    {
+      "path": "practical/web/previs/style.css",
+      "sha256": "24d4f18bb046f1a36ee6bf8a50b4efffcb18dd3ab6c0f1f3b49f80b8e3a8fdba"
+    },
+    {
+      "path": "practical/web/social/app.js",
+      "sha256": "487dc4316b0b2877ba708565857c87763ab7a18905c7bb09f9392d7f94864538"
+    },
+    {
+      "path": "practical/web/social/backup.js",
+      "sha256": "eb9e6be146f54d8a94530abc0a9c44dc195619f015fc1fd7ac27c5c418af8f30"
+    },
+    {
+      "path": "practical/web/social/importer.js",
+      "sha256": "7cb96e7e5ff0d2cc4d6e37a1c58ad8018c0b49ea394ef5e9dde3a6aaa3a6a599"
+    },
+    {
+      "path": "practical/web/social/index.html",
+      "sha256": "32b5e6afb683b0285c8b7b103d99e40c42eba711b18e8e08a0933785347965ea"
+    },
+    {
+      "path": "practical/web/social/model.js",
+      "sha256": "dac5bfeca6fe2b26b22ff651cc8d6d50669c36195d7c43e490af05bf945be752"
+    },
+    {
+      "path": "practical/web/social/style.css",
+      "sha256": "2c950bd641d66a2cc37012966f7f2a91bf96dc98535897d9e4a373297cc1bffc"
+    },
+    {
+      "path": "practical/web/style.css",
+      "sha256": "46c6bab3bd3758a7e72ec7299a049ec75f1ee42480f8a16f7d125ff174048f5c"
+    },
+    {
+      "path": "practical/web/themes/tide.css",
+      "sha256": "29085dd3a2827c9de2c715986f1d756740ef848f3cf4812cc4652f3ebaa75b7f"
+    },
+    {
+      "path": "web/app.js",
+      "sha256": "28221d1689f17791616053532cc46d0c0e274e111642242c304fcca0a40baf22"
+    },
+    {
+      "path": "web/data.js",
+      "sha256": "0f07245eeeea8439123080a89463af00493d22c70e212bd67be02c1380978c6b"
+    },
+    {
+      "path": "web/film.html",
+      "sha256": "9951b388b2d7dfdf9725dbf7b230983289db58e78312927a021846192584686e"
+    },
+    {
+      "path": "web/guide/app.js",
+      "sha256": "26043e9dd103fb0cf1f24038b5c7c5efc818005dad33234e2b6f95beeca4b0ce"
+    },
+    {
+      "path": "web/guide/content.mjs",
+      "sha256": "b876265bd12b0ebc0b973069f063ce350101f8e8eaa80979adfb1c755c89719d"
+    },
+    {
+      "path": "web/guide/index.html",
+      "sha256": "ce42a73e8237f93d43f2d43eafa2928831e1ca35e3cd4cfcbddebac519fffca0"
+    },
+    {
+      "path": "web/guide/style.css",
+      "sha256": "52f3d8d553faa43f6a9905e4cfeaecb1ecf6c3f54666edb1840e8ffae48825d8"
+    },
+    {
+      "path": "web/index.html",
+      "sha256": "653b90eb3c86e06978f3eb1becc7f106ba014ef7e0d42a63b5676ec9da6d1f33"
+    },
+    {
+      "path": "web/launch.html",
+      "sha256": "13776febe8ad57bb4c25cff2357ea2f77d20a34019451dc114141c7254d0481a"
+    },
+    {
+      "path": "web/outro.html",
+      "sha256": "4e99026dba69be904bb6d9f7bb8a4cbf32eebd2217109a8941f704cf76e10ba8"
+    },
+    {
+      "path": "web/reliable-store.js",
+      "sha256": "cd2b634ea82c7011dc761420f8d3da210bedc0fb3f9a57eaf1672c8a477c2856"
+    },
+    {
+      "path": "web/reset.html",
+      "sha256": "5b28ffd687f90959a6d0ef58e770b8bfe6b470424ca4ed4a4699fd13705dd93b"
+    },
+    {
+      "path": "web/rourou/app.js",
+      "sha256": "13f17086f95ae3cca7594276cca34254b57e19a364d118c416c4447eefa85d2a"
+    },
+    {
+      "path": "web/rourou/backup.js",
+      "sha256": "9d2950ee71406244e46dc0f8c6ddda2fa1ae002a34b74d87256e27299123fb62"
+    },
+    {
+      "path": "web/rourou/index.html",
+      "sha256": "8ce3c6e22904cc1729a36ddcac7c856d2774f09cd29a0c888482ee45649cf9d1"
+    },
+    {
+      "path": "web/rourou/schema.js",
+      "sha256": "aba226f486e575fefeaf5b0c9a56deab68fe40f22b578d9110c0f9d4d8eb2e17"
+    },
+    {
+      "path": "web/style.css",
+      "sha256": "fe286d89026ac221f5916236ed9b3a7db025c1c11a23fdb24fb1a3ffc9014113"
+    },
+    {
+      "path": "web/weather-snapshot.js",
+      "sha256": "6cee8db6476888d2c7e04d2d9109ae549cae8ddfbd6cf350edcd245bd40a88e6"
+    }
+  ],
+  "categories": [
+    {
+      "id": "all",
+      "name": "全部入口"
+    },
+    {
+      "id": "story",
+      "name": "戏里 · 创作"
+    },
+    {
+      "id": "team",
+      "name": "工作室 · 协作"
+    },
+    {
+      "id": "growth",
+      "name": "事业 · 成长"
+    },
+    {
+      "id": "life",
+      "name": "生活 · 自己"
+    },
+    {
+      "id": "tools",
+      "name": "设置与帮助"
+    }
+  ],
+  "stages": [
+    {
+      "index": 0,
+      "id": "take",
+      "no": "01",
+      "name": "接本",
+      "title": "收到剧本 · 选哪一部",
+      "output": "接戏评估卡",
+      "route": "project",
+      "demoCard": "demo-stage-0",
+      "practicalCard": "practical-project"
+    },
+    {
+      "index": 1,
+      "id": "read",
+      "no": "02",
+      "name": "读本",
+      "title": "读懂剧本 · 人物与场次",
+      "output": "角色分析卡 + 台词建议稿",
+      "route": "script",
+      "demoCard": "demo-stage-1",
+      "practicalCard": "practical-script"
+    },
+    {
+      "index": 2,
+      "id": "role",
+      "no": "03",
+      "name": "入角",
+      "title": "进入角色 · 表演设计",
+      "output": "第12场表演方案 + 舞蹈训练记录",
+      "route": "performance",
+      "demoCard": "demo-stage-2",
+      "practicalCard": "practical-performance"
+    },
+    {
+      "index": 3,
+      "id": "prev",
+      "no": "04",
+      "name": "预演",
+      "title": "造型与镜头预演",
+      "output": "分镜表 + 动态漫剧预演",
+      "route": "previs",
+      "demoCard": "demo-stage-3",
+      "practicalCard": "practical-previs"
+    },
+    {
+      "index": 4,
+      "id": "shoot",
+      "no": "05",
+      "name": "开机",
+      "title": "开机拍摄 · 工作室协同",
+      "output": "任务看板 + 内容日历",
+      "route": "studio",
+      "demoCard": "demo-stage-4",
+      "practicalCard": "practical-studio"
+    },
+    {
+      "index": 5,
+      "id": "promo",
+      "no": "06",
+      "name": "宣传",
+      "title": "宣传期 · 粉丝沟通",
+      "output": "粉丝反馈周报",
+      "route": "fans",
+      "demoCard": "demo-stage-5",
+      "practicalCard": "practical-fans"
+    },
+    {
+      "index": 6,
+      "id": "deal",
+      "no": "07",
+      "name": "商务",
+      "title": "商业合作 · 数字人与授权",
+      "output": "授权核对清单",
+      "route": "rights",
+      "demoCard": "demo-stage-6",
+      "practicalCard": "practical-rights"
+    },
+    {
+      "index": 7,
+      "id": "review",
+      "no": "08",
+      "name": "复盘",
+      "title": "杀青复盘 · 下一步",
+      "output": "作品复盘 + 下一阶段行动清单",
+      "route": "review",
+      "demoCard": "demo-stage-7",
+      "practicalCard": "practical-review"
+    }
+  ],
+  "cards": [
+    {
+      "id": "practical-today",
+      "mode": "practical",
+      "name": "今日与日历",
+      "route": "today",
+      "icon": "calendar",
+      "category": "team",
+      "kinds": [
+        "event"
+      ],
+      "lead": "先看今天，再安排这一周。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏「今日与日历」→「＋ 日历事项」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "写事项名称、开始与结束时间，再补地点和参与人。"
+        },
+        {
+          "title": "如何保存",
+          "body": "点「保存」，等窗口关闭；回到日程核对时间。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "日历事项可导出 CSV；完整项目备份带走当前可见资料。"
+        }
+      ],
+      "curated": true,
+      "fields": [
+        {
+          "kind": "event",
+          "name": "日历事项",
+          "fields": [
+            {
+              "key": "start",
+              "label": "开始时间",
+              "type": "datetime-local",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "end",
+              "label": "结束时间",
+              "type": "datetime-local",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "location",
+              "label": "地点",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "owner",
+              "label": "参与人",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "status",
+              "label": "状态",
+              "type": "select",
+              "required": true,
+              "options": [
+                "待确认",
+                "已确认",
+                "完成",
+                "取消"
+              ]
+            },
+            {
+              "key": "notes",
+              "label": "通告、交通、准备事项",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practical-project",
+      "mode": "practical",
+      "name": "项目与合作",
+      "route": "project",
+      "icon": "folder",
+      "category": "story",
+      "kinds": [
+        "evaluation",
+        "contract"
+      ],
+      "lead": "每部戏，都有自己的资料档案。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏上方「＋ 新建项目」；已有项目点「编辑项目资料」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "项目名、演员虚名、导演与制作团队都能填；再记合作评估和合同节点。"
+        },
+        {
+          "title": "如何保存",
+          "body": "点「保存项目」；左上角选项目即可切换。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "项目页头可导出完整 ZIP；恢复会新建项目，原项目保留。"
+        }
+      ],
+      "curated": true,
+      "fields": [
+        {
+          "kind": "evaluation",
+          "name": "合作评估",
+          "fields": [
+            {
+              "key": "counterparty",
+              "label": "对接方",
+              "type": "text",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "role",
+              "label": "邀约角色",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "fit",
+              "label": "角色与档期判断",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "start",
+              "label": "预计开始",
+              "type": "date",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "end",
+              "label": "预计结束",
+              "type": "date",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "amount",
+              "label": "报价（含币种，待合同确认）",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "status",
+              "label": "决定",
+              "type": "select",
+              "required": true,
+              "options": [
+                "待资料",
+                "评估中",
+                "接受",
+                "婉拒"
+              ]
+            },
+            {
+              "key": "notes",
+              "label": "风险、缺资料与下一步",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            }
+          ]
+        },
+        {
+          "kind": "contract",
+          "name": "合同与交接",
+          "fields": [
+            {
+              "key": "counterparty",
+              "label": "合作主体",
+              "type": "text",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "scope",
+              "label": "工作范围与权利",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "start",
+              "label": "生效日期",
+              "type": "date",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "end",
+              "label": "到期日期",
+              "type": "date",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "payment",
+              "label": "付款节点",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "status",
+              "label": "状态",
+              "type": "select",
+              "required": true,
+              "options": [
+                "草拟",
+                "待审核",
+                "签署",
+                "已履行",
+                "终止"
+              ]
+            },
+            {
+              "key": "fileId",
+              "label": "合同附件",
+              "type": "fileRef",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "notes",
+              "label": "审核意见与修改记录",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practical-script",
+      "mode": "practical",
+      "name": "剧本研读",
+      "route": "script",
+      "icon": "script",
+      "category": "story",
+      "kinds": [],
+      "lead": "先放进原文，再讨论人物。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「剧本研读」→「录入原文」或「上传原件」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "可用 TXT、Markdown、DOCX、带文字 PDF；图片和视频需另附文字转写。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存资料后可「拆分场次与对白」；规则提取与 AI 解读分开显示。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "结构可导出 JSON；分析报告可编辑、留采纳决定并导出。"
+        }
+      ],
+      "curated": true,
+      "fields": []
+    },
+    {
+      "id": "practical-performance",
+      "mode": "practical",
+      "name": "表演准备",
+      "route": "performance",
+      "icon": "person",
+      "category": "story",
+      "kinds": [
+        "scene"
+      ],
+      "lead": "把人物理解，变成能排练的动作。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「表演准备」→「＋ 表演笔记」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "填场次、当场目标、阻力与关系，再写动作、潜台词和 A/B 两种处理。"
+        },
+        {
+          "title": "如何保存",
+          "body": "点「保存」；下次打开同一项目可继续编辑。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "笔记可导出 CSV；模型建议先回原文核对，再记录自己的选择。"
+        }
+      ],
+      "curated": true,
+      "fields": [
+        {
+          "kind": "scene",
+          "name": "表演笔记",
+          "fields": [
+            {
+              "key": "scene",
+              "label": "场次/原文定位",
+              "type": "text",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "objective",
+              "label": "人物当场目标",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "obstacle",
+              "label": "阻力与关系",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "subtext",
+              "label": "潜台词",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "emotion",
+              "label": "情绪推进",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "action",
+              "label": "动作与反应",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "alternatives",
+              "label": "处理方式A/B与选择理由",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "notes",
+              "label": "排练反馈",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practical-previs",
+      "mode": "practical",
+      "name": "造型与分镜",
+      "route": "previs",
+      "icon": "frames",
+      "category": "story",
+      "kinds": [],
+      "lead": "把画面和台词，排成一段可播放的预演。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「造型与分镜」→「添加镜头」；造型在相邻页签。"
+        },
+        {
+          "title": "怎么填",
+          "body": "填画面、台词和秒数，选择项目图片；上移、下移调整顺序。"
+        },
+        {
+          "title": "如何保存",
+          "body": "点「保存」或等待保存状态；播放、暂停和拖动可检查节奏。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "可导出镜头 CSV、含原图 JSON，以及独立播放 HTML。预演不等同正式影片。"
+        }
+      ],
+      "curated": true,
+      "fields": []
+    },
+    {
+      "id": "practical-studio",
+      "mode": "practical",
+      "name": "工作室协作",
+      "route": "studio",
+      "icon": "team",
+      "category": "team",
+      "kinds": [
+        "task",
+        "meeting",
+        "knowledge"
+      ],
+      "lead": "让每次交接，都有人接住。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「工作室协作」→新增任务、会议纪要或知识与 FAQ。"
+        },
+        {
+          "title": "怎么填",
+          "body": "任务写负责人、截止日、完成标准；会议将已决定与待定项分开。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存后再编辑状态；历史版本与归档入口都在记录内。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "任务 CSV 可导入 / 导出；模型行动项生成后仍要核定负责人和期限。"
+        }
+      ],
+      "curated": true,
+      "fields": [
+        {
+          "kind": "task",
+          "name": "协作任务",
+          "fields": [
+            {
+              "key": "owner",
+              "label": "负责人",
+              "type": "text",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "due",
+              "label": "截止日期",
+              "type": "date",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "status",
+              "label": "状态",
+              "type": "select",
+              "required": true,
+              "options": [
+                "待办",
+                "进行中",
+                "待审核",
+                "完成",
+                "取消"
+              ]
+            },
+            {
+              "key": "notes",
+              "label": "任务内容、完成标准与交接",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            }
+          ]
+        },
+        {
+          "kind": "meeting",
+          "name": "会议纪要",
+          "fields": [
+            {
+              "key": "date",
+              "label": "日期",
+              "type": "date",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "participants",
+              "label": "参会人员",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "notes",
+              "label": "原始纪要",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "decisions",
+              "label": "确认的决定",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "actions",
+              "label": "行动项（再建任务落实）",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            }
+          ]
+        },
+        {
+          "kind": "knowledge",
+          "name": "知识与FAQ",
+          "fields": [
+            {
+              "key": "category",
+              "label": "分类",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "question",
+              "label": "问题",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "answer",
+              "label": "审核后的答案",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "source",
+              "label": "依据或原文链接",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "status",
+              "label": "状态",
+              "type": "select",
+              "required": true,
+              "options": [
+                "待审核",
+                "可复用",
+                "已过期"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practical-fans",
+      "mode": "practical",
+      "name": "粉丝沟通",
+      "route": "fans",
+      "icon": "message",
+      "category": "team",
+      "kinds": [
+        "message"
+      ],
+      "lead": "保留原话，认真准备每一条回复。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「粉丝沟通」→「＋ 留言与回复」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "记录平台、原留言、分类与回复草稿；填审核人再推进状态。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存的是工作室草稿；对外发布由人完成，再回填实际链接。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "留言可导入 / 导出 CSV。AI 分类与措辞建议不等于已公开回复。"
+        }
+      ],
+      "curated": true,
+      "fields": [
+        {
+          "kind": "message",
+          "name": "留言与回复",
+          "fields": [
+            {
+              "key": "source",
+              "label": "平台与来源",
+              "type": "text",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "url",
+              "label": "原留言链接",
+              "type": "url",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "text",
+              "label": "原始留言",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "category",
+              "label": "分类",
+              "type": "select",
+              "required": true,
+              "options": [
+                "作品反馈",
+                "支持鼓励",
+                "活动咨询",
+                "合作咨询",
+                "建议批评",
+                "待核实信号"
+              ]
+            },
+            {
+              "key": "tone",
+              "label": "回复语气",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "reply",
+              "label": "回复草稿",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "status",
+              "label": "状态",
+              "type": "select",
+              "required": true,
+              "options": [
+                "待分类",
+                "待起草",
+                "待审核",
+                "已批准",
+                "已人工发布",
+                "不回复"
+              ]
+            },
+            {
+              "key": "reviewer",
+              "label": "审核人",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "publishedUrl",
+              "label": "人工发布链接",
+              "type": "url",
+              "required": false,
+              "options": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practical-social",
+      "mode": "practical",
+      "name": "内容与账号运营",
+      "route": "social",
+      "icon": "broadcast",
+      "category": "team",
+      "kinds": [],
+      "lead": "让账号、内容与实际数据有迹可循。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "进入「内容与账号运营」，按板块先建立账号与内容资料。"
+        },
+        {
+          "title": "怎么填",
+          "body": "按当前页面的真实字段登记发布、指标和复盘；没有的数据保持未知。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存每条记录，再补实际平台结果。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "使用当前页面提供的导出入口。连接平台与公开发布需要相应账号授权。"
+        }
+      ],
+      "curated": true,
+      "fields": []
+    },
+    {
+      "id": "practical-rights",
+      "mode": "practical",
+      "name": "版权与数字人",
+      "route": "rights",
+      "icon": "shield",
+      "category": "growth",
+      "kinds": [
+        "right"
+      ],
+      "lead": "把素材的去向与授权边界写清楚。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「版权与数字人」→「＋ 授权检查」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "写授权主体、肖像 / 声音 / 表演数据、用途、地域、期限和证明依据。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存核对记录；未确认的授权保持未确认，交本人及团队审核。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "导出授权 CSV 便于人工核对。登记不代表已取得权利或完成法务审查。"
+        }
+      ],
+      "curated": true,
+      "fields": [
+        {
+          "kind": "right",
+          "name": "授权检查",
+          "fields": [
+            {
+              "key": "subject",
+              "label": "授权主体与对象",
+              "type": "text",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "asset",
+              "label": "素材/肖像/声音/表演数据",
+              "type": "text",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "scope",
+              "label": "用途、平台与商业范围",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "territory",
+              "label": "地区与转授权限制",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "start",
+              "label": "授权开始",
+              "type": "date",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "end",
+              "label": "授权到期",
+              "type": "date",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "evidence",
+              "label": "授权依据与证明来源",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "status",
+              "label": "审核",
+              "type": "select",
+              "required": true,
+              "options": [
+                "未确认",
+                "待法务",
+                "已获书面授权",
+                "禁止使用",
+                "已到期"
+              ]
+            },
+            {
+              "key": "notes",
+              "label": "撤回、删除与生成内容边界",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practical-review",
+      "mode": "practical",
+      "name": "作品与复盘",
+      "route": "review",
+      "icon": "chart",
+      "category": "growth",
+      "kinds": [
+        "work",
+        "review"
+      ],
+      "lead": "把作品留下来，把经验带到下一部。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「作品与复盘」→新增作品档案或项目复盘。"
+        },
+        {
+          "title": "怎么填",
+          "body": "先写原定目标、实际结果与证据，再填有效做法和下次行动。"
+        },
+        {
+          "title": "如何保存",
+          "body": "点「保存」；后续补充结果会保留历史版本。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "作品和复盘可导出 CSV；把下一步落到工作室任务或阶段规划。"
+        }
+      ],
+      "curated": true,
+      "fields": [
+        {
+          "kind": "work",
+          "name": "作品档案",
+          "fields": [
+            {
+              "key": "role",
+              "label": "角色与本人职责",
+              "type": "text",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "date",
+              "label": "完成日期",
+              "type": "date",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "url",
+              "label": "可公开作品链接",
+              "type": "url",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "evidence",
+              "label": "成果与观众反馈（注明来源）",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "notes",
+              "label": "能力成长与待提升",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            }
+          ]
+        },
+        {
+          "kind": "review",
+          "name": "项目复盘",
+          "fields": [
+            {
+              "key": "date",
+              "label": "复盘日期",
+              "type": "date",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "goal",
+              "label": "原定目标",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "evidence",
+              "label": "实际结果与证据",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "learned",
+              "label": "有效做法与不足",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "next",
+              "label": "下一步行动",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practical-dance",
+      "mode": "practical",
+      "name": "舞蹈训练",
+      "route": "dance",
+      "icon": "dance",
+      "category": "story",
+      "kinds": [
+        "dance"
+      ],
+      "lead": "记主题与观察，带着具体问题去排练。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「舞蹈训练」→「＋ 舞蹈训练」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "写主题、音乐段落、动作观察和时间码，可关联自己上传的视频原件。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存训练记录，再补老师反馈与下一次训练计划。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "可导出训练 CSV。动作纠正、伤病与身体安全判断仍交给专业人员。"
+        }
+      ],
+      "curated": true,
+      "fields": [
+        {
+          "kind": "dance",
+          "name": "舞蹈训练",
+          "fields": [
+            {
+              "key": "date",
+              "label": "训练日期",
+              "type": "date",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "theme",
+              "label": "主题与叙事情绪",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "music",
+              "label": "音乐与节拍段落",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "segments",
+              "label": "动作段落与编舞备选",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "videoId",
+              "label": "排练视频原件",
+              "type": "fileRef",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "observations",
+              "label": "视频观察问题与时间码",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "teacher",
+              "label": "老师反馈与安全判断",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "next",
+              "label": "下次训练计划",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practical-brief",
+      "mode": "practical",
+      "name": "行业信息",
+      "route": "brief",
+      "icon": "news",
+      "category": "growth",
+      "kinds": [
+        "brief"
+      ],
+      "lead": "看到出处，再形成自己的判断。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「行业信息」→「＋ 行业资料」；来源文字可在剧本研读导入。"
+        },
+        {
+          "title": "怎么填",
+          "body": "填公开链接、领域、核验日期、原文摘要与合作灵感。"
+        },
+        {
+          "title": "如何保存",
+          "body": "按实际情况标注未核实、已读原文或交叉核验。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "导出资料 CSV。网络传闻和趋势判断不能自动当成已经核实的事实。"
+        }
+      ],
+      "curated": true,
+      "fields": [
+        {
+          "kind": "brief",
+          "name": "行业资料",
+          "fields": [
+            {
+              "key": "sector",
+              "label": "领域",
+              "type": "select",
+              "required": true,
+              "options": [
+                "影视",
+                "舞蹈",
+                "音乐",
+                "时尚",
+                "AI内容"
+              ]
+            },
+            {
+              "key": "url",
+              "label": "公开来源链接",
+              "type": "url",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "date",
+              "label": "核验日期",
+              "type": "date",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "facts",
+              "label": "原文事实与摘要",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "inspiration",
+              "label": "合作灵感（观点）",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "status",
+              "label": "核验状态",
+              "type": "select",
+              "required": true,
+              "options": [
+                "未核实",
+                "已读原文",
+                "已交叉核验",
+                "已失效"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practical-plan",
+      "mode": "practical",
+      "name": "发展规划",
+      "route": "plan",
+      "icon": "compass",
+      "category": "growth",
+      "kinds": [
+        "goal"
+      ],
+      "lead": "把想走的方向，拆成这一阶段能做的事。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「发展规划」→「＋ 阶段规划」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "填年度 / 季度目标、取舍理由、验收方式和复盘日期。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存目标，随进展改为执行中、调整或完成。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "导出规划 CSV；行动可继续建为协作任务，由本人和团队决定取舍。"
+        }
+      ],
+      "curated": true,
+      "fields": [
+        {
+          "kind": "goal",
+          "name": "阶段规划",
+          "fields": [
+            {
+              "key": "period",
+              "label": "年度/季度",
+              "type": "text",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "goal",
+              "label": "目标与选择理由",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "measure",
+              "label": "验收方式",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "owner",
+              "label": "负责人",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "due",
+              "label": "复盘日期",
+              "type": "date",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "status",
+              "label": "状态",
+              "type": "select",
+              "required": true,
+              "options": [
+                "规划中",
+                "执行中",
+                "完成",
+                "调整",
+                "暂停"
+              ]
+            },
+            {
+              "key": "notes",
+              "label": "学习主题、作品方向与行动",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practical-travel",
+      "mode": "practical",
+      "name": "出行与健康",
+      "route": "travel",
+      "icon": "bag",
+      "category": "life",
+      "kinds": [
+        "travel",
+        "health"
+      ],
+      "lead": "行程有准备，私人感受有自己的位置。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「出行与健康」→新增出行安排或私人健康记录。"
+        },
+        {
+          "title": "怎么填",
+          "body": "填日期、目的地和准备事项；健康记录写本人感受与实际建议来源。"
+        },
+        {
+          "title": "如何保存",
+          "body": "点击保存。私人健康资料单独保存，不进入剧组的团队资料列表。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "可导出当前可见记录。不要把证件号、密码或验证码写进普通备注。"
+        }
+      ],
+      "curated": true,
+      "fields": [
+        {
+          "kind": "travel",
+          "name": "出行安排",
+          "fields": [
+            {
+              "key": "date",
+              "label": "日期",
+              "type": "date",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "from",
+              "label": "出发地",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "to",
+              "label": "目的地",
+              "type": "text",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "booking",
+              "label": "交通与住宿（不存证件号码）",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "contact",
+              "label": "团队联络",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "status",
+              "label": "状态",
+              "type": "select",
+              "required": true,
+              "options": [
+                "待确认",
+                "已预订",
+                "已出发",
+                "完成",
+                "取消"
+              ]
+            },
+            {
+              "key": "notes",
+              "label": "天气来源与行前准备",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            }
+          ]
+        },
+        {
+          "kind": "health",
+          "name": "私人健康记录",
+          "fields": [
+            {
+              "key": "date",
+              "label": "记录日期",
+              "type": "date",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "type",
+              "label": "记录类型",
+              "type": "select",
+              "required": true,
+              "options": [
+                "休息与感受",
+                "就诊记录",
+                "训练恢复",
+                "复查提醒"
+              ]
+            },
+            {
+              "key": "notes",
+              "label": "本人填写的记录",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "next",
+              "label": "复查或提醒日期",
+              "type": "date",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "source",
+              "label": "医生建议/资料出处（如有）",
+              "type": "text",
+              "required": false,
+              "options": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practical-crisis",
+      "mode": "practical",
+      "name": "公共沟通",
+      "route": "crisis",
+      "icon": "alert",
+      "category": "team",
+      "kinds": [
+        "crisis"
+      ],
+      "lead": "先核事实，再决定是否回应。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「公共沟通」→「＋ 公共沟通事项」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "留原始链接，分别写已核验事实、未知信息、回应草稿与审核人。"
+        },
+        {
+          "title": "如何保存",
+          "body": "草稿先保存；批准和人工发布要补齐审核信息、实际发布链接。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "可导出事项 CSV；重要对外动作始终由人工审核与执行。"
+        }
+      ],
+      "curated": true,
+      "fields": [
+        {
+          "kind": "crisis",
+          "name": "公共沟通事项",
+          "fields": [
+            {
+              "key": "url",
+              "label": "信号原始链接",
+              "type": "url",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "facts",
+              "label": "已核验事实",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "unknown",
+              "label": "尚不确定的信息",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "draft",
+              "label": "回应草稿",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "reviewer",
+              "label": "负责人/审核人",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "status",
+              "label": "状态",
+              "type": "select",
+              "required": true,
+              "options": [
+                "核验中",
+                "待审核",
+                "已批准",
+                "已人工发布",
+                "归档"
+              ]
+            },
+            {
+              "key": "publishedUrl",
+              "label": "人工发布链接",
+              "type": "url",
+              "required": false,
+              "options": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practical-charity",
+      "mode": "practical",
+      "name": "公益项目",
+      "route": "charity",
+      "icon": "heart",
+      "category": "growth",
+      "kinds": [
+        "charity"
+      ],
+      "lead": "让善意有准备，让承诺有交接。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「公益项目」→「＋ 公益协作」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "填合作机构、资质核验来源、承诺事项、预算与负责人。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存后持续补充执行记录和结果依据。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "可导出公益台账 CSV；登记一条事项不代表机构资质已获自动核验。"
+        }
+      ],
+      "curated": true,
+      "fields": [
+        {
+          "kind": "charity",
+          "name": "公益协作",
+          "fields": [
+            {
+              "key": "partner",
+              "label": "合作机构",
+              "type": "text",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "verification",
+              "label": "机构资质与核验来源",
+              "type": "textarea",
+              "required": true,
+              "options": []
+            },
+            {
+              "key": "commitment",
+              "label": "承诺事项与预算",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "owner",
+              "label": "负责人",
+              "type": "text",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "due",
+              "label": "截止日期",
+              "type": "date",
+              "required": false,
+              "options": []
+            },
+            {
+              "key": "status",
+              "label": "状态",
+              "type": "select",
+              "required": true,
+              "options": [
+                "核验中",
+                "执行中",
+                "待反馈",
+                "已完成",
+                "取消"
+              ]
+            },
+            {
+              "key": "evidence",
+              "label": "执行记录与公开报告",
+              "type": "textarea",
+              "required": false,
+              "options": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "practical-business",
+      "mode": "practical",
+      "name": "公司与品牌",
+      "route": "business",
+      "icon": "building",
+      "category": "team",
+      "kinds": [],
+      "lead": "把主体、款项、资产与品牌放在一起管理。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "管理员进入「公司与品牌」，先登记经营主体。"
+        },
+        {
+          "title": "怎么填",
+          "body": "按页签填写合作、分期收支、票据、资产、税务待办和品牌 SKU。"
+        },
+        {
+          "title": "如何保存",
+          "body": "点登记后计入台账；税务推进需要会计确认和相应凭证。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "可导出 CSV 与含原件的经营备份。各币种分开计算，不自动算税或联网申报。"
+        }
+      ],
+      "curated": true,
+      "fields": []
+    },
+    {
+      "id": "practical-pet",
+      "mode": "practical",
+      "name": "肉肉生活",
+      "route": "pet",
+      "icon": "paw",
+      "category": "life",
+      "kinds": [],
+      "lead": "把日常照护，变成找得到的小记录。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「肉肉生活」里选择今日、档案、健康、行为、托管或相册。"
+        },
+        {
+          "title": "怎么填",
+          "body": "先填自己的宠物档案，再记饮食、体重、提醒；相册可上传原图。"
+        },
+        {
+          "title": "如何保存",
+          "body": "注意保存状态，离开板块前让文件处理完成。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "原图可下载，照片可配字做表情包；可导出独立完整备份与托管卡。"
+        }
+      ],
+      "curated": true,
+      "fields": []
+    },
+    {
+      "id": "practical-guide",
+      "mode": "practical",
+      "name": "图解使用说明",
+      "route": "guide",
+      "icon": "book",
+      "category": "tools",
+      "kinds": [],
+      "lead": "忘记下一步，就回到这张地图。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "打开「使用说明」，点阶段或搜索功能名。"
+        },
+        {
+          "title": "怎么填",
+          "body": "每张图卡按点哪里、怎么填、如何保存、保存 / 输出说明。"
+        },
+        {
+          "title": "如何保存",
+          "body": "无需保存。点卡片里的打开按钮就回到对应工作板块。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "目录与字段由本地源码生成；图示是操作示意，不是截图或实际业务数据。"
+        }
+      ],
+      "curated": true,
+      "fields": []
+    },
+    {
+      "id": "practical-settings",
+      "mode": "practical",
+      "name": "账号与AI连接",
+      "route": "settings",
+      "icon": "settings",
+      "category": "tools",
+      "kinds": [],
+      "lead": "连接你自己的工具，管理你自己的团队。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "「账号与 AI 连接」→「模型连接」或「工作室成员」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "填连接名称、供应商、账号可用的模型 ID 与使用者自己的密钥。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存连接后再点「测试」；密钥留在服务端加密存储，不进入项目备份。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "模型测试会实际调用本人账号。团队邀请由你自行转发，本机工具需另行明确启用。"
+        }
+      ],
+      "curated": true,
+      "fields": []
+    },
+    {
+      "id": "demo-stage-0",
+      "mode": "demo",
+      "name": "收到剧本 · 选哪一部",
+      "page": 0,
+      "stage": 0,
+      "icon": "folder",
+      "category": "story",
+      "kinds": [],
+      "lead": "先比较，再决定接不接。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏「接本」→查看剧本对比。"
+        },
+        {
+          "title": "怎么填",
+          "body": "调整你看重的维度，读角色、档期和合作信息；补人工判断。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存采纳、修改或暂缓的决定，再进入下一站。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "演示使用虚构项目和示例比较；可将评估加入资料夹并导出文字资料。"
+        }
+      ],
+      "curated": true,
+      "output": "接戏评估卡",
+      "fields": []
+    },
+    {
+      "id": "demo-stage-1",
+      "mode": "demo",
+      "name": "读懂剧本 · 人物与场次",
+      "page": 1,
+      "stage": 1,
+      "icon": "script",
+      "category": "story",
+      "kinds": [],
+      "lead": "把人物关系与原文放在一起读。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏「读本」→切换关系、成长线、潜台词、重点场次等页签。"
+        },
+        {
+          "title": "怎么填",
+          "body": "选择要看的角色，打开分析卡；台词修改先对照原句。"
+        },
+        {
+          "title": "如何保存",
+          "body": "记录自己的采纳意见，也可以上传项目资料原件。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "角色卡与台词建议可放入资料夹；示例分析不代表模型已读过你上传的资料。"
+        }
+      ],
+      "curated": true,
+      "output": "角色分析卡 + 台词建议稿",
+      "fields": []
+    },
+    {
+      "id": "demo-stage-2",
+      "mode": "demo",
+      "name": "进入角色 · 表演设计",
+      "page": 2,
+      "stage": 2,
+      "icon": "person",
+      "category": "story",
+      "kinds": [],
+      "lead": "同一场戏，试出自己的处理。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏「入角」→表演设计、台词陪练或舞蹈段落。"
+        },
+        {
+          "title": "怎么填",
+          "body": "比较示例中的目标、动作和不同演法，再写自己的选择理由。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存人工判断和训练记录，保留后续调整依据。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "可导出表演方案与训练记录；实战版支持自己持续添加笔记。"
+        }
+      ],
+      "curated": true,
+      "output": "第12场表演方案 + 舞蹈训练记录",
+      "fields": []
+    },
+    {
+      "id": "demo-stage-3",
+      "mode": "demo",
+      "name": "造型与镜头预演",
+      "page": 3,
+      "stage": 3,
+      "icon": "frames",
+      "category": "story",
+      "kinds": [],
+      "lead": "先看到画面，再讨论怎么拍。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏「预演」→造型参考、轻量分镜或动态漫剧。"
+        },
+        {
+          "title": "怎么填",
+          "body": "切换方案，点击播放；可暂停和拖动检查示例节奏。"
+        },
+        {
+          "title": "如何保存",
+          "body": "把选定方案加入资料夹，再补自己的说明。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "这里是虚构预置预演；要编辑自己的镜头、图片和时长，请用实战版造型与分镜。"
+        }
+      ],
+      "curated": true,
+      "output": "分镜表 + 动态漫剧预演",
+      "fields": []
+    },
+    {
+      "id": "demo-stage-4",
+      "mode": "demo",
+      "name": "开机拍摄 · 工作室协同",
+      "page": 4,
+      "stage": 4,
+      "icon": "team",
+      "category": "team",
+      "kinds": [],
+      "lead": "把拍摄日的事情，一件件接住。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏「开机」→通告、任务、内容日历或知识库。"
+        },
+        {
+          "title": "怎么填",
+          "body": "核对当日安排，填写负责人、期限和交接内容。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存任务与记录，再查看日历和资料夹。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "任务与日历可导出。示例日程可清空，你自己添加的安排会保留。"
+        }
+      ],
+      "curated": true,
+      "output": "任务看板 + 内容日历",
+      "fields": []
+    },
+    {
+      "id": "demo-stage-5",
+      "mode": "demo",
+      "name": "宣传期 · 粉丝沟通",
+      "page": 5,
+      "stage": 5,
+      "icon": "message",
+      "category": "team",
+      "kinds": [],
+      "lead": "从一条原留言，走到一份待审核草稿。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏「宣传」→留言分类与回复、运营反馈或采访备忘。"
+        },
+        {
+          "title": "怎么填",
+          "body": "切换语气并编辑回复，保留原始留言和分类依据。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存草稿或提交工作室审核；这一步不会自动对外发送。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "反馈和回复可导出，实际发布仍需本人或团队操作。"
+        }
+      ],
+      "curated": true,
+      "output": "粉丝反馈周报",
+      "fields": []
+    },
+    {
+      "id": "demo-stage-6",
+      "mode": "demo",
+      "name": "商业合作 · 数字人与授权",
+      "page": 6,
+      "stage": 6,
+      "icon": "shield",
+      "category": "growth",
+      "kinds": [],
+      "lead": "把商业合作的边界问明白。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏「商务」→逐项查看数字人与授权清单。"
+        },
+        {
+          "title": "怎么填",
+          "body": "选择用途，核对肖像、声音、表演数据、期限与转授权。"
+        },
+        {
+          "title": "如何保存",
+          "body": "将未确认项与人工意见一并保存。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "导出授权核对清单。演示中的提示不等同真实合同或已获授权。"
+        }
+      ],
+      "curated": true,
+      "output": "授权核对清单",
+      "fields": []
+    },
+    {
+      "id": "demo-stage-7",
+      "mode": "demo",
+      "name": "杀青复盘 · 下一步",
+      "page": 7,
+      "stage": 7,
+      "icon": "chart",
+      "category": "growth",
+      "kinds": [],
+      "lead": "把一部戏的经验，接到下一阶段。",
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏「复盘」→作品、口碑和表演自评页签。"
+        },
+        {
+          "title": "怎么填",
+          "body": "填写自己学到的事、待提升点和下一步行动。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存复盘，打开资料夹核对已留下的产出。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "可导出资料夹文字与完整备份；完整备份才包含可恢复的原件。"
+        }
+      ],
+      "curated": true,
+      "output": "作品复盘 + 下一阶段行动清单",
+      "fields": []
+    },
+    {
+      "id": "demo-page-home",
+      "mode": "demo",
+      "key": "home",
+      "page": -1,
+      "name": "日程总览",
+      "icon": "calendar",
+      "category": "team",
+      "lead": "看今日与整月安排，新增日程后检查重叠。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏打开「日程总览」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "看今日与整月安排，新增日程后检查重叠。"
+        },
+        {
+          "title": "如何保存",
+          "body": "按页面提供的保存入口确认，留意错误和未保存提示。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "使用当前页面的导出入口；完整备份可保留原件，文字导出只包含文字。"
+        }
+      ]
+    },
+    {
+      "id": "demo-page-trip",
+      "mode": "demo",
+      "key": "trip",
+      "page": -2,
+      "name": "出行与天气",
+      "icon": "bag",
+      "category": "life",
+      "lead": "记录出行安排与行前准备，核对信息来源。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏打开「出行与天气」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "记录出行安排与行前准备，核对信息来源。"
+        },
+        {
+          "title": "如何保存",
+          "body": "按页面提供的保存入口确认，留意错误和未保存提示。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "使用当前页面的导出入口；完整备份可保留原件，文字导出只包含文字。"
+        }
+      ]
+    },
+    {
+      "id": "demo-page-body",
+      "mode": "demo",
+      "key": "body",
+      "page": -3,
+      "name": "身体与状态",
+      "icon": "heart",
+      "category": "life",
+      "lead": "记录身体感受和个人状态，专业判断交给专业人员。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏打开「身体与状态」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "记录身体感受和个人状态，专业判断交给专业人员。"
+        },
+        {
+          "title": "如何保存",
+          "body": "按页面提供的保存入口确认，留意错误和未保存提示。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "使用当前页面的导出入口；完整备份可保留原件，文字导出只包含文字。"
+        }
+      ]
+    },
+    {
+      "id": "demo-page-charity",
+      "mode": "demo",
+      "key": "charity",
+      "page": -4,
+      "name": "公益与影响力",
+      "icon": "heart",
+      "category": "growth",
+      "lead": "整理公益合作与资质核验，再保存人工决定。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏打开「公益与影响力」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "整理公益合作与资质核验，再保存人工决定。"
+        },
+        {
+          "title": "如何保存",
+          "body": "按页面提供的保存入口确认，留意错误和未保存提示。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "使用当前页面的导出入口；完整备份可保留原件，文字导出只包含文字。"
+        }
+      ]
+    },
+    {
+      "id": "demo-page-fans",
+      "mode": "demo",
+      "key": "fans",
+      "page": -5,
+      "name": "粉丝与社群",
+      "icon": "message",
+      "category": "team",
+      "lead": "分类反馈、编辑回复草稿，重要对外动作继续人工审核。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏打开「粉丝与社群」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "分类反馈、编辑回复草稿，重要对外动作继续人工审核。"
+        },
+        {
+          "title": "如何保存",
+          "body": "按页面提供的保存入口确认，留意错误和未保存提示。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "使用当前页面的导出入口；完整备份可保留原件，文字导出只包含文字。"
+        }
+      ]
+    },
+    {
+      "id": "demo-page-deals",
+      "mode": "demo",
+      "key": "deals",
+      "page": -6,
+      "name": "合同与品牌",
+      "icon": "building",
+      "category": "growth",
+      "lead": "查看合作材料，逐项记录合同与授权边界。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏打开「合同与品牌」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "查看合作材料，逐项记录合同与授权边界。"
+        },
+        {
+          "title": "如何保存",
+          "body": "按页面提供的保存入口确认，留意错误和未保存提示。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "使用当前页面的导出入口；完整备份可保留原件，文字导出只包含文字。"
+        }
+      ]
+    },
+    {
+      "id": "demo-page-crisis",
+      "mode": "demo",
+      "key": "crisis",
+      "page": -7,
+      "name": "危机公关与舆情",
+      "icon": "alert",
+      "category": "team",
+      "lead": "分开写已核验事实和未知信息，先审核再回应。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏打开「危机公关与舆情」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "分开写已核验事实和未知信息，先审核再回应。"
+        },
+        {
+          "title": "如何保存",
+          "body": "按页面提供的保存入口确认，留意错误和未保存提示。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "使用当前页面的导出入口；完整备份可保留原件，文字导出只包含文字。"
+        }
+      ]
+    },
+    {
+      "id": "demo-page-portfolio",
+      "mode": "demo",
+      "key": "portfolio",
+      "page": -8,
+      "name": "作品库与发展规划",
+      "icon": "chart",
+      "category": "growth",
+      "lead": "维护作品与下一阶段计划，留存实际成果。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏打开「作品库与发展规划」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "维护作品与下一阶段计划，留存实际成果。"
+        },
+        {
+          "title": "如何保存",
+          "body": "按页面提供的保存入口确认，留意错误和未保存提示。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "使用当前页面的导出入口；完整备份可保留原件，文字导出只包含文字。"
+        }
+      ]
+    },
+    {
+      "id": "demo-page-brief",
+      "mode": "demo",
+      "key": "brief",
+      "page": -9,
+      "name": "行业简报",
+      "icon": "news",
+      "category": "growth",
+      "lead": "从原始来源整理资讯，观点与事实分开记。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏打开「行业简报」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "从原始来源整理资讯，观点与事实分开记。"
+        },
+        {
+          "title": "如何保存",
+          "body": "按页面提供的保存入口确认，留意错误和未保存提示。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "使用当前页面的导出入口；完整备份可保留原件，文字导出只包含文字。"
+        }
+      ]
+    },
+    {
+      "id": "demo-page-rourou",
+      "mode": "demo",
+      "key": "rourou",
+      "page": -10,
+      "name": "肉肉的小世界",
+      "icon": "paw",
+      "category": "life",
+      "lead": "在工作台里打开宠物档案、照片、健康提醒和托管记录。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏打开「肉肉的小世界」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "在工作台里打开宠物档案、照片、健康提醒和托管记录。"
+        },
+        {
+          "title": "如何保存",
+          "body": "按页面提供的保存入口确认，留意错误和未保存提示。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "照片原件和完整备份在肉肉板块中导出。"
+        }
+      ]
+    },
+    {
+      "id": "demo-page-guide",
+      "mode": "demo",
+      "key": "guide",
+      "page": -11,
+      "name": "使用说明",
+      "icon": "book",
+      "category": "tools",
+      "lead": "用流程地图与操作图卡找到下一步。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏打开「使用说明」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "用流程地图与操作图卡找到下一步。"
+        },
+        {
+          "title": "如何保存",
+          "body": "这里是说明页，无需保存。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "使用当前页面的导出入口；完整备份可保留原件，文字导出只包含文字。"
+        }
+      ]
+    }
+  ],
+  "notes": {
+    "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
+    "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
+  },
+  "contentHash": "eed26799c0ad076a206bc46156f2c2b30214784619fdb4da5c9039e192a25fa2",
+  "generatedAt": "2026-10-23T17:15:57.136Z"
+}

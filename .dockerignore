@@ -1,0 +1,11 @@
+.git
+node_modules
+.env*
+.runtime
+qa-private
+*.zip
+**/*artifacts*
+**/*.sqlite*
+**/*.secret
+
+web/scripts
