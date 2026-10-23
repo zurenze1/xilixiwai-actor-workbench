@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "e3bb6d8bef515c49b746c44adae1fabb6035198521bee37b4232994e74e77875",
+  "sourceHash": "b89939e8187774020e17b60819a92c3a175ef663858913641006ddb7cf3c9188",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -140,7 +140,7 @@
     },
     {
       "path": "web/index.html",
-      "sha256": "653b90eb3c86e06978f3eb1becc7f106ba014ef7e0d42a63b5676ec9da6d1f33"
+      "sha256": "080d0557e17a04cbc41fe6ca89241e4902a80a084314bfe21a83369fbb2f5483"
     },
     {
       "path": "web/launch.html",
@@ -176,7 +176,7 @@
     },
     {
       "path": "web/style.css",
-      "sha256": "fe286d89026ac221f5916236ed9b3a7db025c1c11a23fdb24fb1a3ffc9014113"
+      "sha256": "c22851427057679ef99b6a04b3b4ffca4c2c310ae0a77d347a0d61eb079c5b61"
     },
     {
       "path": "web/weather-snapshot.js",
@@ -2562,6 +2562,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "eed26799c0ad076a206bc46156f2c2b30214784619fdb4da5c9039e192a25fa2",
-  "generatedAt": "2026-10-23T17:15:57.136Z"
+  "contentHash": "1138b3c0c32cb71fe9cb19c44e172c3ceca412d6d5d1f869299d26ccafcff917",
+  "generatedAt": "2026-10-23T17:22:55.784Z"
 }
