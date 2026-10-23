@@ -6,6 +6,8 @@
 
 ## 打开体验
 
+[在线工作台](https://zurenze1.github.io/xilixiwai-actor-workbench/) · [交互发布会](https://zurenze1.github.io/xilixiwai-actor-workbench/launch.html) · [肉肉的小世界](https://zurenze1.github.io/xilixiwai-actor-workbench/rourou/)
+
 - 工作台：本站首页 `index.html`
 - 交互发布会：`launch.html`
 - 宣发片网页预览：`film.html`
