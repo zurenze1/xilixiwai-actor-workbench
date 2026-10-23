@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>戏里戏外 · 结尾短片</title>
+<style>
+:root{--c1:#1b2a52;--c2:#4f7ad8;--c3:#e8c88a;--c4:#9cc4f0;--bg:#070b16;--ink:#f4f6fa;--muted:#a9b8cf;--serif:"Songti SC","STSong","Noto Serif SC",serif;--sans:-apple-system,"PingFang SC","Hiragino Sans GB",sans-serif}
+[data-theme="butter"]{--c1:#f3e7b4;--c2:#f0b97a;--c3:#e9d36c;--c4:#fff6d6;--bg:#f4efe2;--ink:#26251e;--muted:#6b6650}
+[data-theme="moss"]{--c1:#1f2c17;--c2:#6f8a3c;--c3:#e6c477;--c4:#d3dfaa;--bg:#080b06;--ink:#efeee4;--muted:#aab39b}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+#wrap{position:absolute;inset:0;display:grid;place-items:center;background:var(--bg)}
+#stage{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0;overflow:hidden;background:var(--bg)}
+.layer{position:absolute;inset:0;will-change:opacity,transform,filter}
+/* 动态渐变背景 */
+.mesh{position:absolute;inset:-25%}
+.mesh i{position:absolute;width:70%;height:70%;border-radius:50%}
+.grain{position:absolute;inset:0;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:overlay;pointer-events:none}
+/* 文字 */
+.kin{position:absolute;inset:0;display:flex;align-items:center;align-content:center;justify-content:center;gap:0 22px;flex-wrap:wrap;padding:0 160px;text-align:center}
+.w{display:inline-block;font:600 92px/1.2 var(--serif);letter-spacing:.04em;will-change:opacity,transform,filter}
+.w.sans{font:700 84px/1.2 var(--sans);letter-spacing:.01em}
+.w.sm{font-size:64px}
+.hl{background:linear-gradient(90deg,var(--c4),var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.cap{position:absolute;left:96px;top:70px;z-index:12;text-shadow:0 2px 18px #000a;font:600 15px var(--sans);letter-spacing:.28em;color:var(--c4);text-transform:uppercase}
+[data-theme="butter"] .cap{color:#7a5d12}
+.cap b{display:block;font:600 46px/1.25 var(--serif);letter-spacing:.03em;color:var(--ink);text-transform:none;margin-top:10px}
+/* 照片 */
+.photo{position:absolute;inset:0;overflow:hidden}
+.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform}
+.photo:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0006 0%,transparent 25%,transparent 55%,#000b 100%)}
+.bars:before,.bars:after{content:"";position:absolute;left:0;right:0;height:76px;background:#000;z-index:3}
+.bars:before{top:0}.bars:after{bottom:0}
+.sub{position:absolute;left:0;right:0;bottom:120px;text-align:center;font:500 40px/1.5 var(--serif);color:#fff;text-shadow:0 2px 20px #000c;z-index:4;letter-spacing:.06em}
+/* 界面截图 */
+.ui{position:absolute;left:160px;top:150px;width:1280px;border-radius:18px;overflow:hidden;box-shadow:0 40px 120px #000a,0 0 0 1px #ffffff26;transform-origin:50% 0;will-change:transform}
+[data-theme="butter"] .ui{box-shadow:0 30px 90px #4a3d1540,0 0 0 1px #26251e22}
+.ui img{display:block;width:100%;position:absolute;left:0;top:0}
+.ui img.base{position:relative}
+.glow{position:absolute;left:50%;top:58%;width:1300px;height:620px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,var(--c2),transparent);filter:blur(60px);opacity:.75}
+.cursor{position:absolute;width:56px;height:56px;z-index:20;filter:drop-shadow(0 6px 14px #0009);will-change:left,top,transform}
+.ripple{position:absolute;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;border:3px solid var(--c4);z-index:19;opacity:0}
+.ring{position:absolute;border:3px solid var(--c3);border-radius:14px;box-shadow:0 0 0 9999px #0000,0 0 40px var(--c3);z-index:18;opacity:0}
+/* 计数 */
+.count{position:absolute;left:0;right:0;top:250px;text-align:center;font:800 300px/1 var(--sans);letter-spacing:-.02em}
+.count small{font:600 64px var(--serif);margin-left:18px;letter-spacing:.05em}
+.squig{position:absolute;left:0;top:560px;width:1600px;height:180px}
+.squig path{fill:none;stroke-width:6;stroke-linecap:round}
+.stations{position:absolute;left:0;right:0;top:650px;display:flex;justify-content:center;gap:16px}
+.stations span{font:600 30px var(--serif);padding:10px 20px;border-radius:99px;border:1.5px solid #ffffff40;background:#ffffff0f}
+[data-theme="butter"] .stations span{border-color:#26251e30;background:#ffffff80}
+/* 拼贴 */
+.tile{position:absolute;border-radius:20px;overflow:hidden;box-shadow:0 30px 80px #0009}
+.tile img{width:100%;height:100%;object-fit:cover;display:block}
+.tile em{position:absolute;left:18px;bottom:16px;font:600 28px var(--serif);font-style:normal;color:#fff;text-shadow:0 2px 12px #000}
+/* logo */
+.logo{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.mark{width:150px;height:150px;border-radius:36px;display:grid;place-items:center;font:700 92px var(--serif);background:linear-gradient(135deg,var(--c2),var(--c1));color:#fff;box-shadow:0 30px 90px #0008,inset 0 0 0 1.5px #ffffff40}
+.wordmark{font:700 132px/1.1 var(--serif);letter-spacing:.12em;margin-top:34px}
+.tagline{font:500 32px var(--sans);letter-spacing:.3em;color:var(--muted);margin-top:18px}
+/* 提问框 */
+.pillwrap{position:absolute;left:50%;top:330px;transform:translateX(-50%);width:1120px}
+.pillglow{position:absolute;inset:-30px -50px;border-radius:200px;opacity:.5!important;background:linear-gradient(90deg,var(--c2),var(--c3),var(--c4),var(--c2),var(--c3));background-size:300% 100%;filter:blur(60px)}
+.pill{position:relative;border-radius:999px;background:#05070d;color:#fff;padding:34px 120px 34px 56px;font:500 38px var(--sans);min-height:112px;box-shadow:inset 0 0 0 1.5px #ffffff30}
+.pill:after{content:"";position:absolute;right:26px;top:50%;width:62px;height:62px;margin-top:-31px;border-radius:50%;background:linear-gradient(135deg,var(--c4),var(--c3))}
+.caret{display:inline-block;width:3px;height:42px;background:#fff;vertical-align:middle;margin-left:4px}
+.answer{position:relative;margin-top:60px;border-radius:26px;background:#ffffff12;border:1.5px solid #ffffff26;padding:30px 40px;font:500 32px/1.7 var(--serif);backdrop-filter:blur(20px)}
+[data-theme="butter"] .answer{background:#ffffffb0;border-color:#26251e20}
+.answer small{display:block;font:500 22px var(--sans);color:var(--muted);margin-top:10px}
+/* 胶片条 */
+.strip{position:absolute;left:0;top:300px;display:flex;gap:22px}
+.strip div{width:420px;height:240px;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px #0009;position:relative}
+.strip img{width:100%;height:100%;object-fit:cover}
+.strip b{position:absolute;left:12px;top:10px;font:600 18px var(--sans);color:#fff;letter-spacing:.15em;text-shadow:0 1px 6px #000}
+/* 一词一镜 */
+.sq{transform-origin:50% 50%;will-change:transform,opacity}
+.bigword{position:absolute;left:96px;bottom:120px;z-index:5;font:700 150px/1 var(--serif);color:#fff;text-shadow:0 8px 40px #000a;overflow:hidden;padding:0 12px 10px 0}
+.bigword small{display:block;font:600 18px var(--sans);letter-spacing:.4em;opacity:.8;margin-bottom:14px}
+.sweep{position:absolute;top:-20%;left:0;width:120px;height:140%;background:linear-gradient(90deg,transparent,#ffffffb0,transparent);mix-blend-mode:overlay;pointer-events:none;transform:translateX(-600px)}
+.wordmark{position:relative;overflow:hidden}
+.leak{position:absolute;left:30%;top:-30%;width:900px;height:900px;border-radius:50%;background:radial-gradient(closest-side,#ffb27066,#ff6fa033 45%,transparent 70%);mix-blend-mode:screen;pointer-events:none;opacity:0;z-index:30}
+.chips3{position:absolute;left:96px;right:96px;bottom:140px;display:flex;gap:18px;z-index:5;perspective:800px}
+.chips3 div{flex:1;border-radius:18px;background:#ffffff1f;border:1px solid #ffffff40;backdrop-filter:blur(14px);padding:18px 24px;color:#fff}
+.chips3 b{display:block;font:700 46px var(--serif)}
+.chips3 small{font:500 18px var(--sans);opacity:.85}
+.xili{position:absolute;left:0;right:0;top:170px;text-align:center;font:600 30px var(--serif);letter-spacing:.4em;color:var(--c4)}
+[data-theme="butter"] .xili{color:#7a5d12}
+.xiwai{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px}
+.xw-big{position:relative;overflow:hidden;font:700 220px/1 var(--serif);letter-spacing:.12em;padding:0 10px}
+.xw-row{display:flex;gap:18px}
+.xw-row span{font:600 34px var(--serif);padding:12px 28px;border-radius:99px;border:1.5px solid #ffffff40;background:#ffffff12;backdrop-filter:blur(8px)}
+[data-theme="butter"] .xw-row span{border-color:#26251e30;background:#ffffff80}
+.obig{position:absolute;left:96px;bottom:130px;z-index:5;font:700 170px/1 var(--serif);color:#fff;text-shadow:0 8px 40px #000a;overflow:hidden;padding:0 14px 12px 0}
+.obig small{display:block;font:500 40px var(--serif);letter-spacing:.3em;margin-top:18px;opacity:.9}
+.thanks{font:600 64px var(--serif);margin-top:40px;letter-spacing:.4em;opacity:0}
+/* 控件 */
+#start{position:absolute;inset:0;display:grid;place-items:center;z-index:50;background:radial-gradient(circle,transparent 30%,#0008);cursor:pointer}
+#start button{border:0;border-radius:99px;padding:18px 40px;font:600 20px var(--sans);background:#fff;color:#111;cursor:pointer;box-shadow:0 10px 40px #0007}
+#start p{color:#fff;opacity:.8;font-size:15px;letter-spacing:.2em;margin:0 0 16px;text-align:center}
+#ctrl{position:absolute;left:0;right:0;bottom:0;display:flex;gap:12px;align-items:center;padding:14px 18px;background:linear-gradient(transparent,#000a);z-index:40;opacity:0;transition:opacity .3s}
+body:hover #ctrl,body.paused #ctrl{opacity:1}
+#ctrl button{border:0;background:#ffffff2a;color:#fff;border-radius:99px;padding:6px 14px;font:13px var(--sans);cursor:pointer}
+#pb{flex:1;height:4px;border-radius:4px;background:#ffffff30;cursor:pointer;overflow:hidden}#pb i{display:block;height:100%;width:0;background:#fff}
+#pt{color:#fff;font:12px var(--sans);min-width:76px;text-align:right}
+body.render #ctrl,body.render #start{display:none}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage"></div></div>
+<div id="start"><div><p>结尾短片 · 约 20 秒</p><button>▶ 播放</button></div></div>
+<div id="ctrl"><button id="tgl">❚❚</button><button id="rp">↺</button><div id="pb"><i></i></div><span id="pt">0:00</span><button id="mute">🔊</button><button id="fs">⛶</button></div>
+<script src="assets/shots/shots.js"></script>
+<audio id="music" src="assets/music/outro-audio.m4a" preload="auto"></audio>
+<script>
+(() => {
+const Q = new URLSearchParams(location.search);
+const RENDER = Q.has('render');
+let theme = Q.get('theme');
+if (!theme) { try { theme = JSON.parse(localStorage.getItem('xilixiwai-demo-v1') || '{}').theme; } catch {} }
+document.documentElement.dataset.theme = theme || 'tide';
+if (RENDER) document.body.classList.add('render');
+const stage = document.getElementById('stage');
+const fit = () => { const s = Math.min(innerWidth / 1600, innerHeight / 900); stage.style.transform = `translate(${(innerWidth - 1600 * s) / 2}px,${(innerHeight - 900 * s) / 2}px) scale(${s})`; };
+fit(); addEventListener('resize', fit);
+
+/* ---------- 工具 ---------- */
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const eo = k => 1 - Math.pow(1 - clamp(k), 3);          // ease out
+const eio = k => { k = clamp(k); return k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
+const prog = (t, a, d) => clamp((t - a) / d);
+const el = (html) => { const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; };
+const P = n => `assets/photos/${n}.jpg`, U = n => `assets/shots/${document.documentElement.dataset.theme}/${n}.png`;
+let SHOTS = {};
+// 进入：模糊 + 放大淡入；出场：模糊淡出
+function inout(node, lt, dur, opt = {}) {
+  const ki = eo(prog(lt, 0, opt.inDur || .55)), ko = eio(prog(lt, dur - (opt.outDur || .4), opt.outDur || .4));
+  const o = ki * (1 - ko);
+  node.style.opacity = o;
+  node.style.filter = `blur(${(1 - ki) * (opt.blur ?? 14) + ko * 10}px)`;
+  node.style.transform = `scale(${lerp(opt.from ?? 1.06, 1, ki) * lerp(1, opt.to ?? .97, ko)})`;
+  return o;
+}
+// 逐词出现
+function words(node, lt, times, dur) {
+  [...node.querySelectorAll('.w')].forEach((w, i) => {
+    const a = times[i], k = eo(prog(lt, a, .5)), ko = eio(prog(lt, dur - .35, .35));
+    w.style.opacity = k * (1 - ko);
+    w.style.filter = `blur(${(1 - k) * 16 + ko * 8}px)`;
+    w.style.transform = `translateY(${(1 - k) * 34}px)`;
+  });
+}
+// 光标路径：[[t,x,y],...]，clicks: [t,...]
+function cursorPath(cur, rip, lt, pts, clicks) {
+  let x = pts[0][1], y = pts[0][2];
+  for (let i = 1; i < pts.length; i++) { const [t0, x0, y0] = pts[i - 1], [t1, x1, y1] = pts[i]; if (lt >= t0) { const k = eio(prog(lt, t0, t1 - t0)); x = lerp(x0, x1, k); y = lerp(y0, y1, k); } }
+  cur.style.left = x + 'px'; cur.style.top = y + 'px';
+  let press = 1, ro = 0, rs = .3;
+  clicks.forEach(c => { const d = lt - c; if (d > -.12 && d < .18) press = .82; if (d >= 0 && d < .6) { ro = 1 - d / .6; rs = .3 + d / .6 * 1.1; } });
+  cur.style.transform = `scale(${press})`;
+  rip.style.left = x + 8 + 'px'; rip.style.top = y + 6 + 'px'; rip.style.opacity = ro; rip.style.transform = `scale(${rs})`;
+}
+const CURSOR = `<svg class="cursor" viewBox="0 0 32 32"><path d="M6 3l19 11.5-8.2 1.6 4.8 9.4-3.6 1.8-4.8-9.4L7.6 23z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+
+/* ---------- 背景 ---------- */
+const bg = el(`<div class="layer"><div class="mesh"><i style="background:radial-gradient(closest-side,var(--c1),transparent)"></i><i style="background:radial-gradient(closest-side,var(--c2),transparent)"></i><i style="background:radial-gradient(closest-side,var(--c3),transparent)"></i><i style="background:radial-gradient(closest-side,var(--c4),transparent)"></i></div></div>`);
+stage.appendChild(bg);
+const blobs = [...bg.querySelectorAll('i')];
+function drawBg(t, energy) {
+  blobs.forEach((b, i) => {
+    const a = t * (.18 + i * .05) + i * 1.7;
+    b.style.left = 20 + Math.sin(a) * 22 + (i % 2) * 10 + '%';
+    b.style.top = 15 + Math.cos(a * .8 + i) * 20 + (i > 1 ? 18 : 0) + '%';
+    b.style.opacity = [1, .85, .28, .32][i] * energy;
+  });
+}
+
+/* ---------- 场景（结尾短片） ---------- */
+const VO = {o1: 2.51, o2: 3.14, o3: 4.92};
+const ORDER = []; window.__voOrder = ORDER;
+const T = (id, min) => { if (id) ORDER.push(id); return id ? Math.max(min, VO[id] + .6) : min; };
+const S = [];
+function scene(dur, html, update, opt = {}) { const node = el(`<div class="layer">${html}</div>`); node.style.opacity = 0; stage.appendChild(node); S.push({ dur, node, update, energy: opt.energy ?? 1, leak: !!opt.leak }); }
+
+// 开头无声快切已按要求剪掉，片子一开就有旁白
+// 2 戏里
+scene(T('o1', 3.4), `<div class="photo bars"><img src="${P('06_xia')}"></div><div class="obig">戏里<small>读懂每一个角色</small><i class="sweep"></i></div>`, (n, lt, d) => {
+  inout(n, lt, d, { from: 1.03, blur: 10, inDur: .5 });
+  n.querySelector('img').style.transform = `scale(${lerp(1.04, 1.12, lt / d)})`;
+  const k = eo(prog(lt, .35, .6)); const t = n.querySelector('.obig'); t.style.opacity = k; t.style.transform = `translateY(${(1 - k) * 30}px)`;
+  n.querySelector('.sweep').style.transform = `translateX(${lerp(-400, 700, prog(lt, .6, 1.0))}px) skewX(-20deg)`;
+}, { energy: 0, leak: true });
+
+// 3 戏外
+scene(T('o2', 3.9), `<div class="photo bars"><img src="${P('22_charity')}"></div><div class="obig">戏外<small>照顾好每一个自己</small><i class="sweep"></i></div>`, (n, lt, d) => {
+  inout(n, lt, d, { from: 1.03, blur: 10, inDur: .5 });
+  n.querySelector('img').style.transform = `scale(${lerp(1.12, 1.04, lt / d)})`;
+  const k = eo(prog(lt, .35, .6)); const t = n.querySelector('.obig'); t.style.opacity = k; t.style.transform = `translateY(${(1 - k) * 30}px)`;
+  n.querySelector('.sweep').style.transform = `translateX(${lerp(-400, 700, prog(lt, .6, 1.0))}px) skewX(-20deg)`;
+}, { energy: 0, leak: true });
+
+// 4 结尾：Logo + 谢谢
+scene(T('o3', 7.2), `<div class="logo"><div class="mark">戏</div><div class="wordmark">戏里戏外<i class="sweep"></i></div><div class="tagline">陪你走好每一部戏</div><div class="thanks">谢谢</div></div>`, (n, lt, d) => {
+  const k = eo(prog(lt, 0, 1)); n.style.opacity = k * (1 - prog(lt, d - 1.0, 1.0)); n.style.filter = `blur(${(1 - k) * 20}px)`; n.style.transform = `scale(${lerp(1.15, 1, k)})`;
+  const t = n.querySelector('.tagline'), kt = eo(prog(lt, .9, .6)); t.style.opacity = kt;
+  const th = n.querySelector('.thanks'), kh = eo(prog(lt, 3.4, .8)); th.style.opacity = kh; th.style.transform = `translateY(${(1 - kh) * 20}px)`; th.style.letterSpacing = `${lerp(.8, .4, kh)}em`;
+  n.querySelector('.sweep').style.transform = `translateX(${lerp(-500, 900, prog(lt, .6, 1.2))}px) skewX(-20deg)`;
+}, { energy: 1.1 });
+
+const leakEl = el(`<div class="leak"></div>`); stage.appendChild(leakEl);
+const grain = el(`<div class="grain"></div>`); stage.appendChild(grain);
+
+/* ---------- 时间线 ---------- */
+const starts = []; let acc = 0; S.forEach(s => { starts.push(acc); acc += s.dur; }); const TOTAL = acc;
+window.__total = TOTAL * 1000; window.__starts = starts;
+function renderAt(t) {
+  let en = 0;
+  S.forEach((s, i) => {
+    const lt = t - starts[i];
+    const OV = i < S.length - 1 ? .45 : 0;   // 与下一场重叠，做交叉溶解
+    if (lt < 0 || lt > s.dur + OV) { s.node.style.opacity = 0; s.node.style.visibility = 'hidden'; return; }
+    s.node.style.visibility = 'visible'; s.update(s.node, lt, s.dur + OV);
+    en = s.energy;
+  });
+  drawBg(t, en);
+  const lk = S.find((s, i) => t >= starts[i] && t <= starts[i] + s.dur);
+  leakEl.style.opacity = lk && lk.leak ? .55 + Math.sin(t * .9) * .2 : 0;
+  leakEl.style.transform = `translate(${Math.sin(t * .35) * 30}%, ${Math.cos(t * .27) * 12}%) rotate(${t * 6}deg)`;
+  const dark = document.documentElement.dataset.theme !== 'butter';
+  bg.style.opacity = 1; bg.style.filter = ''; void dark;
+}
+window.__seek = ms => renderAt(ms / 1000);
+
+/* ---------- 播放控制 ---------- */
+const music = document.getElementById('music');
+let playing = false, t0 = 0, cur = 0;
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+function tick() {
+  if (!playing) return;
+  cur = (performance.now() - t0) / 1000;
+  if (cur >= TOTAL) { cur = TOTAL; pause(); }
+  renderAt(cur);
+  document.querySelector('#pb i').style.width = cur / TOTAL * 100 + '%';
+  document.getElementById('pt').textContent = `${fmt(cur)} / ${fmt(TOTAL)}`;
+  if (playing) requestAnimationFrame(tick);
+}
+function play(from = cur) {
+  if (from >= TOTAL - .05) from = 0;
+  cur = from; t0 = performance.now() - from * 1000; playing = true; document.body.classList.remove('paused');
+  document.getElementById('start').style.display = 'none'; document.getElementById('tgl').textContent = '❚❚';
+  try { music.currentTime = from; music.play().catch(() => {}); } catch {}
+  requestAnimationFrame(tick);
+}
+function pause() { playing = false; document.body.classList.add('paused'); document.getElementById('tgl').textContent = '▶'; music.pause(); }
+document.getElementById('start').onclick = () => play(0);
+document.getElementById('tgl').onclick = () => playing ? pause() : play();
+document.getElementById('rp').onclick = () => play(0);
+document.getElementById('mute').onclick = e => { music.muted = !music.muted; e.target.textContent = music.muted ? '🔇' : '🔊'; };
+document.getElementById('fs').onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.();
+document.getElementById('pb').onclick = e => { const r = e.currentTarget.getBoundingClientRect(); play((e.clientX - r.left) / r.width * TOTAL); };
+addEventListener('keydown', e => { if (e.key === ' ') { e.preventDefault(); playing ? pause() : play(); } });
+addEventListener('message', e => { if (e.data === 'pause') pause(); if (e.data === 'play') play(0); });
+document.body.classList.add('paused');
+
+SHOTS = window.__SHOTS || {}; renderAt(RENDER ? 0 : 14); window.__ready = true;
+})();
+</script>
+</body>
+</html>

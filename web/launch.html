@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="tide">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>戏里戏外 · 发布会</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2334456f'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23f4f5f5' font-family='serif'%3E戏%3C/text%3E%3C/svg%3E">
+<style>
+:root,[data-theme="tide"]{--bg:#1f2850;--bg2:#2e3a6b;--ink:#ffffff;--muted:#c3cbe0;--line:#ffffff26;--a:#ffffff;--a2:#e86a4f;--glow:#4a6aa0;--card:#ffffff10;--serif:"Avenir Next","Montserrat","PingFang SC",sans-serif}
+[data-theme="butter"]{--bg:#efe7d8;--bg2:#e4d9bf;--ink:#3b3226;--muted:#7d7262;--line:#3b32261f;--a:#6f7a4a;--a2:#b5653a;--glow:#d9c9a0;--card:#fbf6eacc;--serif:"Didot","Bodoni 72","Songti SC","STSong",serif}
+[data-theme="moss"]{--bg:#f7f2e2;--bg2:#e6e0c6;--ink:#1f2a17;--muted:#5e6a52;--line:#1f2a171c;--a:#34541f;--a2:#9a7b3c;--glow:#557a35;--card:#fffcf1cc;--serif:"Didot","Bodoni 72","Songti SC","STSong",serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,"PingFang SC","Hiragino Sans GB",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}button{font:inherit;color:inherit;cursor:pointer}
+h1,h2,h3{margin:0;font-weight:600;line-height:1.25}p{margin:0}
+.serif{font-family:var(--serif)}
+
+/* 顶栏 */
+.nav{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;gap:16px;padding:14px 28px;background:linear-gradient(var(--bg),transparent)}
+.nav b{font:600 18px var(--serif);letter-spacing:.08em}
+.nav .sp{flex:1}
+.nav a.btn,.nav button{border:1px solid var(--line);background:var(--card);backdrop-filter:blur(8px);border-radius:99px;padding:7px 16px;font-size:13.5px;text-decoration:none}
+.nav .pri{background:var(--ink)!important;color:var(--bg)!important;border-color:var(--ink)!important;font-weight:600}
+.dots{display:flex;gap:6px}.dots button{width:18px;height:18px;border-radius:50%;padding:0!important;border:2px solid transparent!important}
+.dots button.on{border-color:var(--ink)!important}
+.side-nav{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:30;display:grid;gap:10px}
+.side-nav a{width:9px;height:9px;border-radius:50%;background:var(--muted);opacity:.4;display:block;transition:.3s}
+.side-nav a.on{opacity:1;background:var(--a);transform:scale(1.4)}
+
+/* 宣发片 */
+.film-wrap{min-height:100vh;display:grid;place-items:center;padding:80px 28px 40px}
+.film{position:relative;width:min(1180px,100%);aspect-ratio:16/9;border-radius:22px;overflow:hidden;background:radial-gradient(circle at 50% 120%,var(--glow) 0%,var(--bg2) 45%,var(--bg) 80%);box-shadow:0 40px 120px #0008,0 0 0 1px var(--line)}
+[data-theme="butter"] .film{box-shadow:0 30px 80px #4a3d1530,0 0 0 1px var(--line)}
+.scene{position:absolute;inset:0;display:grid;place-items:center;text-align:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.scene.on{opacity:1;pointer-events:auto;transition:opacity .6s .25s}
+.film canvas{position:absolute;inset:0;width:100%;height:100%}
+.cap{font-size:clamp(14px,1.6vw,22px);letter-spacing:.12em;color:var(--muted)}
+.big{font:600 clamp(34px,6.4vw,92px)/1.1 var(--serif);letter-spacing:.04em}
+.huge{font:700 clamp(120px,22vw,320px)/1 var(--serif);white-space:nowrap;color:transparent;-webkit-text-stroke:1.5px var(--a);opacity:.9}
+.scene.on .slide{animation:slide 5s linear both}
+@keyframes slide{from{transform:translateX(32%)}to{transform:translateX(-32%)}}
+.scene.on .up{animation:up .9s cubic-bezier(.2,.8,.2,1) both}
+.scene.on .up2{animation:up .9s .35s cubic-bezier(.2,.8,.2,1) both}
+.scene.on .up3{animation:up .9s .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes up{from{opacity:0;transform:translateY(30px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+.grad{background:linear-gradient(90deg,var(--ink),var(--a) 60%,var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* 迷你界面 */
+.ui{width:74%;aspect-ratio:16/9.2;border-radius:14px;background:var(--bg2);border:1px solid var(--line);display:grid;grid-template-columns:19% 1fr 22%;overflow:hidden;text-align:left;box-shadow:0 30px 80px #0007;transform:perspective(1400px) rotateX(14deg) rotateY(-10deg) scale(.92);transition:transform 2.4s cubic-bezier(.2,.8,.2,1)}
+.scene.on .ui{transform:perspective(1400px) rotateX(0) rotateY(0) scale(1)}
+.ui .l{background:#0006;padding:12px 10px;font-size:clamp(7px,.8vw,11px);display:grid;align-content:start;gap:5px}
+[data-theme="butter"] .ui .l{background:#20211d;color:#fff8d9}
+.ui .l i{display:flex;gap:6px;align-items:center;font-style:normal;opacity:.7;padding:3px 4px;border-radius:5px}
+.ui .l i.on{opacity:1;background:#ffffff1a}
+.ui .l i:before{content:"";width:9px;height:9px;border-radius:50%;border:1px solid currentColor;flex:none}
+.ui .m{padding:12px;display:grid;gap:8px;align-content:start}
+.ui .hero{height:24%;border-radius:8px;background:linear-gradient(120deg,#273654,#4f6f96);padding:10px;font:600 clamp(9px,1.3vw,18px) var(--serif);color:#fff}
+.ui .row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ui .blk{border-radius:7px;background:var(--card);border:1px solid var(--line);height:clamp(30px,6vw,80px);padding:6px;font-size:clamp(7px,.75vw,10px);color:var(--muted)}
+.ui .bar{height:5px;border-radius:5px;background:var(--line);margin-top:5px;overflow:hidden}.ui .bar b{display:block;height:100%;background:var(--a);width:0;transition:width 1.6s 1s}
+.scene.on .ui .bar b{width:var(--w)}
+.ui .r{border-left:1px solid var(--line);padding:10px 8px;display:grid;gap:5px;align-content:start;font-size:clamp(7px,.75vw,10px)}
+.ui .r span{border:1px solid var(--line);border-radius:5px;padding:4px 6px;opacity:0}
+.scene.on .ui .r span{animation:up .5s both}
+.callout{position:absolute;border:2px solid var(--a);border-radius:10px;background:color-mix(in srgb,var(--a) 10%,transparent);padding:6px 12px;font-size:clamp(11px,1.1vw,15px);backdrop-filter:blur(6px);opacity:0;white-space:nowrap}
+.scene.on .callout{animation:up .7s both}
+.cursor{position:absolute;width:26px;height:26px;z-index:5;filter:drop-shadow(0 4px 8px #0008);transition:left 1s cubic-bezier(.4,0,.2,1),top 1s cubic-bezier(.4,0,.2,1)}
+.cursor.click:after{content:"";position:absolute;left:-14px;top:-14px;width:52px;height:52px;border-radius:50%;border:2px solid var(--a);animation:ring .5s forwards}
+@keyframes ring{from{transform:scale(.3);opacity:1}to{transform:scale(1.2);opacity:0}}
+
+/* 站点蒙太奇 */
+.mont{width:78%;display:grid;grid-template-columns:1fr 1.2fr;gap:4%;align-items:center;text-align:left}
+.mont .no{font:600 clamp(12px,1.2vw,16px) -apple-system;letter-spacing:.2em;color:var(--a)}
+.mont h3{font:600 clamp(26px,4vw,56px)/1.15 var(--serif);margin:6px 0 10px}
+.mont p{color:var(--muted);font-size:clamp(12px,1.3vw,18px)}
+.panel{border-radius:16px;background:var(--card);border:1px solid var(--line);padding:5%;min-height:52%;backdrop-filter:blur(10px);box-shadow:0 20px 60px #0005}
+.bars div{display:grid;grid-template-columns:30% 1fr;gap:10px;align-items:center;font-size:clamp(10px,1.1vw,15px);margin:8px 0}
+.bars i{display:block;height:10px;border-radius:9px;background:var(--line);overflow:hidden}
+.bars i b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a),var(--a2));transition:width 1.4s .4s cubic-bezier(.2,.8,.2,1)}
+.scene.on .bars i b{width:var(--w)}
+.panel svg{width:100%;height:auto;overflow:visible}
+.panel svg text{fill:var(--ink);font-size:13px}
+.draw{fill:none;stroke:var(--a);stroke-width:3;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900}
+.scene.on .draw{animation:draw 2s .3s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.pop{opacity:0}.scene.on .pop{animation:pp .5s both}
+@keyframes pp{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+.chipc{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:4px 12px;margin:4px;font-size:clamp(10px,1.1vw,14px);background:var(--card)}
+.frames{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.frames i{aspect-ratio:4/3;border-radius:8px;background:linear-gradient(135deg,#3a4668,#1b2133);position:relative;overflow:hidden}
+.frames i:after{content:"";position:absolute;right:14%;top:12%;width:34%;height:44%;background:#efe3c6;opacity:.8;border-radius:2px}
+.frames i:before{content:"";position:absolute;left:22%;bottom:0;width:26%;height:52%;background:#11162a;border-radius:40% 40% 0 0}
+.check div{display:flex;gap:10px;align-items:center;padding:6px 0;font-size:clamp(11px,1.2vw,16px);border-bottom:1px solid var(--line)}
+.check b{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--a);display:grid;place-items:center;font-size:12px;color:var(--bg);flex:none}
+.scene.on .check b{animation:tick .3s both;background:var(--a)}
+@keyframes tick{from{background:transparent}}
+
+/* 提问框 */
+.orb{width:38vmin;height:38vmin;max-width:420px;max-height:420px;border-radius:50%;background:radial-gradient(circle,#fff 0%,var(--a) 30%,transparent 70%);filter:blur(12px);opacity:.55;position:absolute}
+.scene.on .orb{animation:breathe 3s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.15);opacity:.8}}
+.ask{position:relative;z-index:1;width:62%;border-radius:18px;border:1px solid var(--line);background:color-mix(in srgb,var(--bg2) 90%,transparent);backdrop-filter:blur(14px);padding:20px 22px;text-align:left;box-shadow:0 20px 60px #0006}
+.ask .q{font-size:clamp(14px,1.7vw,22px);min-height:1.6em}
+.ask .q:before{content:"✦ ";color:var(--a)}
+.ask .ans{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font:clamp(13px,1.4vw,19px)/1.7 var(--serif);color:var(--muted);opacity:0;transition:.6s}
+.ask .ans.on{opacity:1}
+.ask .meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:12px}
+.marquee{display:grid;gap:12px;width:100%;overflow:hidden}
+.marquee div{display:flex;gap:12px;white-space:nowrap;width:max-content}
+.scene.on .marquee div{animation:mq 14s linear infinite}
+.scene.on .marquee div:nth-child(2){animation-direction:reverse;animation-duration:17s}
+@keyframes mq{to{transform:translateX(-50%)}}
+.marquee span{border:1px solid color-mix(in srgb,var(--a) 50%,transparent);border-radius:99px;padding:8px 20px;font-size:clamp(12px,1.3vw,17px);background:color-mix(in srgb,var(--a) 8%,transparent)}
+.planet{position:absolute;left:50%;bottom:-62%;width:110%;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 50% 0%,color-mix(in srgb,var(--a) 50%,transparent),var(--bg2) 40%,var(--bg) 70%);box-shadow:0 -10px 80px color-mix(in srgb,var(--glow) 70%,transparent)}
+.ctrl{position:absolute;left:0;right:0;bottom:0;display:flex;gap:12px;align-items:center;padding:12px 18px;background:linear-gradient(transparent,#0009);z-index:9;opacity:0;transition:.3s}
+.film:hover .ctrl,.film.paused .ctrl{opacity:1}
+.ctrl button{border:0;background:#ffffff2a;color:#fff;border-radius:99px;padding:6px 14px;font-size:13px}
+.ctrl .pb{flex:1;height:4px;border-radius:4px;background:#ffffff30;overflow:hidden;cursor:pointer}.ctrl .pb i{display:block;height:100%;width:0;background:#fff}
+.ctrl span{color:#fff;font-size:12px;min-width:70px;text-align:right}
+.start{position:absolute;inset:0;display:grid;place-items:center;z-index:8;text-align:center;background:radial-gradient(circle at 50% 50%,transparent,#0006)}
+.start button{border:0;border-radius:99px;padding:16px 34px;font-size:18px;font-weight:600;background:var(--ink);color:var(--bg);box-shadow:0 0 0 0 var(--a);animation:pl 2s infinite}
+@keyframes pl{50%{box-shadow:0 0 0 14px transparent}0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--a) 60%,transparent)}}
+
+/* 讲解章节 */
+section.sec{min-height:100vh;padding:110px 8vw 80px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.eyebrow{font-size:13px;letter-spacing:.24em;color:var(--a);margin-bottom:14px}
+.h{font:600 clamp(32px,4.6vw,64px)/1.2 var(--serif)}
+.lead{font-size:clamp(16px,1.5vw,20px);color:var(--muted);margin-top:16px;max-width:760px}
+.rv{opacity:0;transform:translateY(36px);transition:opacity .9s,transform .9s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+.needs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:36px}
+.need{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:20px;text-align:left;transition:.3s;position:relative;overflow:hidden}
+.need:hover,.need.on{border-color:var(--a);transform:translateY(-4px)}
+.need .n{font:600 13px -apple-system;color:var(--a);letter-spacing:.1em}
+.need h3{font:600 20px var(--serif);margin:6px 0}
+.need p{font-size:13.5px;color:var(--muted)}
+.need .map{margin-top:12px;font-size:12.5px;display:none;color:var(--ink)}
+.need.on .map{display:block;animation:up .4s both}
+.need.sub{border-style:dashed}
+.ia{display:grid;gap:18px;margin-top:36px}
+.layer-row{display:grid;grid-template-columns:120px 1fr;gap:18px;align-items:start}
+.lt{position:sticky;top:90px;border-left:3px solid var(--a);padding:4px 0 4px 14px}
+.lt span{display:block;font:700 30px var(--serif)}
+.lt small{color:var(--muted);font-size:13px}
+.tiles{display:grid;gap:12px}
+.tiles.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.tiles.one{grid-template-columns:minmax(0,1fr)}
+.tiles.one .mt-tile .mv{aspect-ratio:21/6}
+.mt-tile{display:block;text-decoration:none;border:1px solid var(--line);background:var(--card);border-radius:16px;overflow:hidden;transition:.3s}
+.mt-tile:hover{border-color:var(--a);transform:translateY(-3px)}
+.mv{aspect-ratio:16/9;overflow:hidden;background:var(--bg2)}
+.mv video,.mv img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1s}
+.mt-tile:hover .mv video,.mt-tile:hover .mv img{transform:scale(1.05)}
+.mt-tile b{display:block;font:600 17px var(--serif);margin:10px 14px 2px}
+.mt-tile small{display:block;color:var(--muted);font-size:12.5px;margin:0 14px 12px}
+.line8{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;margin:6px 0 14px;position:relative}
+.line8:before{content:"";position:absolute;left:4%;right:4%;top:27px;height:2px;background:linear-gradient(90deg,var(--a),var(--a2))}
+.stn{text-align:center;text-decoration:none;position:relative;transition:.3s}
+.stn i{width:56px;height:56px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:var(--bg2);border:2px solid var(--a);font:600 15px -apple-system;font-style:normal;position:relative;z-index:1;transition:.3s}
+.stn:hover i{background:var(--a);color:var(--bg);transform:scale(1.12)}
+.stn b{display:block;margin-top:12px;font:600 20px var(--serif)}
+.stn small{display:block;color:var(--muted);font-size:12.5px;line-height:1.45;margin-top:4px}
+.extras{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:36px}
+.ex{border-radius:18px;padding:24px;background:var(--card);border:1px solid var(--line);text-decoration:none;transition:.3s;display:block}
+.ex:hover{border-color:var(--a2);transform:translateY(-4px)}
+.ex .ic{font-size:30px}
+.ex h3{font:600 21px var(--serif);margin:10px 0 6px}
+.ex p{font-size:14px;color:var(--muted)}
+.ex .go{margin-top:12px;font-size:13px;color:var(--a2)}
+.ex.star{grid-column:span 2;background:linear-gradient(135deg,color-mix(in srgb,var(--a2) 18%,transparent),var(--card))}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:32px}
+.rules div{border-left:3px solid var(--a);padding:6px 0 6px 16px}
+.rules b{display:block;font:600 18px var(--serif)}
+.rules p{font-size:14px;color:var(--muted);margin-top:4px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px}
+.cta a{border-radius:99px;padding:13px 26px;text-decoration:none;font-weight:600;border:1px solid var(--line)}
+.cta a.pri{background:var(--ink);color:var(--bg)}
+.thanks{text-align:center;align-items:center}
+.thanks .h{font-size:clamp(48px,8vw,120px)}
+.note{font-size:12.5px;color:var(--muted);margin-top:28px;opacity:.8}
+.tip{position:fixed;left:20px;bottom:16px;font-size:12px;color:var(--muted);opacity:.6;z-index:30}
+body.render{overflow:hidden}
+body.render .nav,body.render .side-nav,body.render .tip,body.render section.sec,body.render .start,body.render .ctrl{display:none!important}
+body.render .film-wrap{padding:0;min-height:0}
+body.render .film{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0;box-shadow:none}
+body.render .scene,body.render .ask .ans,body.render .cursor{transition:none!important}
+.film iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.photo-sec:before{content:"";position:absolute;inset:0;background:var(--bgimg) center/cover no-repeat;opacity:.32;-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 70%);mask-image:linear-gradient(90deg,transparent 0%,#000 70%);pointer-events:none}
+.thanks.photo-sec:before{-webkit-mask-image:radial-gradient(circle at 50% 50%,#000 0%,transparent 75%);mask-image:radial-gradient(circle at 50% 50%,#000 0%,transparent 75%)}
+.photo-sec > *{position:relative}
+.ex-photo{height:200px;margin:-24px -24px 18px;background:center/cover no-repeat;border-radius:18px 18px 0 0}
+.ex.star{overflow:hidden}
+/* 暖场 */
+.nav,.side-nav,.tip{transition:opacity .6s}
+body.on-cover .nav,body.on-cover .side-nav,body.on-cover .tip{opacity:0;pointer-events:none}
+.cover{position:relative;height:100vh;overflow:hidden;display:grid;place-items:center;background:#05070d;color:#fff}
+.cv-bg,.cv-slide,.cv-shade,#dust{position:absolute;inset:0}
+.cv-slide{background:center/cover no-repeat;opacity:0;transform:scale(1.12);transition:opacity 2.4s ease,transform 9s linear}
+.cv-slide.on{opacity:1;transform:scale(1.0)}
+.cv-shade{background:radial-gradient(ellipse at 50% 50%,#05070d66 0%,#05070dcc 60%,#05070d 100%),linear-gradient(180deg,#05070d 0%,transparent 30%,transparent 70%,#05070d 100%)}
+#dust{width:100%;height:100%;pointer-events:none}
+.cv-center{position:relative;text-align:center;z-index:2}
+.cv-eyebrow{font-size:15px;letter-spacing:.5em;opacity:.75;margin-bottom:34px;animation:cvIn 1.6s .2s both}
+.cv-mark{width:96px;height:96px;margin:0 auto 26px;border-radius:24px;display:grid;place-items:center;font:700 58px var(--serif);background:linear-gradient(135deg,#4f6f96,#273654);box-shadow:0 0 60px #4f7ad888,inset 0 0 0 1px #ffffff40;animation:cvIn 1.6s .4s both,glowPulse 4s 2s ease-in-out infinite}
+.cv-title{font:700 clamp(72px,11vw,168px)/1.05 var(--serif);letter-spacing:.14em;margin:0;background:linear-gradient(100deg,#fff 0%,#fff 40%,#e8c88a 50%,#fff 60%,#fff 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:cvIn 1.8s .6s both,shine 6s 2.5s linear infinite;text-shadow:0 0 80px #9cc4f033}
+.cv-tag{font-size:clamp(16px,1.6vw,22px);letter-spacing:.4em;opacity:.8;margin-top:22px;animation:cvIn 1.6s 1s both}
+@keyframes cvIn{from{opacity:0;transform:translateY(24px);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
+@keyframes shine{from{background-position:150% 0}to{background-position:-100% 0}}
+@keyframes glowPulse{50%{box-shadow:0 0 110px #4f7ad8cc,inset 0 0 0 1px #ffffff60}}
+.cv-chips{position:absolute;left:0;right:0;bottom:110px;display:grid;gap:12px;opacity:.55;z-index:2;-webkit-mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);mask-image:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent)}
+.cv-chips div{display:flex;gap:12px;width:max-content;animation:mq 40s linear infinite}
+.cv-chips div:nth-child(2){animation-direction:reverse;animation-duration:48s}
+.cv-chips span{border:1px solid #ffffff38;border-radius:99px;padding:7px 18px;font-size:14px;letter-spacing:.08em;background:#ffffff0d;backdrop-filter:blur(6px)}
+@keyframes mq{to{transform:translateX(-50%)}}
+.cv-foot{position:absolute;bottom:40px;left:0;right:0;text-align:center;font-size:13px;letter-spacing:.3em;opacity:.65;z-index:2}
+.cv-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#8fd0a8;margin-right:10px;vertical-align:middle;animation:breathe 2s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.25}}
+/* 图片卡片 */
+.pc{padding:0!important;overflow:hidden}
+.cph{height:170px;overflow:hidden;position:relative}
+.cph div,.cph video,.cph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:center/cover no-repeat;transition:transform 1.2s cubic-bezier(.2,.8,.2,1)}
+.cph:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,var(--bg2) 100%)}
+.pc:hover .cph div,.pc:hover .cph video{transform:scale(1.08)}
+.pc .pb{padding:16px 22px 22px}
+.pn{font:600 12px -apple-system;letter-spacing:.2em;color:var(--a)}
+.need.pc > :not(.cph){margin-left:20px;margin-right:20px}
+.need.pc .n{display:block;margin-top:14px}
+.need.pc p{margin-bottom:18px}
+.need.pc .map{margin-bottom:18px}
+.ex .ic{display:none}
+.ex .ex-photo{height:170px;overflow:hidden}
+.ex .ex-photo video,.ex .ex-photo img{width:100%;height:100%;object-fit:cover;display:block}
+/* 痛点 */
+.pains{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:40px}
+.pain{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:22px;backdrop-filter:blur(10px)}
+.pain .pi{font-size:28px}
+.pain b{display:block;font:600 21px var(--serif);margin:10px 0 6px}
+.pain p{font-size:14px;color:var(--muted)}
+@media (max-width:900px){.layer-row{grid-template-columns:1fr}.tiles.four{grid-template-columns:repeat(2,minmax(0,1fr))}.line8{grid-template-columns:repeat(4,1fr);row-gap:26px}.line8:before{display:none}.ex.star{grid-column:auto}.nav .dots,.side-nav{display:none}.mont{grid-template-columns:1fr;width:86%}.ask{width:86%}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body class="on-cover">
+<nav class="nav">
+  <b id="brandName">戏里戏外</b><span class="muted" style="font-size:12px;opacity:.6">演员AI工作台 · 发布会</span>
+  <span class="sp"></span>
+  <div class="dots" id="dots"></div>
+  <a class="btn pri" href="index.html" target="_blank" rel="noopener">打开工作台 ↗</a>
+</nav>
+<div class="side-nav" id="sideNav"></div>
+
+<!-- 0 暖场 -->
+<section id="cover" class="cover" data-sec>
+  <div class="cv-bg">
+    <div class="cv-slide" style="background-image:url(assets/photos/02_window.jpg)"></div>
+    <div class="cv-slide" style="background-image:url(assets/photos/07_rooftop.jpg)"></div>
+    <div class="cv-slide" style="background-image:url(assets/photos/01_bookshop.jpg)"></div>
+    <div class="cv-slide" style="background-image:url(assets/photos/10_set.jpg)"></div>
+    <div class="cv-slide" style="background-image:url(assets/photos/08_station.jpg)"></div>
+  </div>
+  <div class="cv-shade"></div>
+  <canvas id="dust"></canvas>
+  <div class="cv-center">
+    <p class="cv-eyebrow">演员 AI 工作台 · 产品发布会</p>
+    <div class="cv-mark">戏</div>
+    <h1 class="cv-title" id="cvTitle">戏里戏外</h1>
+    <p class="cv-tag">从接本到复盘，一个工作台就够了</p>
+  </div>
+  <div class="cv-chips"><div><span>剧本分析</span><span>人物关系</span><span>成长线</span><span>潜台词</span><span>人物小传</span><span>台词优化</span><span>台词陪练</span><span>情绪推进</span><span>同场多种处理</span><span>舞蹈拆解</span><span>剧本分析</span><span>人物关系</span><span>成长线</span><span>潜台词</span><span>人物小传</span><span>台词优化</span><span>台词陪练</span><span>情绪推进</span><span>同场多种处理</span><span>舞蹈拆解</span></div><div><span>造型参考</span><span>动态漫剧</span><span>通告单</span><span>改页核对</span><span>任务看板</span><span>内容日历</span><span>粉丝留言</span><span>舆情信号</span><span>数字人授权</span><span>行业简报</span><span>年度规划</span><span>造型参考</span><span>动态漫剧</span><span>通告单</span><span>改页核对</span><span>任务看板</span><span>内容日历</span><span>粉丝留言</span><span>舆情信号</span><span>数字人授权</span><span>行业简报</span><span>年度规划</span></div></div>
+  <div class="cv-foot"><span class="cv-dot"></span>即将开始 · 按 ↓ 播放宣发片</div>
+</section>
+
+<!-- 1 宣发片 -->
+<section id="film" class="film-wrap" data-sec>
+  <div class="film"><iframe id="filmFrame" src="film.html" title="宣发片" allow="autoplay; fullscreen" allowfullscreen></iframe></div>
+</section>
+
+<!-- 2 痛点 -->
+<section class="sec photo-sec" id="pain" data-sec style="--bgimg:url(assets/photos/09_script.jpg)">
+  <p class="eyebrow rv">THE REAL PROBLEM</p>
+  <h2 class="h rv">一部戏背后，<br>演员要扛的远不止表演</h2>
+  <div class="pains" id="painGrid"></div>
+</section>
+
+<!-- 3 需求 -->
+<section class="sec" id="needs" data-sec>
+  <p class="eyebrow rv">WHAT YOU ASKED FOR</p>
+  <h2 class="h rv">你们提的 9 条需求，<br>我一条一条都做进去了</h2>
+  <p class="lead rv">点开任意一张卡片，看它在工作台的哪一站。</p>
+  <div class="needs" id="needGrid"></div>
+</section>
+
+<!-- 4 我做了什么 -->
+<section class="sec" id="line" data-sec>
+  <p class="eyebrow rv">WHAT I BUILT</p>
+  <h2 class="h rv">戏里戏外，<br>一个工作台，四层结构</h2>
+  <p class="lead rv"><b style="color:var(--ink)">今天</b>是总入口；<b style="color:var(--ink)">戏里</b>是一部戏的一生，有先后、环环相扣；<b style="color:var(--ink)">戏外·事业</b>长期并行经营；<b style="color:var(--ink)">戏外·生活</b>照顾好自己。每个板块都有 AI 建议，也都有「人工复核 · 最终决定」。</p>
+  <div class="ia rv" id="ia"></div>
+  <div class="cta rv"><a class="pri" href="index.html" target="_blank" rel="noopener">打开工作台 ↗</a></div>
+</section>
+
+<!-- 5 额外惊喜 -->
+<section class="sec" id="extra" data-sec>
+  <p class="eyebrow rv">ONE MORE THING</p>
+  <h2 class="h rv">任务之外，<br>我还多做了这些</h2>
+  <p class="lead rv">需求清单里没有写，但我在了解演员的日常工作之后，觉得应该有的。</p>
+  <div class="extras rv">
+    <a class="ex star" href="rourou/" target="_blank" rel="noopener"><div class="ex-photo" style="background-image:url(assets/photos/12_maltese.jpg)"></div><div class="ic">🐾</div><h3>肉肉的小世界</h3><p>只属于她和肉肉的地方：每天吃了多少、喝了多少，疫苗驱虫什么时候到期；按马尔济斯的品种特点做健康提醒；AI 解读肉肉的每一个小动作；出差时一键生成托管卡。</p><p class="go">打开看看 ↗</p></a>
+    <a class="ex" href="index.html#home" target="_blank" rel="noopener"><div class="ex-photo"><video src="assets/loops/home.mp4" poster="assets/photos/15_studio.jpg" autoplay muted loop playsinline preload="metadata"></video></div><div class="ic">📅</div><h3>日程总览 + 排期助手</h3><p>拍摄、路演、商演、综艺排在一张表上；新邀约进来，AI 先查冲突。</p></a>
+    <a class="ex" href="index.html#trip" target="_blank" rel="noopener"><div class="ex-photo"><video src="assets/loops/trip.mp4" poster="assets/photos/08_station.jpg" autoplay muted loop playsinline preload="metadata"></video></div><div class="ic">🌦</div><h3>出行与天气</h3><p>接入实时天气预报，AI 判断坐飞机还是高铁、几点出门、穿什么；团队各自的携带清单。</p></a>
+    <a class="ex" href="index.html#body" target="_blank" rel="noopener"><div class="ex-photo"><video src="assets/loops/body.mp4" poster="assets/photos/19_body.jpg" autoplay muted loop playsinline preload="metadata"></video></div><div class="ic">💪</div><h3>身体与状态</h3><p>体重、饮食、运动、睡眠、嗓音，按角色要求给出安全的节奏；私密模块可选开启。</p></a>
+    <a class="ex" href="index.html#portfolio" target="_blank" rel="noopener"><div class="ex-photo"><video src="assets/loops/portfolio.mp4" poster="assets/photos/20_award.jpg" autoplay muted loop playsinline preload="metadata"></video></div><div class="ic">🎞</div><h3>作品库与发展规划</h3><p>导入演过的所有戏，结合年龄、气质、体态，多维雷达看清最适合的题材与角色、下一步往哪走。</p></a>
+    <a class="ex" href="index.html#deals" target="_blank" rel="noopener"><div class="ex-photo"><video src="assets/loops/deals.mp4" poster="assets/photos/14_rights.jpg" autoplay muted loop playsinline preload="metadata"></video></div><div class="ic">📑</div><h3>合同与品牌</h3><p>合同、证件、作品资料一个地方管；代言品牌交付与到期；新代言 AI 背调评估“该不该接”。</p></a>
+    <a class="ex" href="index.html#crisis" target="_blank" rel="noopener"><div class="ex-photo"><video src="assets/loops/crisis.mp4" poster="assets/photos/27_comments.jpg" autoplay muted loop playsinline preload="metadata"></video></div><div class="ic">🛡</div><h3>危机公关与舆情</h3><p>声量监测、预警分级、事件研判、回应方案对比、声明起草、预案库：先核实，再回应。</p></a>
+    <a class="ex" href="index.html#charity" target="_blank" rel="noopener"><div class="ex-photo"><video src="assets/loops/charity.mp4" poster="assets/photos/22_charity.jpg" autoplay muted loop playsinline preload="metadata"></video></div><div class="ic">💛</div><h3>公益与影响力</h3><p>公益项目、机构核验、粉丝公益联动、年度公益报告，把热爱变成看得见的善意。</p></a>
+    <div class="ex"><div class="ex-photo" style="background-image:url(assets/photos/26_director.jpg)"></div><div class="ic">✍️</div><h3>人工复核 + 归档</h3><p>每个板块都能写下“我们最后怎么做”；所有数据可归档、备份，外部文件可导入。</p></div>
+    <a class="ex" href="index.html#st=0" target="_blank" rel="noopener"><div class="ex-photo"><video src="assets/loops/take.mp4" poster="assets/photos/24_scripts.jpg" autoplay muted loop playsinline preload="metadata"></video></div><div class="ic">⚖️</div><h3>多剧本对比</h3><p>同时来几个本子，先横向比较，再决定细读哪一部。</p></a>
+    <a class="ex" href="index.html#st=1" target="_blank" rel="noopener"><div class="ex-photo"><video src="assets/loops/read.mp4" poster="assets/photos/09_script.jpg" autoplay muted loop playsinline preload="metadata"></video></div><div class="ic">✍️</div><h3>人物小传</h3><p>按演员的习惯，AI 先起草第一人称小传，再改成自己的。</p></a>
+    <a class="ex" href="index.html#st=4" target="_blank" rel="noopener"><div class="ex-photo"><video src="assets/loops/call.mp4" poster="assets/photos/10_set.jpg" autoplay muted loop playsinline preload="metadata"></video></div><div class="ic">📋</div><h3>通告单助手</h3><p>每天的通告单，读成“今天我要准备什么”。</p></a>
+    <a class="ex" href="index.html#st=7" target="_blank" rel="noopener"><div class="ex-photo" style="background-image:url(assets/photos/29_storyboard.jpg)"></div><div class="ic">🗂</div><h3>资料夹一键导出</h3><p>整部戏的分析、方案、清单，导出一份完整资料包。</p></a>
+    <div class="ex"><div class="ex-photo" style="background-image:url(assets/photos/30_digital.jpg)"></div><div class="ic">🔌</div><h3>自带模型连接</h3><p>正式版可接入 DeepSeek、ChatGPT、Claude、Codex，用团队自己的账号；今天演示使用预置结果。</p></div>
+    <div class="ex"><div class="ex-photo" style="background-image:url(assets/photos/11_wardrobe.jpg)"></div><div class="ic">🎨</div><h3>三套主题</h3><p>深蓝潮汐、奶油便签、山野片场，随心切换。</p></div>
+  </div>
+</section>
+
+<!-- 6 原则 -->
+<section class="sec" id="rules" data-sec>
+  <p class="eyebrow rv">OUR PRINCIPLES</p>
+  <h2 class="h rv">AI 负责整理和起草，<br>决定永远在人手里</h2>
+  <div class="rules rv">
+    <div><b>能回到原文</b><p>剧本分析区分“剧本写明”和“人物推断”，每条都能定位原文。</p></div>
+    <div><b>不自动发送</b><p>粉丝回复、对外物料，只起草，必须人工审核。</p></div>
+    <div><b>不把传闻当事实</b><p>行业信息和品牌信息，逐条标注来源与核验状态。</p></div>
+    <div><b>不替代专业判断</b><p>授权条款以律师为准；舞蹈动作与身体安全以老师为准。</p></div>
+  </div>
+</section>
+
+<!-- 7 结尾短片 -->
+<section id="outro" class="film-wrap" data-sec>
+  <div class="film"><iframe id="outroFrame" src="outro.html" title="结尾短片" allow="autoplay; fullscreen" allowfullscreen></iframe></div>
+</section>
+
+<!-- 8 感谢 -->
+<section class="sec thanks photo-sec" id="thanks" data-sec style="--bgimg:url(assets/photos/08_station.jpg)">
+  <p class="eyebrow rv">THANK YOU</p>
+  <h2 class="h rv grad">谢谢</h2>
+  <p class="lead rv" style="margin:18px auto 0">期待它能陪你走完下一部戏。</p>
+  <div class="cta rv" style="justify-content:center"><a class="pri" href="index.html" target="_blank" rel="noopener">打开工作台 ↗</a><a href="#film">再看一遍宣发片</a></div>
+  <p class="note">演示中的项目、人物、留言与品牌均为虚构；AI 结果为预置示例，不代表任何真实演员的经历、使用或背书。剧情画面由 AI 生成。宣发片配乐：“A Good Dream” by Jesse Keller（CC BY 3.0）。</p>
+</section>
+<p class="tip">↓ / 空格：下一节　↑：上一节</p>
+
+<script>
+(() => {
+const ph = n => `<div class="cph"><div style="background-image:url(assets/photos/${n}.jpg)"></div></div>`;
+const phv = (loop, n) => `<div class="cph"><video src="assets/loops/${loop}.mp4" poster="assets/photos/${n}.jpg" autoplay muted loop playsinline preload="metadata"></video></div>`;
+const KEY = 'xilixiwai-demo-v1';
+const NAMES = ['戏里戏外'];
+let st = {}; try { st = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch {}
+const setTheme = t => { document.documentElement.dataset.theme = t; try { const cur = JSON.parse(localStorage.getItem(KEY) || '{}'); cur.theme = t; localStorage.setItem(KEY, JSON.stringify(cur)); } catch {} const fr = document.getElementById('filmFrame'); if (fr && !(fr.getAttribute('src') || '').endsWith('theme=' + t)) fr.src = 'film.html?theme=' + t; const fo = document.getElementById('outroFrame'); if (fo && !(fo.getAttribute('src') || '').endsWith('theme=' + t)) fo.src = 'outro.html?theme=' + t; document.querySelectorAll('#dots button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); };
+document.getElementById('dots').innerHTML = [['tide', '#2e3a6b', '深蓝潮汐'], ['butter', '#e7dcc3', '奶油便签'], ['moss', '#34541f', '山野片场']].map(([k, c, n]) => `<button data-t="${k}" title="${n}" style="background:${c}"></button>`).join('');
+document.getElementById('dots').onclick = e => { const b = e.target.closest('button'); if (b) setTheme(b.dataset.t); };
+setTheme(st.theme || 'tide');
+const nm = NAMES[0];
+document.getElementById('brandName').textContent = nm; document.getElementById('cvTitle').textContent = nm; document.title = nm + ' · 发布会';
+
+/* 需求卡片 */
+const NEED_IMG = ['09_script', '06_xia', '28_fans', '29_storyboard', '30_digital', '19_body', '20_award', '08_station', '15_studio'];
+const NEED_LOOP = ['read', 'role', 'fans', 'prev', 'deal', 'dance', 'brief', 'portfolio', 'home'];
+const NEEDS = [
+  ['01', '剧本分析', '人物关系、成长线、角色动机、潜台词、重点场次、台词优化', '第 02 站 · 读本', 1],
+  ['02', '角色与表演', '情绪推进、人物目标、动作反应、同一场戏的多种处理', '第 03 站 · 入角', 2],
+  ['03', '粉丝沟通', '留言分类、语气适配、回复草稿、运营反馈提炼', '粉丝与社群 · 第 06 站 宣传', 'fans'],
+  ['04', '漫剧与预演', '造型参考、轻量分镜、角色氛围、动态漫剧', '第 04 站 · 预演', 3],
+  ['05', '数字人与版权', '肖像、声音、表演数据、生成内容、商业授权边界', '第 07 站 · 商务', 6],
+  ['补充', '舞蹈专业辅助', '主题、情绪、音乐节奏、动作段落、训练记录与复盘', '第 03 站 · 舞蹈段落', 2],
+  ['补充', '行业信息助手', '影视、舞蹈、音乐、时尚、AI 行业简报，来源核验', '戏外 · 行业简报', 'brief'],
+  ['补充', '个人发展规划', '年度目标、档期、学习主题、作品复盘、行动清单', '作品库与发展规划 · 日程总览 · 身体与状态', 'portfolio'],
+  ['补充', '社群与工作室管理', '内容日历、会议纪要、任务拆解、知识库、舆情归类', '第 05 站 · 开机 · 粉丝与社群 · 日程总览', 4]
+];
+document.getElementById('needGrid').innerHTML = NEEDS.map((n, i) => `<button class="need pc rv ${n[0] === '补充' ? 'sub' : ''}">${phv(NEED_LOOP[i], NEED_IMG[i])}<span class="n">${n[0] === '补充' ? '补充需求' : '需求 ' + n[0]}</span><h3>${n[1]}</h3><p>${n[2]}</p><div class="map">→ ${n[3]}　<a href="index.html#${typeof n[4] === 'number' ? 'st=' + n[4] : n[4]}" target="_blank" rel="noopener">打开 ↗</a></div></button>`).join('');
+document.getElementById('needGrid').onclick = e => { const b = e.target.closest('.need'); if (b && !e.target.closest('a')) b.classList.toggle('on'); };
+
+const ff = document.getElementById('filmFrame');
+/* 暖场：照片轮播 + 光尘 */
+const slides = [...document.querySelectorAll('.cv-slide')]; let si = 0;
+const showSlide = () => { slides.forEach((x, i) => x.classList.toggle('on', i === si)); si = (si + 1) % slides.length; };
+showSlide(); setInterval(showSlide, 6000);
+const dc = document.getElementById('dust'), dx = dc.getContext('2d'); let DW, DH;
+const dsize = () => { DW = dc.width = innerWidth * devicePixelRatio; DH = dc.height = innerHeight * devicePixelRatio; }; dsize(); addEventListener('resize', dsize);
+const motes = Array.from({ length: 90 }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.8 + .4, v: Math.random() * .00025 + .00008, p: Math.random() * 6 }));
+(function dust(t) {
+  dx.clearRect(0, 0, DW, DH);
+  motes.forEach(m => { m.y -= m.v; if (m.y < -.02) { m.y = 1.02; m.x = Math.random(); } const a = .25 + .35 * Math.sin(t / 900 + m.p); dx.globalAlpha = Math.max(0, a); dx.fillStyle = '#ffe9c4'; dx.beginPath(); dx.arc((m.x + Math.sin(t / 4000 + m.p) * .01) * DW, m.y * DH, m.r * devicePixelRatio, 0, 7); dx.fill(); });
+  requestAnimationFrame(dust);
+})(0);
+/* 痛点 */
+const PAINS = [
+  ['24_scripts', '本子一来好几部', '没时间一部部读完再比，只能凭感觉选'],
+  ['25_night', '读本靠熬夜', '人物关系、谁在什么时候知道什么，很容易记混'],
+  ['26_director', '想法说不清', '同一场戏有几种演法，和导演很难对齐'],
+  ['10_set', '进组后信息碎一地', '通告、改页、任务、口径，散在十几个群里'],
+  ['27_comments', '留言回不过来', '真心话和风险信号混在一起，容易漏掉'],
+  ['14_rights', '数字人合同看不懂', '肖像、声音、表演数据，授权边界在哪？'],
+  ['08_station', '戏拍完，经验就散了', '下一步接什么、学什么，没有地方好好复盘']
+];
+document.getElementById('painGrid').innerHTML = PAINS.map((p, i) => `<div class="pain pc rv">${ph(p[0])}<div class="pb"><span class="pn">0${i + 1}</span><b>${p[1]}</b><p>${p[2]}</p></div></div>`).join('');
+
+/* 八站 */
+const ST = [['接本', '选哪一部'], ['读本', '人物与场次'], ['入角', '表演设计'], ['预演', '造型与分镜'], ['开机', '工作室协同'], ['宣传', '粉丝沟通'], ['商务', '数字人与授权'], ['复盘', '下一步']];
+// 结构图：每个模块一个“动态图”（宣发片里截出的循环片段，没有时显示照片）
+const media = (loop, img) => `<div class="mv"><video src="assets/loops/${loop}.mp4" poster="assets/photos/${img}.jpg" autoplay muted loop playsinline preload="metadata"></video></div>`;
+const tile = (href, loop, img, t, d) => `<a class="mt-tile" href="index.html${href}" target="_blank" rel="noopener">${media(loop, img)}<b>${t}</b><small>${d}</small></a>`;
+document.getElementById('ia').innerHTML = `
+  <div class="layer-row"><div class="lt"><span>今天</span><small>总入口</small></div><div class="tiles one">${tile('#home', 'home', '15_studio', '日程总览', '今日 · 本月 · 新邀约 · 撞档提醒')}</div></div>
+  <div class="layer-row"><div class="lt"><span>戏里</span><small>一部戏的一生</small></div><div class="tiles">
+    <div class="line8">${ST.map((s, i) => `<a class="stn" href="index.html#st=${i}" target="_blank" rel="noopener"><i>0${i + 1}</i><b>${s[0]}</b><small>${s[1]}</small></a>`).join('')}</div>
+    <div class="tiles four">${tile('#st=0', 'take', '24_scripts', '接本', '多剧本对比 · 项目背调')}${tile('#st=1', 'read', '09_script', '读本', '人物关系 · 潜台词 · 小传')}${tile('#st=2', 'role', '06_xia', '入角', '三种演法 · 台词陪练 · 舞蹈')}${tile('#st=3', 'prev', '29_storyboard', '预演', '造型 · 分镜 · 动态漫剧')}</div></div></div>
+  <div class="layer-row"><div class="lt"><span>戏外</span><small>事业</small></div><div class="tiles four">${tile('#portfolio', 'portfolio', '20_award', '作品库与发展规划', '多维雷达 · 年度规划')}${tile('#deals', 'deals', '14_rights', '合同与品牌', '资料库 · 代言 · 背调')}${tile('#fans', 'fans', '28_fans', '粉丝与社群', '后援会 · 全平台留言')}${tile('#crisis', 'crisis', '27_comments', '危机公关与舆情', '监测 · 研判 · 回应')}${tile('#charity', 'charity', '22_charity', '公益与影响力', '项目 · 核验 · 联动')}${tile('#brief', 'brief', '13_press', '行业简报', '核验来源 · 趋势')}</div></div>
+  <div class="layer-row"><div class="lt"><span>戏外</span><small>生活</small></div><div class="tiles four">${tile('#trip', 'trip', '08_station', '出行与天气', '实时天气 · 交通 · 清单')}${tile('#body', 'body', '19_body', '身体与状态', '体重 · 饮食 · 私密模块')}<a class="mt-tile" href="rourou/" target="_blank" rel="noopener"><div class="mv"><img src="assets/photos/16_maltese_walk.jpg" alt=""></div><b>肉肉的小世界</b><small>吃喝 · 疫苗 · 行为解读</small></a></div></div>`;
+// 视频加载失败（还没有循环片段）时保持照片
+const loopTheme = t => document.querySelectorAll('video[poster]').forEach(v => { const k = (v.getAttribute('src') || '').match(/([\w-]+)\.mp4$/); if (k) { v.src = `assets/loops/${t}/${k[1]}.mp4`; v.play?.().catch(() => {}); } });
+loopTheme(document.documentElement.dataset.theme || 'tide');
+document.getElementById('dots').addEventListener('click', () => setTimeout(() => loopTheme(document.documentElement.dataset.theme), 30));
+document.querySelectorAll('video[poster]').forEach(v => v.addEventListener('error', () => { const i = document.createElement('img'); i.src = v.poster; v.replaceWith(i); }, true));
+
+/* 章节导航与渐显 */
+const secs = [...document.querySelectorAll('[data-sec]')];
+document.getElementById('sideNav').innerHTML = secs.map(s => `<a href="#${s.id}"></a>`).join('');
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.querySelectorAll('.rv').forEach((r, i) => setTimeout(() => r.classList.add('in'), i * 110)); const k = secs.indexOf(e.target); document.querySelectorAll('#sideNav a').forEach((a, j) => a.classList.toggle('on', j === k)); document.body.classList.toggle('on-cover', e.target.id === 'cover'); } }), { threshold: .35 });
+secs.forEach(s => io.observe(s));
+// 离开宣发片区域时自动暂停（含音乐）
+new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) e.target.querySelector('iframe')?.contentWindow?.postMessage('pause', '*'); }), { threshold: .2 }).observe(document.getElementById('film'));
+new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) e.target.querySelector('iframe')?.contentWindow?.postMessage('pause', '*'); }), { threshold: .2 }).observe(document.getElementById('outro'));
+const curSec = () => { let k = 0; secs.forEach((s, i) => { if (s.getBoundingClientRect().top < innerHeight * .4) k = i; }); return k; };
+addEventListener('keydown', e => {
+  if (e.target.closest('input,textarea')) return;
+  if (['ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); const k = curSec(); secs[Math.min(secs.length - 1, k + 1)].scrollIntoView({ behavior: 'smooth' }); const nx = secs[Math.min(secs.length - 1, k + 1)]; if (nx.id === 'film') setTimeout(() => ff.contentWindow?.postMessage('play', '*'), 900); if (nx.id === 'outro') setTimeout(() => document.getElementById('outroFrame').contentWindow?.postMessage('play', '*'), 900); }
+  if (['ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); secs[Math.max(0, curSec() - 1)].scrollIntoView({ behavior: 'smooth' }); }
+});
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>戏里戏外 · 宣发片</title>
+<style>
+:root{--c1:#1b2a52;--c2:#4f7ad8;--c3:#e8c88a;--c4:#9cc4f0;--bg:#070b16;--ink:#f4f6fa;--muted:#a9b8cf;--serif:"Songti SC","STSong","Noto Serif SC",serif;--sans:-apple-system,"PingFang SC","Hiragino Sans GB",sans-serif}
+[data-theme="butter"]{--c1:#f3e7b4;--c2:#f0b97a;--c3:#e9d36c;--c4:#fff6d6;--bg:#f4efe2;--ink:#26251e;--muted:#6b6650}
+[data-theme="moss"]{--c1:#1f2c17;--c2:#6f8a3c;--c3:#e6c477;--c4:#d3dfaa;--bg:#080b06;--ink:#efeee4;--muted:#aab39b}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+#wrap{position:absolute;inset:0;display:grid;place-items:center;background:var(--bg)}
+#stage{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0;overflow:hidden;background:var(--bg)}
+.layer{position:absolute;inset:0;will-change:opacity,transform,filter}
+/* 动态渐变背景 */
+.mesh{position:absolute;inset:-25%}
+.mesh i{position:absolute;width:70%;height:70%;border-radius:50%}
+.grain{position:absolute;inset:0;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:overlay;pointer-events:none}
+/* 文字 */
+.kin{position:absolute;inset:0;display:flex;align-items:center;align-content:center;justify-content:center;gap:0 22px;flex-wrap:wrap;padding:0 160px;text-align:center}
+.w{display:inline-block;font:600 92px/1.2 var(--serif);letter-spacing:.04em;will-change:opacity,transform,filter}
+.w.sans{font:700 84px/1.2 var(--sans);letter-spacing:.01em}
+.w.sm{font-size:64px}
+.hl{background:linear-gradient(90deg,var(--c4),var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.cap{position:absolute;left:96px;top:70px;z-index:12;text-shadow:0 2px 18px #000a;font:600 15px var(--sans);letter-spacing:.28em;color:var(--c4);text-transform:uppercase}
+[data-theme="butter"] .cap{color:#7a5d12}
+.cap b{display:block;font:600 46px/1.25 var(--serif);letter-spacing:.03em;color:var(--ink);text-transform:none;margin-top:10px}
+/* 照片 */
+.photo{position:absolute;inset:0;overflow:hidden}
+.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform}
+.photo:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0006 0%,transparent 25%,transparent 55%,#000b 100%)}
+.bars:before,.bars:after{content:"";position:absolute;left:0;right:0;height:76px;background:#000;z-index:3}
+.bars:before{top:0}.bars:after{bottom:0}
+.sub{position:absolute;left:0;right:0;bottom:120px;text-align:center;font:500 40px/1.5 var(--serif);color:#fff;text-shadow:0 2px 20px #000c;z-index:4;letter-spacing:.06em}
+/* 界面截图 */
+.ui{position:absolute;left:160px;top:150px;width:1280px;border-radius:18px;overflow:hidden;box-shadow:0 40px 120px #000a,0 0 0 1px #ffffff26;transform-origin:50% 0;will-change:transform}
+[data-theme="butter"] .ui{box-shadow:0 30px 90px #4a3d1540,0 0 0 1px #26251e22}
+.ui img{display:block;width:100%;position:absolute;left:0;top:0}
+.ui img.base{position:relative}
+.glow{position:absolute;left:50%;top:58%;width:1300px;height:620px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,var(--c2),transparent);filter:blur(60px);opacity:.75}
+.cursor{position:absolute;width:56px;height:56px;z-index:20;filter:drop-shadow(0 6px 14px #0009);will-change:left,top,transform}
+.ripple{position:absolute;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;border:3px solid var(--c4);z-index:19;opacity:0}
+.ring{position:absolute;border:3px solid var(--c3);border-radius:14px;box-shadow:0 0 0 9999px #0000,0 0 40px var(--c3);z-index:18;opacity:0}
+/* 计数 */
+.count{position:absolute;left:0;right:0;top:250px;text-align:center;font:800 300px/1 var(--sans);letter-spacing:-.02em}
+.count small{font:600 64px var(--serif);margin-left:18px;letter-spacing:.05em}
+.squig{position:absolute;left:0;top:560px;width:1600px;height:180px}
+.squig path{fill:none;stroke-width:6;stroke-linecap:round}
+.stations{position:absolute;left:0;right:0;top:650px;display:flex;justify-content:center;gap:16px}
+.stations span{font:600 30px var(--serif);padding:10px 20px;border-radius:99px;border:1.5px solid #ffffff40;background:#ffffff0f}
+[data-theme="butter"] .stations span{border-color:#26251e30;background:#ffffff80}
+/* 拼贴 */
+.tile{position:absolute;border-radius:20px;overflow:hidden;box-shadow:0 30px 80px #0009}
+.tile img{width:100%;height:100%;object-fit:cover;display:block}
+.tile em{position:absolute;left:18px;bottom:16px;font:600 28px var(--serif);font-style:normal;color:#fff;text-shadow:0 2px 12px #000}
+/* logo */
+.logo{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.mark{width:150px;height:150px;border-radius:36px;display:grid;place-items:center;font:700 92px var(--serif);background:linear-gradient(135deg,var(--c2),var(--c1));color:#fff;box-shadow:0 30px 90px #0008,inset 0 0 0 1.5px #ffffff40}
+.wordmark{font:700 132px/1.1 var(--serif);letter-spacing:.12em;margin-top:34px}
+.tagline{font:500 32px var(--sans);letter-spacing:.3em;color:var(--muted);margin-top:18px}
+/* 提问框 */
+.pillwrap{position:absolute;left:50%;top:330px;transform:translateX(-50%);width:1120px}
+.pillglow{position:absolute;inset:-30px -50px;border-radius:200px;opacity:.5!important;background:linear-gradient(90deg,var(--c2),var(--c3),var(--c4),var(--c2),var(--c3));background-size:300% 100%;filter:blur(60px)}
+.pill{position:relative;border-radius:999px;background:#05070d;color:#fff;padding:34px 120px 34px 56px;font:500 38px var(--sans);min-height:112px;box-shadow:inset 0 0 0 1.5px #ffffff30}
+.pill:after{content:"";position:absolute;right:26px;top:50%;width:62px;height:62px;margin-top:-31px;border-radius:50%;background:linear-gradient(135deg,var(--c4),var(--c3))}
+.caret{display:inline-block;width:3px;height:42px;background:#fff;vertical-align:middle;margin-left:4px}
+.answer{position:relative;margin-top:60px;border-radius:26px;background:#ffffff12;border:1.5px solid #ffffff26;padding:30px 40px;font:500 32px/1.7 var(--serif);backdrop-filter:blur(20px)}
+[data-theme="butter"] .answer{background:#ffffffb0;border-color:#26251e20}
+.answer small{display:block;font:500 22px var(--sans);color:var(--muted);margin-top:10px}
+/* 胶片条 */
+.strip{position:absolute;left:0;top:300px;display:flex;gap:22px}
+.strip div{width:420px;height:240px;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px #0009;position:relative}
+.strip img{width:100%;height:100%;object-fit:cover}
+.strip b{position:absolute;left:12px;top:10px;font:600 18px var(--sans);color:#fff;letter-spacing:.15em;text-shadow:0 1px 6px #000}
+/* 一词一镜 */
+.sq{transform-origin:50% 50%;will-change:transform,opacity}
+.bigword{position:absolute;left:96px;bottom:120px;z-index:5;font:700 150px/1 var(--serif);color:#fff;text-shadow:0 8px 40px #000a;overflow:hidden;padding:0 12px 10px 0}
+.bigword small{display:block;font:600 18px var(--sans);letter-spacing:.4em;opacity:.8;margin-bottom:14px}
+.sweep{position:absolute;top:-20%;left:0;width:120px;height:140%;background:linear-gradient(90deg,transparent,#ffffffb0,transparent);mix-blend-mode:overlay;pointer-events:none;transform:translateX(-600px)}
+.wordmark{position:relative;overflow:hidden}
+.leak{position:absolute;left:30%;top:-30%;width:900px;height:900px;border-radius:50%;background:radial-gradient(closest-side,#ffb27066,#ff6fa033 45%,transparent 70%);mix-blend-mode:screen;pointer-events:none;opacity:0;z-index:30}
+.chips3{position:absolute;left:96px;right:96px;bottom:140px;display:flex;gap:18px;z-index:5;perspective:800px}
+.chips3 div{flex:1;border-radius:18px;background:#ffffff1f;border:1px solid #ffffff40;backdrop-filter:blur(14px);padding:18px 24px;color:#fff}
+.chips3 b{display:block;font:700 46px var(--serif)}
+.chips3 small{font:500 18px var(--sans);opacity:.85}
+.xili{position:absolute;left:0;right:0;top:170px;text-align:center;font:600 30px var(--serif);letter-spacing:.4em;color:var(--c4)}
+[data-theme="butter"] .xili{color:#7a5d12}
+.xiwai{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px}
+.xw-big{position:relative;overflow:hidden;font:700 220px/1 var(--serif);letter-spacing:.12em;padding:0 10px}
+.xw-row{display:flex;gap:18px}
+.xw-row span{font:600 34px var(--serif);padding:12px 28px;border-radius:99px;border:1.5px solid #ffffff40;background:#ffffff12;backdrop-filter:blur(8px)}
+[data-theme="butter"] .xw-row span{border-color:#26251e30;background:#ffffff80}
+/* 控件 */
+#start{position:absolute;inset:0;display:grid;place-items:center;z-index:50;background:radial-gradient(circle,transparent 30%,#0008);cursor:pointer}
+#start button{border:0;border-radius:99px;padding:18px 40px;font:600 20px var(--sans);background:#fff;color:#111;cursor:pointer;box-shadow:0 10px 40px #0007}
+#start p{color:#fff;opacity:.8;font-size:15px;letter-spacing:.2em;margin:0 0 16px;text-align:center}
+#ctrl{position:absolute;left:0;right:0;bottom:0;display:flex;gap:12px;align-items:center;padding:14px 18px;background:linear-gradient(transparent,#000a);z-index:40;opacity:0;transition:opacity .3s}
+body:hover #ctrl,body.paused #ctrl{opacity:1}
+#ctrl button{border:0;background:#ffffff2a;color:#fff;border-radius:99px;padding:6px 14px;font:13px var(--sans);cursor:pointer}
+#pb{flex:1;height:4px;border-radius:4px;background:#ffffff30;cursor:pointer;overflow:hidden}#pb i{display:block;height:100%;width:0;background:#fff}
+#pt{color:#fff;font:12px var(--sans);min-width:76px;text-align:right}
+body.render #ctrl,body.render #start{display:none}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage"></div></div>
+<div id="start"><div><p>产品宣发片 · 约 2 分钟 · 女声旁白 + 配乐</p><button>▶ 播放</button></div></div>
+<div id="ctrl"><button id="tgl">❚❚</button><button id="rp">↺</button><div id="pb"><i></i></div><span id="pt">0:00</span><button id="mute">🔊</button><button id="fs">⛶</button></div>
+<script src="assets/shots/shots.js"></script>
+<audio id="music" src="assets/music/film-audio.m4a" preload="auto"></audio>
+<script>
+(() => {
+const Q = new URLSearchParams(location.search);
+const RENDER = Q.has('render');
+let theme = Q.get('theme');
+if (!theme) { try { theme = JSON.parse(localStorage.getItem('xilixiwai-demo-v1') || '{}').theme; } catch {} }
+document.documentElement.dataset.theme = theme || 'tide';
+if (RENDER) document.body.classList.add('render');
+const stage = document.getElementById('stage');
+const fit = () => { const s = Math.min(innerWidth / 1600, innerHeight / 900); stage.style.transform = `translate(${(innerWidth - 1600 * s) / 2}px,${(innerHeight - 900 * s) / 2}px) scale(${s})`; };
+fit(); addEventListener('resize', fit);
+
+/* ---------- 工具 ---------- */
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const eo = k => 1 - Math.pow(1 - clamp(k), 3);          // ease out
+const eio = k => { k = clamp(k); return k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
+const prog = (t, a, d) => clamp((t - a) / d);
+const el = (html) => { const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; };
+const P = n => `assets/photos/${n}.jpg`, U = n => `assets/shots/${document.documentElement.dataset.theme}/${n}.png`;
+let SHOTS = {};
+// 进入：模糊 + 放大淡入；出场：模糊淡出
+function inout(node, lt, dur, opt = {}) {
+  const ki = eo(prog(lt, 0, opt.inDur || .55)), ko = eio(prog(lt, dur - (opt.outDur || .4), opt.outDur || .4));
+  const o = ki * (1 - ko);
+  node.style.opacity = o;
+  node.style.filter = `blur(${(1 - ki) * (opt.blur ?? 14) + ko * 10}px)`;
+  node.style.transform = `scale(${lerp(opt.from ?? 1.06, 1, ki) * lerp(1, opt.to ?? .97, ko)})`;
+  return o;
+}
+// 逐词出现
+function words(node, lt, times, dur) {
+  [...node.querySelectorAll('.w')].forEach((w, i) => {
+    const a = times[i], k = eo(prog(lt, a, .5)), ko = eio(prog(lt, dur - .35, .35));
+    w.style.opacity = k * (1 - ko);
+    w.style.filter = `blur(${(1 - k) * 16 + ko * 8}px)`;
+    w.style.transform = `translateY(${(1 - k) * 34}px)`;
+  });
+}
+// 光标路径：[[t,x,y],...]，clicks: [t,...]
+function cursorPath(cur, rip, lt, pts, clicks) {
+  let x = pts[0][1], y = pts[0][2];
+  for (let i = 1; i < pts.length; i++) { const [t0, x0, y0] = pts[i - 1], [t1, x1, y1] = pts[i]; if (lt >= t0) { const k = eio(prog(lt, t0, t1 - t0)); x = lerp(x0, x1, k); y = lerp(y0, y1, k); } }
+  cur.style.left = x + 'px'; cur.style.top = y + 'px';
+  let press = 1, ro = 0, rs = .3;
+  clicks.forEach(c => { const d = lt - c; if (d > -.12 && d < .18) press = .82; if (d >= 0 && d < .6) { ro = 1 - d / .6; rs = .3 + d / .6 * 1.1; } });
+  cur.style.transform = `scale(${press})`;
+  rip.style.left = x + 8 + 'px'; rip.style.top = y + 6 + 'px'; rip.style.opacity = ro; rip.style.transform = `scale(${rs})`;
+}
+const CURSOR = `<svg class="cursor" viewBox="0 0 32 32"><path d="M6 3l19 11.5-8.2 1.6 4.8 9.4-3.6 1.8-4.8-9.4L7.6 23z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+
+/* ---------- 背景 ---------- */
+const bg = el(`<div class="layer"><div class="mesh"><i style="background:radial-gradient(closest-side,var(--c1),transparent)"></i><i style="background:radial-gradient(closest-side,var(--c2),transparent)"></i><i style="background:radial-gradient(closest-side,var(--c3),transparent)"></i><i style="background:radial-gradient(closest-side,var(--c4),transparent)"></i></div></div>`);
+stage.appendChild(bg);
+const blobs = [...bg.querySelectorAll('i')];
+function drawBg(t, energy) {
+  blobs.forEach((b, i) => {
+    const a = t * (.18 + i * .05) + i * 1.7;
+    b.style.left = 20 + Math.sin(a) * 22 + (i % 2) * 10 + '%';
+    b.style.top = 15 + Math.cos(a * .8 + i) * 20 + (i > 1 ? 18 : 0) + '%';
+    b.style.opacity = [1, .85, .28, .32][i] * energy;
+  });
+}
+
+/* ---------- 场景 ---------- */
+// 旁白时长（秒），每一场 = 旁白 + 呼吸，且不少于动画需要的时长
+// 旁白时长（秒）：编号 → 时长；场景按出现顺序登记用到的旁白编号
+const VO = {1:3.39,2:4.12,4:7.30,5:3.85,6:3.62,7:4.05,8:4.74,9:2.38,10:3.35,11:3.00,12:4.36,13:4.55,14:4.05,15:3.62,16:3.43,17:3.12,19:6.10,20:4.78,21:4.24,22:2.89,23:4.24,24:5.05,25:4.55,26:6.29,27:4.16,28:7.22};
+const ORDER = []; window.__voOrder = ORDER;
+const T = (id, min) => { ORDER.push(id); return Math.max(min, VO[id] + .38); };
+const S = [];
+function scene(dur, html, update, opt = {}) { const node = el(`<div class="layer">${html}</div>`); node.style.opacity = 0; stage.appendChild(node); S.push({ dur, node, update, energy: opt.energy ?? 1, leak: !!opt.leak }); }
+
+// 场景顺序：今天 → 戏里（八站）→ 戏外·事业 → 戏外·生活 → 原则 → 结尾
+scene(T(1, 3.6), `<div class="kin"><span class="w">每一个角色</span><span class="w">都值得</span><span class="w hl">被认真读懂</span></div>`, (n, lt, d) => { n.style.opacity = 1; words(n, lt, [.35, 1.53, 2.47], d); }, { energy: .55 });
+scene(T(2, 4.6), `<div class="photo bars"><img src="${P('02_window')}"></div><div class="sub"></div>`, (n, lt, d) => {
+  inout(n, lt, d, { from: 1.02, blur: 8, inDur: .8 });
+  n.querySelector('img').style.transform = `scale(${lerp(1.04, 1.13, lt / d)}) translateX(${lerp(0, -1.5, lt / d)}%)`;
+  const s = n.querySelector('.sub'); s.textContent = lt < 2.2 ? '一封没有落款的信。' : '一个，还没说出口的角色。';
+  const k = lt < 2.2 ? prog(lt, .3, .3) * (1 - prog(lt, 1.95, .25)) : prog(lt, 2.25, .3); s.style.opacity = k; s.style.filter = `blur(${(1 - k) * 8}px)`;
+}, { energy: 0, leak: true });
+const SEQ = [['09_script', '读本'], ['11_wardrobe', '试装'], ['10_set', '片场'], ['13_press', '首映'], ['20_award', '领奖'], ['22_charity', '公益']];
+// 旁白“读本、试装、片场、首映、领奖、公益……每一件，都值得被好好安排”的逐字时间（Whisper 测得 + 0.35 秒入场）
+const CUE = [.35, 1.31, 2.03, 2.91, 3.71, 4.47], GRID = 5.3;
+scene(T(4, 7.7), `${SEQ.map(([p, w], i) => `<div class="photo bars sq"><img src="${P(p)}"><div class="bigword"><small>0${i + 1} / 06</small>${w}<i class="sweep"></i></div></div>`).join('')}`, (n, lt, d) => {
+  n.style.opacity = 1 - eio(prog(lt, d - .45, .45));
+  const g = eo(prog(lt, GRID, 1.0));
+  [...n.querySelectorAll('.sq')].forEach((el, i) => {
+    const a = CUE[i], k = eo(prog(lt, a - .05, .28)), ko = i < SEQ.length - 1 ? eio(prog(lt, CUE[i + 1] + .1, .3)) : 0;
+    el.style.opacity = Math.max(k * (1 - ko), g);
+    el.style.filter = `blur(${(1 - k) * 12 * (1 - g)}px)`;
+    const p = clamp((lt - a) / 1.6);
+    el.querySelector('img').style.transform = `scale(${lerp(1.14, 1.04, eo(p))}) translateX(${(i % 2 ? -1 : 1) * lerp(2, -2, p)}%)`;
+    const cx = ((i % 3) - 1) * 540, cy = (Math.floor(i / 3) ? 1 : -1) * 232;
+    el.style.transform = `translate(${cx * g}px, ${cy * g}px) scale(${lerp(1, .32, g)})`;
+    el.style.zIndex = i;
+    const w = el.querySelector('.bigword'), kw = eo(prog(lt, a + .05, .45));
+    w.style.opacity = kw; w.style.transform = `translateY(${(1 - kw) * 40}px)`; w.style.letterSpacing = `${lerp(.4, .12, kw)}em`;
+    w.querySelector('.sweep').style.transform = `translateX(${lerp(-400, 900, prog(lt, a + .3, .9))}px) skewX(-20deg)`;
+  });
+}, { energy: .35, leak: true });
+scene(T(6, 3.6), `<div class="logo"><div class="mark">戏</div><div class="wordmark">戏里戏外<i class="sweep"></i></div><div class="tagline">演员 AI 工作台</div></div>`, (n, lt, d) => {
+  inout(n, lt, d, { from: 1.25, blur: 24, inDur: .8 });
+  const t = n.querySelector('.tagline'), k = eo(prog(lt, 1.8, .5)); t.style.opacity = k; t.style.transform = `translateY(${(1 - k) * 16}px)`;
+  n.querySelector('.sweep').style.transform = `translateX(${lerp(-500, 900, prog(lt, .7, 1.1))}px) skewX(-20deg)`;
+}, { energy: 1.25 });
+uiScene(T(7, 4.2), 'home', '日程总览', '一个月，排得满满当当', { zoom: [1.3, 1.7, 1.28], zoomTg: 'cal', ring: 'clash', ringAt: 2.3 });
+scene(T(5, 3.6), `<div class="xili">戏里 · 一部戏的一生</div><div class="count"><span class="num">0</span><small>站</small></div>
+  <svg class="squig" viewBox="0 0 1600 180"><defs><linearGradient id="sg" x1="0" x2="1"><stop offset="0" stop-color="var(--c2)"/><stop offset="1" stop-color="var(--c3)"/></linearGradient></defs><path d="M-20 120 C 200 20, 380 170, 600 90 S 1000 20, 1200 100 S 1500 140, 1640 60" stroke="url(#sg)"/></svg>
+  <div class="stations">${['接本', '读本', '入角', '预演', '开机', '宣传', '商务', '复盘'].map(s => `<span>${s}</span>`).join('')}</div>`, (n, lt, d) => {
+  inout(n, lt, d, { from: 1.04, blur: 10 });
+  n.querySelector('.num').textContent = Math.round(lerp(0, 8, eo(prog(lt, 1.9, .6))));
+  const p = n.querySelector('path'), L = 1800; p.style.strokeDasharray = L; p.style.strokeDashoffset = L * (1 - eio(prog(lt, 3.1, 1.0)));
+  [...n.querySelectorAll('.stations span')].forEach((s, i) => { const k = eo(prog(lt, .35 + i * .14, .35)); s.style.opacity = k; s.style.transform = `translateY(${(1 - k) * 20}px)`; });
+});
+function uiScene(dur, key, cap, title, plan) {
+  scene(dur, `<div class="glow"></div><div class="cap">${cap}<b>${title}</b></div>
+    <div class="ui"><img class="base" src="${U(key + '_a')}"><img class="after" src="${U(key + '_b')}"></div><div class="ring"></div>${CURSOR}<div class="ripple"></div>`, (n, lt, d) => {
+    const o = inout(n, lt, d, { from: 1, blur: 12 });
+    const ui = n.querySelector('.ui'), cap = n.querySelector('.cap'), sh = SHOTS[key] || { w: 1600, tg: {} };
+    const k = eo(prog(lt, 0, 1.1));
+    const z = plan.zoom ? eio(prog(lt, plan.zoom[0], plan.zoom[1])) : 0;
+    const S0 = 1280 / sh.w, zs = plan.zoom ? lerp(1, plan.zoom[2], z) : 1;
+    let fx = plan.zoom ? plan.zoom[3] : 640, fy = plan.zoom ? plan.zoom[4] : 300;
+    const zt = plan.zoomTg && sh.tg[plan.zoomTg]; if (zt) { fx = (zt[0] + zt[2] / 2) * S0; fy = (zt[1] + zt[3] / 2) * S0; }
+    const panX = (640 - fx) * z * .75, panY = (330 - fy) * z * .75;
+    ui.style.transformOrigin = `${fx}px ${fy}px`;
+    ui.style.transform = `perspective(1800px) translate(${panX}px,${(1 - k) * 160 + panY}px) rotateX(${(1 - k) * 22}deg) rotateY(${Math.sin(lt * .6) * 2.2}deg) scale(${lerp(.9, 1, k) * zs})`;
+    cap.style.opacity = eo(prog(lt, .3, .5)); cap.style.transform = `translateY(${(1 - eo(prog(lt, .3, .5))) * 20}px)`;
+    const af = n.querySelector('.after'); af.style.opacity = plan.swap != null ? eo(prog(lt, plan.swap, .35)) : 0;
+    // 光标坐标：截图坐标 -> 舞台坐标
+    const tg = sh.tg[plan.target] || [sh.w / 2, 300, 10, 10];
+    const toStage = (x, y) => { const sx = 160 + x * S0, sy = 150 + y * S0; return [fx + 160 + (sx - 160 - fx) * zs + panX, fy + 150 + (sy - 150 - fy) * zs + panY]; };
+    const [tx, ty] = toStage(tg[0] + tg[2] / 2, tg[1] + tg[3] / 2);
+    const cur = n.querySelector('.cursor'), rip = n.querySelector('.ripple');
+    cur.style.opacity = plan.click != null ? clamp(prog(lt, plan.click - 1.1, .3)) * (1 - prog(lt, d - .6, .3)) : 0;
+    if (plan.click != null) cursorPath(cur, rip, lt, [[0, tx + 260, ty + 230], [plan.click - 1.0, tx + 260, ty + 230], [plan.click - .1, tx, ty]], [plan.click]);
+    const ring = n.querySelector('.ring');
+    if (plan.ring) { const r = sh.tg[plan.ring]; if (r) { const [x1, y1] = toStage(r[0], r[1]), [x2, y2] = toStage(r[0] + r[2], r[1] + r[3]); Object.assign(ring.style, { left: x1 - 8 + 'px', top: y1 - 8 + 'px', width: x2 - x1 + 16 + 'px', height: y2 - y1 + 16 + 'px' }); ring.style.opacity = eo(prog(lt, plan.ringAt, .4)) * (1 - prog(lt, d - .5, .3)); } }
+    return o;
+  }, { energy: .9 });
+}
+uiScene(T(8, 5.2), 'take', '01 接本', '三个本子，先比一比', { target: 'btn', click: 1.9, swap: 2.1, zoom: [2.6, 1.6, 1.3], zoomTg: 'rec', ring: 'rec', ringAt: 3.4 });
+uiScene(T(9, 3.9), 'read', '02 读本', '每一条分析，都能回到原文', { target: 'btn', click: 1.6, swap: 1.8, zoom: [2.3, 1.4, 1.3], zoomTg: 'graph' });
+uiScene(T(10, 4.0), 'role', '03 入角', '同一场戏，三种演法', { target: 'probe', click: 1.7, swap: 1.85, ring: 'probe', ringAt: 2.1 });
+uiScene(T(21, 4.4), 'dance', '03 入角 · 舞蹈', '台词陪练 · 人物小传 · 舞蹈拆解', { zoom: [1.0, 2.2, 1.3], zoomTg: 'seg' });
+scene(T(11, 4.0), `<div class="cap">04 预演<b>分镜，一键变成动态漫剧</b></div>
+  <div class="strip">${['04_two', '03_letter', '05_lu', '06_xia', '02_window'].map((p, i) => `<div><img src="${P(p)}"><b>SHOT ${i + 1}</b></div>`).join('')}</div>
+  <div class="photo bars full" style="opacity:0"><img src="${P('06_xia')}"></div><div class="sub" style="opacity:0">那就先让我，把话说完。</div>`, (n, lt, d) => {
+  inout(n, lt, d, { from: 1, blur: 10 });
+  const strip = n.querySelector('.strip'); strip.style.transform = `translateX(${lerp(1650, -900, eio(prog(lt, 0, 2.6)))}px)`;
+  const full = n.querySelector('.full'), k = eo(prog(lt, 2.2, .7)); full.style.opacity = k; full.style.filter = `blur(${(1 - k) * 18}px)`;
+  full.querySelector('img').style.transform = `scale(${lerp(1.18, 1.06, prog(lt, 2.2, 2.4))})`;
+  const sub = n.querySelector('.sub'); sub.style.opacity = eo(prog(lt, 2.9, .5)) * (1 - prog(lt, d - .4, .3));
+});
+uiScene(T(22, 3.9), 'call', '05 开机', '通告单，读成今天要准备什么', { target: 'btn', click: 1.5, swap: 1.7, zoom: [2.1, 1.6, 1.25], zoomTg: 'res' });
+uiScene(T(12, 4.2), 'promo', '06 宣传', 'AI 只起草，发不发由人定', { target: 'risk', click: 1.7, swap: 1.85, ring: 'reply', ringAt: 2.3 });
+uiScene(T(13, 4.2), 'deal', '07 商务', '肖像、声音、表演数据，逐条问清楚', { target: 'scope', click: 1.6, swap: 1.75, zoom: [2.1, 1.3, 1.18], zoomTg: 'dims' });
+uiScene(T(17, 3.6), 'folder', '资料夹', '每一站的成果，都存进这部戏的资料夹', { zoom: [.6, 2.4, 1.35], zoomTg: 'rail' });
+scene(T(26, 4.2), `<div class="xiwai"><div class="xw-big">戏外<i class="sweep"></i></div><div class="xw-row">${['商业合作', '粉丝', '公关', '公益', '生活'].map(x => `<span>${x}</span>`).join('')}</div></div>`, (n, lt, d) => {
+  inout(n, lt, d, { from: 1.18, blur: 22, inDur: .8 });
+  n.querySelector('.sweep').style.transform = `translateX(${lerp(-500, 900, prog(lt, .6, 1.1))}px) skewX(-20deg)`;
+  [...n.querySelectorAll('.xw-row span')].forEach((c, i) => { const k = eo(prog(lt, [1.33, 2.45, 3.27, 3.99, 5.81][i], .4)); c.style.opacity = k; c.style.transform = `translateY(${(1 - k) * 30}px)`; });
+}, { energy: 1.15 });
+uiScene(T(28, 5.0), 'portfolio', '作品库与发展规划', '适合什么角色，下一步往哪走', { zoom: [1.0, 2.6, 1.28], zoomTg: 'radar' });
+uiScene(T(23, 4.6), 'deals', '合同与品牌', '该不该接？AI 背调，人来决定', { target: 'btn', click: 1.5, swap: 1.7, zoom: [2.2, 1.6, 1.2], zoomTg: 'radar' });
+uiScene(T(24, 4.2), 'fans', '粉丝与社群', '后援会、粉丝团、全平台留言', { zoom: [1.0, 2.4, 1.22], zoomTg: 'inbox' });
+uiScene(T(27, 4.6), 'crisis', '危机公关与舆情', '先核实，再回应', { target: 'btn', click: 1.6, swap: 1.8, zoom: [2.3, 1.8, 1.22], zoomTg: 'res' });
+scene(T(16, 4.6), `<div class="photo bars"><img src="${P('23_charity2')}"></div><div class="cap" style="color:#fff">公益与影响力<b style="color:#fff">把热爱，变成看得见的善意</b></div>
+  <div class="chips3">${[['3,200', '册图书送进乡村'], ['48', '小时志愿服务'], ['全程', '公示 · 可追溯']].map(c => `<div><b>${c[0]}</b><small>${c[1]}</small></div>`).join('')}</div>`, (n, lt, d) => {
+  inout(n, lt, d, { from: 1.03, blur: 10, inDur: .7 });
+  n.querySelector('img').style.transform = `scale(${lerp(1.04, 1.14, lt / d)})`;
+  [...n.querySelectorAll('.chips3 div')].forEach((c, i) => { const k = eo(prog(lt, .9 + i * .35, .6)); c.style.opacity = k; c.style.transform = `translateY(${(1 - k) * 40}px) rotateX(${(1 - k) * 40}deg)`; });
+}, { energy: 0, leak: true });
+uiScene(T(25, 4.2), 'brief', '行业简报', '逐条核验来源，不把传闻当事实', { target: 'btn', click: 1.5, swap: 1.7, zoom: [2.1, 1.8, 1.18], zoomTg: 'list' });
+uiScene(T(14, 4.6), 'trip', '出行与天气', '实时天气，AI 判断怎么走', { target: 'btn', click: 1.6, swap: 1.8, zoom: [2.3, 1.6, 1.22], zoomTg: 'legs' });
+uiScene(T(15, 4.0), 'body', '身体与状态', '体重、饮食、睡眠，为角色做准备', { zoom: [1.1, 2.0, 1.32], zoomTg: 'chart' });
+scene(T(19, 3.4), `<div class="kin" style="flex-direction:column;gap:14px"><div><span class="w sm">AI 负责整理和起草</span></div><div><span class="w hl">决定，永远在人手里</span></div></div>`, (n, lt, d) => { n.style.opacity = 1; words(n, lt, [.15, 1.0], d); }, { energy: .6 });
+scene(T(20, 5.9), `<div class="logo"><div class="mark">戏</div><div class="wordmark">戏里戏外<i class="sweep"></i></div><div class="tagline">从接本到复盘 · 一个工作台就够了</div></div>`, (n, lt, d) => {
+  const k = eo(prog(lt, 0, 1)); n.style.opacity = k * (1 - prog(lt, d - .9, .9)); n.style.filter = `blur(${(1 - k) * 20}px)`; n.style.transform = `scale(${lerp(1.15, 1, k)})`;
+  const t = n.querySelector('.tagline'), kt = eo(prog(lt, .9, .7)); t.style.opacity = kt;
+  n.querySelector('.sweep').style.transform = `translateX(${lerp(-500, 900, prog(lt, 1.0, 1.2))}px) skewX(-20deg)`;
+}, { energy: 1.1 });
+
+const leakEl = el(`<div class="leak"></div>`); stage.appendChild(leakEl);
+const grain = el(`<div class="grain"></div>`); stage.appendChild(grain);
+
+/* ---------- 时间线 ---------- */
+const starts = []; let acc = 0; S.forEach(s => { starts.push(acc); acc += s.dur; }); const TOTAL = acc;
+window.__total = TOTAL * 1000; window.__starts = starts;
+function renderAt(t) {
+  let en = 0;
+  S.forEach((s, i) => {
+    const lt = t - starts[i];
+    const OV = i < S.length - 1 ? .45 : 0;   // 与下一场重叠，做交叉溶解
+    if (lt < 0 || lt > s.dur + OV) { s.node.style.opacity = 0; s.node.style.visibility = 'hidden'; return; }
+    s.node.style.visibility = 'visible'; s.update(s.node, lt, s.dur + OV);
+    en = s.energy;
+  });
+  drawBg(t, en);
+  const lk = S.find((s, i) => t >= starts[i] && t <= starts[i] + s.dur);
+  leakEl.style.opacity = lk && lk.leak ? .55 + Math.sin(t * .9) * .2 : 0;
+  leakEl.style.transform = `translate(${Math.sin(t * .35) * 30}%, ${Math.cos(t * .27) * 12}%) rotate(${t * 6}deg)`;
+  const dark = document.documentElement.dataset.theme !== 'butter';
+  bg.style.opacity = 1; bg.style.filter = ''; void dark;
+}
+window.__seek = ms => renderAt(ms / 1000);
+
+/* ---------- 播放控制 ---------- */
+const music = document.getElementById('music');
+let playing = false, t0 = 0, cur = 0;
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+function tick() {
+  if (!playing) return;
+  cur = (performance.now() - t0) / 1000;
+  if (cur >= TOTAL) { cur = TOTAL; pause(); }
+  renderAt(cur);
+  document.querySelector('#pb i').style.width = cur / TOTAL * 100 + '%';
+  document.getElementById('pt').textContent = `${fmt(cur)} / ${fmt(TOTAL)}`;
+  if (playing) requestAnimationFrame(tick);
+}
+function play(from = cur) {
+  if (from >= TOTAL - .05) from = 0;
+  cur = from; t0 = performance.now() - from * 1000; playing = true; document.body.classList.remove('paused');
+  document.getElementById('start').style.display = 'none'; document.getElementById('tgl').textContent = '❚❚';
+  try { music.currentTime = from; music.play().catch(() => {}); } catch {}
+  requestAnimationFrame(tick);
+}
+function pause() { playing = false; document.body.classList.add('paused'); document.getElementById('tgl').textContent = '▶'; music.pause(); }
+document.getElementById('start').onclick = () => play(0);
+document.getElementById('tgl').onclick = () => playing ? pause() : play();
+document.getElementById('rp').onclick = () => play(0);
+document.getElementById('mute').onclick = e => { music.muted = !music.muted; e.target.textContent = music.muted ? '🔇' : '🔊'; };
+document.getElementById('fs').onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.();
+document.getElementById('pb').onclick = e => { const r = e.currentTarget.getBoundingClientRect(); play((e.clientX - r.left) / r.width * TOTAL); };
+addEventListener('keydown', e => { if (e.key === ' ') { e.preventDefault(); playing ? pause() : play(); } });
+addEventListener('message', e => { if (e.data === 'pause') pause(); if (e.data === 'play') play(0); });
+document.body.classList.add('paused');
+
+SHOTS = window.__SHOTS || {}; renderAt(RENDER ? 0 : 20.6); window.__ready = true;
+})();
+</script>
+</body>
+</html>
