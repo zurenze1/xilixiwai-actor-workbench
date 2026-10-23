@@ -16,7 +16,7 @@ test('rest marker cannot erase work; overnight and unknown time are considered',
 });
 test('nested invalid backup values are rejected instead of replacing saved data',()=>{
  const fresh=()=>({folder:[],reviews:{},files:{},pack:{},home:true,st:0});
- for(const invalid of [{folder:null},{reviews:{home:[{text:'x'}]}},{pack:null},{st:50},{home:'yes'}])assert.throws(()=>validateMain(invalid,fresh));
+ for(const invalid of [{folder:null},{reviews:{home:[{text:'x'}]}},{pack:null},{st:50},{home:'yes'},{bKw:'invalid'}])assert.throws(()=>validateMain(invalid,fresh));
  assert.deepEqual(validateMain({folder:['take']},fresh).folder,['take']);
 });
 test('API adapters produce actual provider-specific requests using recipient credentials',async()=>{

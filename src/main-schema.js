@@ -15,7 +15,7 @@ export const mainSchema=z.object({
  tab:texts.optional(),ran:bools.optional(),seen:bools.optional(),checks:bools.optional(),
  adopt:z.number().int().min(0).max(2).nullable().optional(),
  formDrafts:z.record(z.string(),z.record(z.string(),z.union([z.string(),z.boolean()]))).optional(),
- bioEdits:texts.optional(),replyEdits:texts.optional(),
+ bioEdits:texts.optional(),replyEdits:texts.optional(),bKw:z.array(text).optional(),
  hiddenEv:bools.optional(),evDone:bools.optional(),todayDone:bools.optional(),submitted:bools.optional(),pack:bools.optional(),
  packAdd:z.record(z.string(),z.array(text)).optional(),selfAns:texts.optional(),
  meals:z.array(z.object({t:z.string(),n:z.string(),k:z.number().finite().nonnegative()})).optional(),

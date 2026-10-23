@@ -12,7 +12,7 @@ const fresh = () => ({
 const esc = x => String(x ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const validateMain = raw => {
  const state=ActorStore.validateMain(raw,fresh);
- if(!Object.keys(D.scopes).includes(state.scope)||!D.handlings.some(h=>h.id===state.handling)||!['demo','deepseek','openai','claude','codex','claudecode','compatible'].includes(state.provider))throw Error('状态含有无效选项');
+ if(!D.people.some(p=>p.id===state.rel)||!['warm','play','formal'].includes(state.tone)||!Object.keys(D.scopes).includes(state.scope)||!D.handlings.some(h=>h.id===state.handling)||!['demo','deepseek','openai','claude','codex','claudecode','compatible'].includes(state.provider))throw Error('状态含有无效选项');
  for(const task of state.tasks)if(typeof task.t!=='string'||typeof task.who!=='string'||typeof task.due!=='string')throw Error('任务字段无效');
  return state;
 };
