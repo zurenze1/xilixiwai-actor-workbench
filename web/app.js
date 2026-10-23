@@ -1,4 +1,4 @@
-(() => {
+(async () => {
 const D = window.DEMO;
 const KEY = 'xilixiwai-demo-v1';
 const $ = (s, el = document) => el.querySelector(s);
@@ -9,12 +9,42 @@ const fresh = () => ({
   rel: 'xia', adopt: null, handling: 'probe', tasks: D.tasks.map(t => ({ ...t })),
   sel: null, tone: 'warm', submitted: {}, scope: 'ad', scopeTried: false, checks: {}, faqQ: '', seen: {}, pick: 'nl'
 });
-let S;
-try { S = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY) || '{}')); } catch { S = fresh(); }
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
+const esc = x => String(x ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const validateMain = raw => {
+ const state=ActorStore.validateMain(raw,fresh);
+ if(!Object.keys(D.scopes).includes(state.scope)||!D.handlings.some(h=>h.id===state.handling)||!['demo','deepseek','openai','claude','codex','claudecode','compatible'].includes(state.provider))throw Error('状态含有无效选项');
+ for(const task of state.tasks)if(typeof task.t!=='string'||typeof task.who!=='string'||typeof task.due!=='string')throw Error('任务字段无效');
+ return state;
+};
+let client;
+try { client = await ActorStore.open(KEY, fresh, validateMain); }
+catch (error) {
+  document.querySelector('#main').textContent = error.message;
+  const b = document.createElement('button'); b.textContent = '导出原始记录供恢复'; b.onclick = async () => ActorStore.download('原始记录.json',await ActorStore.exportRaw(KEY)); document.querySelector('#main').append(b); const r=document.createElement('button');r.textContent='保留原记录，开始新演示';r.onclick=async()=>{if(!confirm('先下载原始记录，然后开始新演示？原始记录也会在本机保留恢复副本。'))return;ActorStore.download('原始记录.json',await ActorStore.exportRaw(KEY));await ActorStore.startFresh(KEY,validateMain(fresh()));location.reload();};document.querySelector('#main').append(r);return;
+}
+let S = client.state;
+const chosenTheme=new URLSearchParams(location.search).get('theme')||localStorage.getItem('xilixiwai.theme.v2');if(['tide','butter','moss'].includes(chosenTheme)){S.theme=chosenTheme;localStorage.setItem('xilixiwai.theme.v2',chosenTheme);}
+let renderedPage=null, draftTimer;
+function captureDraft() {
+ if(!renderedPage)return;
+ const form={};document.querySelectorAll('#main input:not([type=file]):not([type=range]),#main textarea,#main select').forEach((el,i)=>{const k=el.id||el.dataset.self!==undefined&&'self-'+el.dataset.self||el.dataset.role&&'pack-'+el.dataset.role;if(k)form[k]=el.type==='checkbox'?el.checked:el.value;});
+ form.__status=draftStatus;S.formDrafts[renderedPage]=form;
+}
+function restoreDraft(){
+ const form=S.formDrafts[renderedPage]||{};
+ document.querySelectorAll('#main input:not([type=file]):not([type=range]),#main textarea,#main select').forEach(el=>{const k=el.id||el.dataset.self!==undefined&&'self-'+el.dataset.self||el.dataset.role&&'pack-'+el.dataset.role;if(k&&form[k]!==undefined){if(el.type==='checkbox')el.checked=!!form[k];else el.value=form[k];}});
+ draftStatus=form.__status||'adopt';document.querySelectorAll('[data-act="rvst"]').forEach(b=>b.classList.toggle('on',b.dataset.v===draftStatus));
+}
+function showError(error){
+ let b=document.querySelector('#saveError');if(!b){b=document.createElement('div');b.id='saveError';b.setAttribute('role','alert');b.style.cssText='position:fixed;z-index:9999;left:12px;right:12px;bottom:12px;padding:16px;background:#70222a;color:white;border-radius:12px';document.body.append(b);}
+ b.textContent='未保存：'+error.message+' ';const out=document.createElement('button');out.textContent='导出当前草稿';out.onclick=()=>ActorStore.download('未保存的工作台草稿.json',JSON.stringify({app:'xilixiwai',version:1,state:S}));b.append(out);
+ const reload=document.createElement('button');reload.textContent='刷新读取已保存记录';reload.onclick=()=>location.reload();b.append(reload);
+}
+addEventListener('actor-store-conflict',e=>{if(e.detail.key===KEY)showError(Error(e.detail.message));});
+const save = async () => { clearTimeout(draftTimer);captureDraft();await client.save(S); };
 let freshKey = null, newFolder = null, timers = [];
-const clearTimers = () => { timers.forEach(clearTimeout); timers = []; try { if (window.__comicStop) window.__comicStop(); } catch {} };
-const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+const clearTimers = () => { timers.forEach(clearTimeout); timers = []; try { if (window.__comicStop) window.__comicStop(); if(comicAudio)comicAudio.pause(); } catch {} };
+const later = (fn, ms) => timers.push(setTimeout(() => Promise.resolve().then(fn).catch(showError), ms));
 
 /* 资料夹：每站产出 */
 const FOLDER = {
@@ -31,9 +61,9 @@ const FOLDER = {
   review: { st: 7, t: '作品复盘报告', d: '复盘 · 播出口碑 · 表演自评' }
 };
 const has = k => S.folder.includes(k);
-function addFolder(k, msg) {
+async function addFolder(k, msg) {
   if (!has(k)) { S.folder.push(k); newFolder = k; }
-  save(); render(true); toast(msg || `已存入资料夹：${FOLDER[k].t}`); nudge();
+  await save(); render(true); toast(msg || `已存入资料夹：${FOLDER[k].t}`); nudge();
 }
 const stationDone = i => Object.entries(FOLDER).some(([k, v]) => v.st === i && has(k)) && Object.entries(FOLDER).filter(([, v]) => v.st === i && !v.opt).every(([k]) => has(k));
 
@@ -93,6 +123,7 @@ const STEPS = {
   plan:     ['汇总这部戏的资料夹', '对照年度目标', '生成下一阶段行动清单（供团队取舍）']
 };
 function runAI(key) {
+  if(S.provider!=='demo'){aiDialog(key);return;}
   const box = document.querySelector(`[data-ai="${key}"]`); if (!box) return;
   const steps = (STEPS[key] || ['分析中']).map(s => s === '读取已选演法：' ? s + handlingName() : s);
   const prov = S.provider === 'demo' ? '演示模式（预置示例）' : providerName();
@@ -101,7 +132,7 @@ function runAI(key) {
   lis.forEach((li, i) => {
     later(() => { li.classList.add('in'); if (lis[i - 1]) lis[i - 1].classList.add('ok'); }, 120 + i * 480);
   });
-  later(() => { S.ran[key] = true; freshKey = key; save(); render(true); freshKey = null; nudge(); const r = document.querySelector('.reveal'); if (r) r.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 220 + lis.length * 480);
+  later(async () => { S.ran[key] = true; freshKey = key; await save(); render(true); freshKey = null; nudge(); const r = document.querySelector('.reveal'); if (r) r.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 220 + lis.length * 480);
 }
 
 /* ---------------- 每站步骤指引 ---------------- */
@@ -167,44 +198,55 @@ function reviewBlock() {
     <div class="row mt8" style="justify-content:space-between">
       <div class="row"><label class="btn sm" style="cursor:pointer">📎 导入文件<input type="file" id="rvFile" multiple hidden></label><span class="small muted">剧本、合同、通告单、照片等，挂在这个板块下</span></div>
       <button class="btn pri" data-act="rvsave">保存决定</button></div>
-    ${files.length ? `<div class="files mt8">${files.map((f, i) => `<div class="file"><span>${f.img ? `<img src="${f.img}" alt="">` : '📄'}</span><div><b>${f.name}</b><small>${f.size} · ${f.at}${f.text ? ' · 可预览' : ''}</small>${f.text ? `<pre>${f.text.slice(0, 280).replace(/</g, '&lt;')}${f.text.length > 280 ? '…' : ''}</pre>` : ''}</div><button class="btn sm" data-act="rvfdel" data-i="${i}">移除</button></div>`).join('')}</div>` : ''}
-    ${list.length ? `<ul class="rv-list mt">${list.slice().reverse().map((r, j) => { const st = STATUS.find(s => s[0] === r.status) || STATUS[3]; return `<li><div class="row" style="justify-content:space-between"><span class="row">${tag(st[2], st[1])}<b>${r.who}</b><span class="small muted">${r.at}</span></span><button class="btn sm" data-act="rvdel" data-i="${list.length - 1 - j}">删除</button></div><p class="mt8">${r.text.replace(/</g, '&lt;').replace(/\n/g, '<br>')}</p></li>`; }).join('')}</ul>` : ''}
+    ${files.length ? `<div class="files mt8">${files.map((f, i) => `<div class="file"><span>${f.img ? `<img src="${f.img}" alt="">` : '📄'}</span><div><b>${esc(f.name)}</b><small>${esc(f.size)} · ${esc(f.at)}${f.text ? ' · 可预览' : ''}</small>${f.text ? `<pre>${f.text.slice(0, 280).replace(/</g, '&lt;')}${f.text.length > 280 ? '…' : ''}</pre>` : ''}</div>${f.file ? `<button class="btn sm" data-act="filedownload" data-v="${f.file.id}">下载原件</button>` : `<small>旧记录只有登记信息，请重新上传原件</small>`}<button class="btn sm" data-act="rvfdel" data-i="${i}">移除</button></div>`).join('')}</div>` : ''}
+    ${list.length ? `<ul class="rv-list mt">${list.slice().reverse().map((r, j) => { const st = STATUS.find(s => s[0] === r.status) || STATUS[3]; return `<li><div class="row" style="justify-content:space-between"><span class="row">${tag(st[2], st[1])}<b>${esc(r.who)}</b><span class="small muted">${esc(r.at)}</span></span><button class="btn sm" data-act="rvdel" data-i="${list.length - 1 - j}">删除</button></div><p class="mt8">${r.text.replace(/</g, '&lt;').replace(/\n/g, '<br>')}</p></li>`; }).join('')}</ul>` : ''}
   </section>`;
 }
 const stamp = () => { const d = new Date(); return `${d.getMonth() + 1}/${d.getDate()} ${d.toTimeString().slice(0, 5)}`; };
-function saveReview() {
+async function saveReview() {
   const t = ($('#rvText').value || '').trim(); if (!t) { toast('先写下你们的决定'); return; }
   const k = pageKey(); (S.reviews[k] = S.reviews[k] || []).push({ status: draftStatus, who: $('#rvWho').value, text: t, at: stamp() });
-  save(); render(true); toast('已保存人工决定');
+  delete S.formDrafts[k];renderedPage=null;await save();render(true);toast('已保存人工决定');
 }
-function importFiles(files) {
-  const k = pageKey(); S.files[k] = S.files[k] || [];
-  [...files].forEach(f => {
-    const size = f.size > 1048576 ? (f.size / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(f.size / 1024)) + ' KB';
-    const rec = { name: f.name, size, at: stamp() };
-    const done = () => { S.files[k].push(rec); try { save(); } catch { rec.text = ''; rec.img = ''; save(); toast('文件较大，只登记了文件名'); } render(true); };
-    if (/\.json$/i.test(f.name) && /戏里戏外|backup/i.test(f.name)) { importBackup(f); return; }
-    if (/^text\/|\.(md|txt|csv)$/i.test(f.type + f.name) && f.size < 300000) { const r = new FileReader(); r.onload = () => { rec.text = r.result; done(); }; r.readAsText(f); }
-    else if (/^image\//.test(f.type) && f.size < 8000000) { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => { const c = document.createElement('canvas'), s = Math.min(1, 480 / im.width); c.width = im.width * s; c.height = im.height * s; c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); rec.img = c.toDataURL('image/jpeg', .7); done(); }; im.src = r.result; }; r.readAsDataURL(f); }
-    else done();
-  });
-  toast(`已导入 ${files.length} 个文件到「${PAGE_NAME(k)}」`);
+async function importFiles(files) {
+  const k = pageKey(), pending=[];
+  for(const f of [...files]) {
+    const original=await ActorStore.putFile(f);
+    const rec={name:f.name,size:f.size>1048576?(f.size/1048576).toFixed(1)+' MB':Math.max(1,Math.round(f.size/1024))+' KB',at:stamp(),file:original};
+    if(/^text\//.test(f.type)||/\.(txt|md|csv)$/i.test(f.name))rec.text=(await f.text()).slice(0,1000000);
+    if(/\.docx$/i.test(f.name)){try{rec.text=(await window.mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value.slice(0,1000000);}catch(e){rec.text='Word原件已保存，文字提取失败：'+e.message;}}
+    if(/^image\//.test(f.type)) {const img=await createImageBitmap(f);const c=document.createElement('canvas'),scale=Math.min(1,480/img.width);c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);rec.img=c.toDataURL('image/jpeg',.7);img.close();}
+    pending.push(rec);
+  }
+  S.files[k]=[...(S.files[k]||[]),...pending];await save();render(true);toast(`已保存 ${pending.length} 个附件原件，可下载和完整备份`);
 }
 /* ---------------- 归档 / 备份 / 导入 ---------------- */
-function download(name, text, type) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
-function exportBackup() { download(`戏里戏外-备份-${new Date().toLocaleDateString('sv')}.json`, JSON.stringify({ app: 'xilixiwai', version: 1, savedAt: new Date().toISOString(), state: S }, null, 1), 'application/json'); toast('已导出完整备份（包含所有记录、决定和附件）'); }
-function importBackup(file) {
-  const r = new FileReader(); r.onload = () => {
-    try { const j = JSON.parse(r.result); if (j.app !== 'xilixiwai' || !j.state) throw 0;
-      if (!confirm(`导入 ${j.savedAt ? j.savedAt.slice(0, 16).replace('T', ' ') : ''} 的备份？当前浏览器里的记录会被替换。`)) return;
-      S = Object.assign(fresh(), j.state); save(); render(); toast('备份已恢复'); if ($('#dlg').open) settings();
-    } catch { toast('这不是戏里戏外的备份文件'); }
-  }; r.readAsText(file);
+const download = ActorStore.download;
+async function exportBackup() {
+  captureDraft();await save();const bundle=await ActorStore.exportBundle();await ActorStore.validateBundle(bundle,{validateMain,validatePet:PetSchema.validate});
+  download(`戏里戏外-备份-${new Date().toLocaleDateString('sv')}.json`,JSON.stringify(bundle),'application/json');toast('已导出工作台、肉肉资料及附件原件');
 }
-function archiveProject() {
-  const n = Object.values(S.reviews).reduce((a, l) => a + l.length, 0);
-  S.archives.unshift({ title: `《${D.project.title}》`, at: new Date().toLocaleString('zh-CN'), folder: S.folder.length, reviews: n, snap: JSON.stringify({ folder: S.folder, reviews: S.reviews, checks: S.checks, tasks: S.tasks }) });
-  save(); toast(`已归档：资料夹 ${S.folder.length} 项 · 人工决定 ${n} 条`); if ($('#dlg').open) settings();
+async function importBackup(file) {
+  const doc=JSON.parse(await file.text());
+  await ActorStore.validateBundle(doc,{validateMain,validatePet:PetSchema.validate});
+  if(!confirm('备份已通过校验。先导出当前备份以便撤回，然后替换当前记录？'))return;
+  await exportBackup();
+  await ActorStore.restoreBundle(doc,{mainClient:client,validateMain,validatePet:PetSchema.validate});S=await client.reload();renderedPage=null;render();toast('备份已恢复，原件已校验');if($('#dlg').open)settings();
+}
+async function archiveProject() {
+  const n=Object.values(S.reviews).reduce((a,l)=>a+l.length,0);captureDraft();
+  const snapshot={...structuredClone(S),archives:[]};
+  S.archives.unshift({title:`《${D.project.title}》`,at:new Date().toLocaleString('zh-CN'),folder:S.folder.length,reviews:n,snap:JSON.stringify(snapshot)});
+  await save();toast('已归档完整项目快照，可查看、恢复和导出');if($('#dlg').open)settings();
+}
+async function archiveAction(i,action) {
+  const archive=S.archives[i];if(!archive?.snap)throw Error('此归档没有可恢复的快照');const raw=JSON.parse(archive.snap);
+  if(action==='view'){const dlg=$('#dlg');dlg.innerHTML='<div class="dlg"><h2>'+esc(archive.title)+'<button data-act="close">×</button></h2><pre style="white-space:pre-wrap">'+esc(JSON.stringify(raw,null,2))+'</pre></div>';return;}
+  if(!raw.st&&raw.st!==0)throw Error('旧版归档只保存了部分资料，无法完整恢复；可查看或导出旧快照');
+  const state=validateMain(raw);
+  if(action==='export'){const bundle=await ActorStore.exportBundle({state});download('项目归档备份.json',JSON.stringify(bundle));return;}
+  if(!confirm('恢复这个归档？会先下载当前完整备份。'))return;
+  await exportBackup();const keep=S.archives;S={...state,archives:keep};renderedPage=null;await save();render();settings();toast('已恢复归档');
 }
 
 /* ---------------- 页面结构：今天 / 戏里 / 戏外·事业 / 戏外·生活 ---------------- */
@@ -217,7 +259,7 @@ const CRUMB = { home: () => `<b>日程总览</b><span>示例：拍摄期 ${D.sch
 const name = () => D.names[0];
 const PROVIDERS = [
   ['demo', '演示模式', '今天发布会使用'], ['deepseek', 'DeepSeek', 'API Key'], ['openai', 'ChatGPT / OpenAI', 'API Key'],
-  ['claude', 'Claude', 'API Key'], ['codex', 'Codex', '本机登录'], ['claudecode', 'Claude Code', '本机登录']
+  ['claude', 'Claude', 'API Key'], ['codex', 'Codex', '本机登录'], ['claudecode', 'Claude Code', '本机登录'], ['compatible','其他兼容服务','API Key']
 ];
 const providerName = () => (PROVIDERS.find(p => p[0] === S.provider) || PROVIDERS[0])[1];
 const handlingName = () => D.handlings.find(h => h.id === S.handling).k;
@@ -263,7 +305,7 @@ function renderTop() {
   $('#top').innerHTML = `
   <div class="crumb">${onPage() ? CRUMB[onPage()]() : `<b>《${D.project.title}》</b><span>${D.project.role} · 第 ${s.no} 站 / 08 · ${s.title}</span>`}</div>
   <div class="prog" title="已完成站数"><i><em style="width:${done / 8 * 100}%"></em></i>${done}/8</div>
-  <button class="chip" data-act="settings" title="连接模型"><span class="led ${S.provider === 'demo' ? '' : 'live'}"></span>${S.provider === 'demo' ? '演示模式 · 示例结果' : providerName() + ' · 待配置'}</button>
+  <button class="chip" data-act="settings" title="连接模型"><span class="led ${aiConnected ? 'live' : ''}"></span>${S.provider === 'demo' ? '演示模式 · 示例结果' : providerName() + (aiConnected?' · 已测试连接':' · 待配置')}</button>
   <div class="themes" title="切换主题">${[['tide', '#2e3a6b', '深蓝潮汐'], ['butter', '#e7dcc3', '奶油便签'], ['moss', '#34541f', '山野片场']].map(([k, c, n]) => `<button data-act="theme" data-v="${k}" title="${n}" class="${S.theme === k ? 'on' : ''}" style="background:${c}"></button>`).join('')}</div>
   <button class="icon-btn folder-toggle" data-act="folder">资料夹 ${S.folder.length}</button>`;
 }
@@ -313,10 +355,12 @@ function scoreScript(x) {
 
 function vTake() {
   const T = D.take, P = D.project, SC = D.scripts;
+  const weightSum=Object.values(S.wts||D.scoreRule.weights).reduce((a,b)=>a+b,0),best=Math.max(...SC.map(x=>scoreScript(x).total));
+  const leaders=weightSum ? SC.filter(x=>scoreScript(x).total===best):[];
   const compare = aiBlock('compare', 'AI 横向对比 3 部剧本', '三个本子同时到，不用一部部从头读完再比。AI 先按角色分量、年度方向、团队、档期、片酬五个维度横向比较。', () => `
     <div class="card"><div class="result-head"><h3>三部剧本横向对比</h3>${demoTag()}</div>
       <div class="grid3">${SC.map(x => `<button class="pick ${S.pick === x.id ? 'on' : ''}" data-act="pick" data-v="${x.id}">
-        <div class="row" style="justify-content:space-between"><h3 class="serif" style="font-size:19px">《${x.t}》</h3>${x.rec ? tag('ok', 'AI 推荐') : ''}</div>
+        <div class="row" style="justify-content:space-between"><h3 class="serif" style="font-size:19px">《${x.t}》</h3>${leaders.some(l=>l.id===x.id) ? tag('ok',leaders.length>1?'并列首选':'当前权重首选') : ''}</div>
         <p class="small muted">${x.g} · ${x.role}</p>
         ${(() => { const sc = scoreScript(x); return `<div class="score"><b>${sc.total}</b><small>综合匹配（按你的权重）</small></div>
         ${sc.dims.map(([k, n, v]) => `<div class="dimrow"><span>${n}</span><div class="bar"><i style="width:${v}%;background:${v >= 75 ? 'var(--ok)' : v >= 50 ? 'var(--warn)' : 'var(--bad)'}"></i></div><b class="dv">${v}</b></div>`).join('')}
@@ -325,7 +369,7 @@ function vTake() {
       <div class="rule-box mt"><div class="row" style="justify-content:space-between"><b>评分规则 · 权重由你定</b><span class="row"><button class="btn sm" data-act="calc">${S.showCalc ? '收起计算过程' : '看每一项怎么算'}</button><button class="btn sm" data-act="wreset">恢复默认权重</button></span></div>
         <div class="wts">${[['role', '角色分量'], ['dir', '年度方向'], ['team', '团队与平台'], ['sched', '档期'], ['fee', '片酬']].map(([k, n]) => `<label><span>${n}</span><input type="range" min="0" max="50" step="5" data-wt="${k}" value="${(S.wts || D.scoreRule.weights)[k]}"><b>${(S.wts || D.scoreRule.weights)[k]}%</b></label>`).join('')}</div>
         <p class="small muted mt8">综合 = 各项得分 × 权重，加总后按权重总和归一。比如更看重作品和角色，就把「角色分量」「年度方向」调高；档期紧就调高「档期」。</p></div>
-      <ul class="list mt">${D.compareAdvice.map(a => `<li class="small">→ ${a}</li>`).join('')}</ul>
+      <ul class="list mt"><li class="small">${weightSum ? `按当前权重排序：${SC.slice().sort((a,b)=>scoreScript(b).total-scoreScript(a).total).map(x=>'《'+x.t+'》 '+scoreScript(x).total+'分').join(' → ')}。${leaders.length>1?'最高分并列，请结合条件沟通。':'首选会随权重变化。'}`:'所有权重为0，暂无可排序依据，请至少设置一项。'}</li></ul>
       <p class="note">评分是帮你排序的参考，不是结论。接哪一部，由你和经纪团队决定。</p></div>`);
   const pickT = SC.find(x => x.id === S.pick) || SC[0];
   const detail = !S.ran.compare ? '' : S.pick !== 'nl' ? `<div class="card mt"><p>本演示以 <b>《逆光来信》</b> 走完整条主线。《${pickT.t}》的细读流程与之相同。</p><div class="row mt8"><button class="btn sm" data-act="pick" data-v="nl">切回《逆光来信》</button></div></div>` : `<div class="mt">${aiBlock('take', 'AI 细读《逆光来信》', '选定首选后，AI 再细读这一部：讲了什么故事、你的戏份、角色弧线，以及接之前要问清楚的事。', () => `
@@ -341,7 +385,7 @@ function vTake() {
       <div class="card"><h3>和你今年的方向合不合</h3><ul class="list mt8">${T.fit.map(f => `<li><div class="row" style="justify-content:space-between"><b>${f.k}</b>${tag(f.s, f.t)}</div><p class="muted small">${f.v}</p></li>`).join('')}</ul></div>
       <div class="card"><h3>接之前，建议先问清楚</h3><ul class="list mt8">${T.questions.map((q, i) => `<li>${i + 1}. ${q}</li>`).join('')}</ul>
         <p class="note">AI 只负责把信息摆清楚。接不接、什么条件接，由你和团队决定。</p>
-        <div class="row mt">${has('take') ? `${tag('ok', '✓ 已决定接下这部戏')}<span class="muted small">评估卡已存入资料夹</span>` : `<button class="btn" data-act="toast" data-msg="已生成给导演的问题清单（演示）">先约导演聊聊</button><button class="btn pri" data-act="save" data-k="take">接下《${P.title}》 ✓</button>`}</div></div>
+        <div class="row mt">${has('take') ? `${tag('ok', '✓ 已决定接下这部戏')}<span class="muted small">评估卡已存入资料夹</span>` : `<button class="btn" data-act="directorquestions">先约导演聊聊</button><button class="btn pri" data-act="save" data-k="take">接下《${P.title}》 ✓</button>`}</div></div>
     </div>
     ${has('take') ? `<div class="card mt"><div class="result-head"><div><h3>合作确认记录</h3><p class="sub">把“口头说好的”和“写进合同的”分开记，谁负责、何时确认一目了然。</p></div>${tag('ev', '经纪 · 法务 · 财务')}</div>
       <table class="tbl"><tr><th>事项</th><th>约定</th><th>状态</th><th>负责人</th></tr>${D.confirm.map(c => `<tr><td><b>${c.k}</b></td><td>${c.v}</td><td>${tag(c.st, c.t)}</td><td class="muted">${c.who}</td></tr>`).join('')}</table></div>` : ''}`)}</div>`;
@@ -352,7 +396,7 @@ function vTake() {
   return `${hero(D.stations[0])}
   <div class="card"><h3>收件箱 · 本周收到 ${SC.length} 部剧本</h3>
     ${SC.map(x => `<div class="inbox mt8 ${S.ran.compare ? '' : 'pulse'}"><div class="env">✉️</div><div style="flex:1"><b>《${x.t}》</b><p class="muted small">${x.g} · 邀约角色 ${x.role} · 来自 ${x.from}</p></div>${tag('ev', '新邀约')}</div>`).join('')}</div>
-  <div class="mt">${compare}</div>${detail}${vet}
+  ${projectInfoView()}<div class="mt">${compare}</div>${detail}${vet}
   ${next(0, has('take') ? '下一站会带上：<b>剧本 + 接戏评估卡</b>（重点场次、舞蹈准备提醒）' : '先比较、再细读，最后决定接哪一部。')}`;
 }
 
@@ -401,8 +445,8 @@ function vRead() {
       <ul class="list">${D.keyScenes.map((k, i) => `<li><div class="row" style="justify-content:space-between"><b>${i + 1}. 第${k.sc}场 · ${k.w}</b>${cite(k.sc)}</div><p class="small mt8">${k.why}</p><p class="small muted">提示：${k.tip}</p></li>`).join('')}</ul></div>`);
   if (t === 'bio') body = aiBlock('bio', 'AI 起草人物小传', '演员进组前通常要写人物小传。AI 汇总剧本里关于许知夏的全部交代，起草一版第一人称小传，你再改成自己的。', () => `
     <div class="card"><div class="result-head"><h3>许知夏 · 人物小传（草稿）</h3>${demoTag()}</div>
-      ${D.bio.map(p => `<p class="serif" style="font-size:15.5px;line-height:1.95;margin-bottom:10px">${p}</p>`).join('')}
-      <p class="note">${D.bioNote}</p><div class="row mt8">${cite(21)}<button class="btn sm" data-act="toast" data-msg="正式版可直接编辑并保留历史版本">✎ 改成我自己的版本</button></div></div>`);
+      ${(S.bioEdits.main ? S.bioEdits.main.split('\n') : D.bio).map(p => `<p class="serif" style="font-size:15.5px;line-height:1.95;margin-bottom:10px">${esc(p)}</p>`).join('')}
+      <p class="note">${D.bioNote}</p><div class="row mt8">${cite(21)}<button class="btn sm" data-act="editbio">✎ 改成我自己的版本</button></div></div>`);
   if (t === 'card') { const RC = D.roleCard; body = aiBlock('rcard', 'AI 生成角色分析卡', '把人物关系、成长线、潜台词和小传汇总成一张卡：背景、经历、性格、动机、外在细节、关系与弧线，一眼看懂她是谁。', () => `
     <div class="rcard" id="rcard"><div class="rc-side"><div class="rc-photo" style="background-image:url('assets/photos/06_xia.jpg')"></div>
         <div class="swatch">${RC.palette.map(c => `<i style="background:${c}"></i>`).join('')}</div>
@@ -537,9 +581,9 @@ function playComic() {
     if (p < 1) requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
-  later(() => {
+  later(async () => {
     const st = $('#stage'); if (st) st.insertAdjacentHTML('beforeend', `<div class="cover" style="background:#000c"><div><h2 class="serif">预演结束</h2><button data-act="play">↺ 再看一遍</button></div></div>`);
-    if (!has('comic')) addFolder('comic', '已存入资料夹：动态漫剧预演');
+    if (!has('comic')) await addFolder('comic', '已存入资料夹：动态漫剧预演');
   }, total + 300);
 }
 
@@ -562,7 +606,7 @@ function vShoot() {
     <div>${aiBlock('tasks', 'AI 拆解成任务', 'AI 从纪要里找出“谁、做什么、什么时候”，拆成任务卡，同时排进内容日历。', () => `
       <div class="result-head"><h3>任务看板</h3>${demoTag()}</div>
       <div class="kanban">${['待办', '进行中', '已完成'].map((c, ci) => `<div class="col"><h4>${c}<span>${S.tasks.filter(x => x.col === ci).length}</span></h4>
-        ${S.tasks.map((x, i) => x.col === ci ? `<div class="task">${x.t}<small><span>${x.who} · ${x.due}</span>${ci < 2 ? `<button data-act="move" data-i="${i}">推进 →</button>` : '✓'}</small></div>` : '').join('')}</div>`).join('')}</div>
+        ${S.tasks.map((x, i) => x.col === ci ? `<div class="task">${esc(x.t)}<small><span>${esc(x.who)} · ${esc(x.due)}</span>${ci < 2 ? `<button data-act="move" data-i="${i}">推进 →</button>` : '✓'}</small></div>` : '').join('')}</div>`).join('')}</div>
       <div class="row mt">${has('shoot') ? tag('ok', '✓ 已存入资料夹') : `<button class="btn pri" data-act="save" data-k="shoot">存入资料夹</button>`}<button class="btn" data-act="tab" data-st="4" data-v="cal">查看内容日历 →</button></div>`)}</div></div>`;
   else if (t === 'cal') body = `<div class="card"><div class="result-head"><h3>内容日历 · 开机周</h3><div class="row small"><span class="ev shoot">拍摄</span><span class="ev post">物料发布</span><span class="ev fan">粉丝 / 社群</span></div></div>
     <div class="cal">${D.week.map(d => `<div class="day"><b>${d.d}</b>${d.ev.map(([c, n]) => `<span class="ev ${c}">${n}</span>`).join('')}</div>`).join('')}</div>
@@ -571,7 +615,7 @@ function vShoot() {
     const q = (S.faqQ || '').trim();
     const list = D.faq.filter(f => !q || (f.q + f.a + f.tag).includes(q));
     body = `<div class="card"><div class="result-head"><h3>工作室知识库 · 常见问题模板</h3><span class="muted small">团队成员遇到问题先查这里，少重复问</span></div>
-      <div class="field" style="margin-top:0"><input id="faq" placeholder="搜索：探班、行程、物料、品牌…" value="${q}"></div>
+      <div class="field" style="margin-top:0"><input id="faq" placeholder="搜索：探班、行程、物料、品牌…" value="${esc(q)}"></div>
       <ul class="list mt8">${list.map(f => `<li><div class="row"><span class="tag">${f.tag}</span><b>${f.q}</b></div><p class="small mt8">${f.a}</p></li>`).join('') || '<li class="muted">没有找到，可以新建一条</li>'}</ul></div>`;
   }
   return `${hero(D.stations[4])}${tabs(4, [['call', '今日通告单'], ['tasks', '纪要 → 任务'], ['cal', '内容日历'], ['faq', '知识库与常见问题']])}${body}
@@ -673,7 +717,7 @@ function vReview() {
     <div class="card"><h3>观众记住了什么</h3><div class="bars2 mt8">${A.topics.map(([n, v]) => `<div style="grid-template-columns:120px 1fr 40px"><span>${n}</span><i><b style="width:${v}%"></b></i><span>${v}%</span></div>`).join('')}</div>
       <h3 class="mt">口碑关键词</h3><div class="row mt8">${A.words.map((w, i) => `<span class="tag ${i < 4 ? 'ok' : ''}">${w}</span>`).join('')}</div></div></div>`; });
   else if (t === 'self') { S.selfAns = S.selfAns || {}; body = `<div class="grid2"><div class="card"><h3>表演自评</h3><p class="sub">AI 提问，你来回答；写下来的，才是真正留下的</p>
-      ${D.selfQ.map((q, i) => `<div class="field"><label>${i + 1}. ${q}</label><textarea data-self="${i}" rows="2" placeholder="写下你的想法…">${S.selfAns[i] || ''}</textarea></div>`).join('')}</div>
+      ${D.selfQ.map((q, i) => `<div class="field"><label>${i + 1}. ${q}</label><textarea data-self="${i}" rows="2" placeholder="写下你的想法…">${esc(S.selfAns[i] || '')}</textarea></div>`).join('')}</div>
     <div><div class="card"><h3>导演与搭档的反馈</h3><ul class="list small mt8">${D.feedback.map(f => `<li><b>${f[0]}</b>：“${f[1]}”</li>`).join('')}</ul></div>
       <div class="card mt">${aiBlock('selfrev', 'AI 总结：带进下一部戏的三件事', '结合你的自评、导演反馈和观众口碑，总结这部戏最值得带走的经验。', () => `<div class="result-head"><h3>带进下一部戏的三件事</h3>${demoTag()}</div><ol class="small" style="padding-left:18px;margin:0">${D.takeaway.map(x => `<li style="margin:6px 0">${x}</li>`).join('')}</ol>
         <div class="row mt">${has('review') ? tag('ok', '✓ 作品复盘已存入资料夹') : `<button class="btn pri" data-act="save" data-k="review">存入资料夹</button>`}</div>`)}</div></div></div>`; }
@@ -698,11 +742,11 @@ function vPortfolio() {
   return `<section class="hero has-img" style="--img:url('assets/photos/20_award.jpg')"><div class="eyebrow">MY WORKS & DIRECTION</div><h1>作品库与发展规划</h1>
     <p>把演过的每一部戏导进来，和你的年龄、气质、体态、声线放在一起，AI 帮你看清：最适合什么题材、什么角色，下一步往哪走。</p>
     <div class="needs"><span class="need">个人作品库</span><span class="need">自我画像</span><span class="need">多维能力雷达</span><span class="need">题材 × 角色适配</span><span class="need">发展路线</span></div></section>
-  <div class="card"><div class="result-head"><div><h3>我的作品时间轴</h3><p class="sub">${P.works.length} 部作品 · 可以导入片单、剧照、评分和评价</p></div><label class="btn sm" style="cursor:pointer">📥 导入作品<input type="file" id="rvFile" multiple hidden></label></div>
-    <div class="works">${P.works.map(w => `<div class="wk"><span class="wy">${w[0]}</span><b>《${w[1]}》</b><small>${w[2]}</small><small>${w[3]}</small>${w[4] ? `<span class="ws ${w[4] >= 8 ? 'hi' : w[4] < 7 ? 'lo' : ''}">${w[4]}</span>` : '<span class="ws now">拍摄中</span>'}</div>`).join('')}</div>
+  <div class="card"><div class="result-head"><div><h3>我的作品时间轴</h3><p class="sub">${P.works.length} 部预置示例 + ${S.userWorks.length} 部自行录入 · CSV表头：作品名,年份,角色,题材,备注</p></div><label class="btn sm" style="cursor:pointer">📥 导入CSV作品<input type="file" id="worksFile" accept=".csv" hidden></label></div>
+    <div class="works">${S.userWorks.map(w=>`<div class="wk"><span class="wy">${esc(w.year)}</span><b>《${esc(w.title)}》</b><small>${esc(w.genre)} · ${esc(w.role)}</small><small>${esc(w.note)}</small><span class="tag">自行录入</span></div>`).join('')}${P.works.map(w => `<div class="wk"><span class="wy">${w[0]}</span><b>《${w[1]}》</b><small>${w[2]}</small><small>${w[3]}</small>${w[4] ? `<span class="ws ${w[4] >= 8 ? 'hi' : w[4] < 7 ? 'lo' : ''}">${w[4]}</span>` : '<span class="ws now">拍摄中</span>'}</div>`).join('')}</div>
     <div class="row mt8">${Object.entries(genres).map(([g, c]) => `<span class="tag">${g} × ${c}</span>`).join('')}<span class="small muted">口碑为示例评分</span></div></div>
   <div class="grid2 mt">
-    <div class="card"><div class="result-head"><h3>多维能力与市场雷达</h3><div class="legend"><span><i style="background:var(--accent)"></i>现在</span><span><i style="background:var(--hi)"></i>3 年目标</span></div></div>${radar2(P.radar)}</div>
+    <div class="card"><div class="result-head"><h3>多维能力与市场雷达 · 预置示例</h3><div class="legend"><span><i style="background:var(--accent)"></i>现在</span><span><i style="background:var(--hi)"></i>3 年目标</span></div></div>${radar2(P.radar)}</div>
     <div class="card"><h3>自我画像</h3><p class="sub">由本人和团队填写，AI 只做参考</p>
       <dl class="kv mt8" style="grid-template-columns:76px 1fr">${P.self.map(s => `<dt>${s[0]}</dt><dd>${s[1]}</dd>`).join('')}</dl>
       <h3 class="mt">题材 × 角色 适配度</h3>
@@ -712,7 +756,7 @@ function vPortfolio() {
     ${aiBlock('port', 'AI 综合分析', '读取全部作品的题材、角色和口碑，结合年龄、气质、体态、声线，给出最适合的方向、要谨慎的方向和发展路线。', () => `
       <div class="grid2"><div class="flag ok"><b>✓ 最适合</b>${P.best.map(b => `<p class="small">· ${b}</p>`).join('')}</div><div class="flag warn"><b>! 谨慎</b>${P.careful.map(b => `<p class="small">· ${b}</p>`).join('')}</div></div>
       <div class="roadmap mt">${P.road.map((r, i) => `<div class="rm"><span>${i + 1}</span><b>${r[0]}</b><p class="small">${r[1]}</p></div>`).join('')}</div>
-      <p class="note">${demoTag()}　接什么、往哪走，最终由本人和团队决定。新剧本到来时，「接本」会自动对照这里的定位。</p>`)}
+      <p class="note">${demoTag()}　接什么、往哪走，最终由本人和团队决定。导入片单仅更新作品时间轴；雷达与此处建议为预置示例，尚未根据新片单重算。</p>`)}
   </div>
   <div class="section-title mt"><h2>年度规划</h2><p class="small muted">目标、档期与学习安排，下一阶段的行动清单</p></div>
   ${planView()}`;
@@ -846,8 +890,8 @@ function vFans() {
   <div class="card mt"><div class="result-head"><div><h3>全平台留言 · 一个收件箱</h3><p class="sub">微博、抖音、小红书、B站的留言汇在一起，AI 按平台调性起草回复</p></div>
     <div class="opt" style="margin:0"><button data-act="fanpf" data-v="all" class="${pf === 'all' ? 'on' : ''}">全部</button>${F.platforms.map(p => `<button data-act="fanpf" data-v="${p.k}" class="${pf === p.k ? 'on' : ''}">${p.n}</button>`).join('')}</div></div>
     <div class="inbox2">${inbox.map((m, i) => `<div class="msg"><div class="row" style="justify-content:space-between"><span class="row"><span class="pbadge sm" style="background:${P[m.p].c}">${P[m.p].n}</span><b>${m.u}</b></span>${tag(m.lv, m.c)}</div>
-      <p class="mt8">${m.t}</p><div class="reply"><small>✦ AI 草稿 · ${P[m.p].tone.split('、')[0]}</small>${m.r}</div>
-      <div class="row mt8">${(S.fanOk || {})[m.u] ? tag('ok', '✓ 已提交审核') : m.lv === 'bad' ? `<button class="btn sm" data-act="fanok" data-v="${m.u}">转安保 / 工作室</button>` : `<button class="btn sm pri" data-act="fanok" data-v="${m.u}">提交审核</button><button class="btn sm" data-act="toast" data-msg="已打开编辑（演示）">修改</button>`}</div></div>`).join('')}</div>
+      <p class="mt8">${m.t}</p><div class="reply"><small>✦ AI 草稿 · ${P[m.p].tone.split('、')[0]}</small>${esc(S.replyEdits[m.u] ?? m.r)}</div>
+      <div class="row mt8">${(S.fanOk || {})[m.u] ? tag('ok', '✓ 已提交审核') : m.lv === 'bad' ? `<button class="btn sm" data-act="fanok" data-v="${m.u}">转安保 / 工作室</button>` : `<button class="btn sm pri" data-act="fanok" data-v="${m.u}">提交审核</button><button class="btn sm" data-act="editreply" data-v="${esc(m.u)}">修改</button>`}</div></div>`).join('')}</div>
     <p class="note">AI 只起草，不自动回复、不自动发布。正式版通过各平台开放接口或工作室账号授权读取留言。</p></div>
   <div class="grid2 mt">
     <div class="card"><div class="result-head"><div><h3>宠粉内容日历 · 本周</h3><p class="sub">用粉丝真正关心的内容，持续给惊喜</p></div></div>
@@ -881,7 +925,7 @@ function vCharity() {
     </div>
   </div>
   <div class="card mt"><div class="result-head"><div><h3>AI 公益机构核验</h3><p class="sub">合作前先查清楚：登记、资质、财务公开、过往项目、舆情</p></div></div>
-    <div class="row" style="flex-wrap:nowrap"><input class="add-item" id="orgIn" style="margin:0;flex:1" placeholder="输入机构名称，例如：某某乡村阅读公益基金会" value="${S.orgQ || '星光乡村阅读公益基金会（示例）'}"><button class="btn pri ai" data-act="run" data-k="orgcheck">AI 核验</button></div>
+    <div class="row" style="flex-wrap:nowrap"><input class="add-item" id="orgIn" style="margin:0;flex:1" placeholder="输入机构名称，例如：某某乡村阅读公益基金会" value="${esc(S.orgQ || '星光乡村阅读公益基金会（示例）')}"><button class="btn pri ai" data-act="run" data-k="orgcheck">AI 核验</button></div>
     <div class="mt" ${S.ran.orgcheck ? '' : 'data-ai="orgcheck"'}>${S.ran.orgcheck ? `<div class="${freshKey === 'orgcheck' ? 'reveal' : ''}"><div class="grid3">${C.check.map(c => `<div class="leg"><div class="row" style="justify-content:space-between"><b>${c[0]}</b>${tag(c[2], c[3])}</div><p class="small muted mt8">${c[1]}</p></div>`).join('')}</div>
       <p class="note">${demoTag()}　正式版会到民政部「慈善中国」平台查询登记信息与年报，并附原始链接。演示中的机构为虚构。最终是否合作，由本人和团队决定。</p></div>` : '<p class="small muted">点击「AI 核验」，逐项检查这家机构。</p>'}</div>
   </div>
@@ -915,7 +959,7 @@ function vBody() {
   return `<section class="hero has-img" style="--img:url('assets/photos/19_body.jpg')"><div class="eyebrow">BODY & CONDITION</div><h1>身体与状态</h1>
     <p>身材、精力、嗓音、睡眠，都会出现在镜头里。按角色的要求，把每天的体重、饮食、运动和状态记下来，AI 帮你看趋势、给建议。</p>
     <div class="needs"><span class="need">体重趋势</span><span class="need">摄入与消耗</span><span class="need">运动记录</span><span class="need">角色体态</span><span class="need">睡眠与嗓音</span></div></section>
-  <div class="gate" style="margin-top:0;margin-bottom:14px">🔒 身体数据只有本人可见，默认不同步给团队。体重和饮食管理请在营养师 / 医生指导下进行，不建议极端节食。</div>
+  <div class="gate" style="margin-top:0;margin-bottom:14px">🔒 身体数据保存在当前浏览器；本演示没有账号隔离，使用此浏览器的人可查看。完整备份会包含这些记录。体重和饮食管理请在营养师 / 医生指导下进行，不建议极端节食。</div>
   <div class="grid4 kpis">
     <div class="kpi"><small>今日体重</small><b>${wNow.toFixed(1)}<em>kg</em></b><span class="small ${wNow - wWeek <= 0 ? 'muted' : 'warn-t'}">比 7 天前 ${(wNow - wWeek > 0 ? '+' : '') + (wNow - wWeek).toFixed(1)} kg · 目标 ${B.target[0]}–${B.target[1]}</span></div>
     <div class="kpi"><small>今日摄入</small><b>${intake}<em>千卡</em></b><div class="bar"><i style="width:${Math.min(100, intake / B.goalIn * 100)}%"></i></div><span class="small muted">建议 ${B.goalIn} 千卡左右</span></div>
@@ -934,9 +978,9 @@ function vBody() {
   </div>
   <div class="grid2 mt">
     <div class="card"><div class="result-head"><h3>今天吃了什么</h3><span class="small muted">输入食物，AI 估算热量</span></div>
-      <ul class="list small">${meals.map(m => `<li class="row" style="justify-content:space-between"><span><span class="tag">${m.t}</span> ${m.n}</span><b>${m.k} 千卡</b></li>`).join('')}</ul>
+      <ul class="list small">${meals.map(m => `<li class="row" style="justify-content:space-between"><span><span class="tag">${esc(m.t)}</span> ${esc(m.n)}</span><b>${m.k} 千卡</b></li>`).join('')}</ul>
       <div class="row mt8" style="flex-wrap:nowrap"><input class="add-item" id="foodIn" placeholder="例如：一杯拿铁、200 克鸡胸、一个苹果" style="margin:0;flex:1"><button class="btn sm pri" data-act="food">记录</button></div>
-      ${S.lastFood ? `<p class="small muted mt8">✦ ${S.lastFood}</p>` : ''}</div>
+      ${S.lastFood ? `<p class="small muted mt8">✦ ${esc(S.lastFood)}</p>` : ''}</div>
     <div class="card"><div class="result-head"><h3>运动记录</h3><span class="small muted">可连接 Apple 健康 / 华为运动健康 / Keep（正式版）</span></div>
       <ul class="list small">${B.workouts.map(x => `<li class="row" style="justify-content:space-between"><span>${x.ic} ${x.n} · ${x.m} 分钟</span><b>${x.k} 千卡</b></li>`).join('')}</ul>
       <h3 class="mt">今天的状态</h3><div class="checks">${[['energy', '精力'], ['mood', '情绪'], ['voice', '嗓音'], ['sleep', '睡眠质量']].map(([k, t]) => `<div class="ckrow"><span>${t}</span><div class="dots5">${[1, 2, 3, 4, 5].map(v => `<button data-act="ck" data-v="${k}" data-i="${v}" class="${(ck[k] || 0) >= v ? 'on' : ''}"></button>`).join('')}</div></div>`).join('')}
@@ -954,7 +998,7 @@ function vBody() {
 
 /* ---------------- 私密模块：经期记录（可选） ---------------- */
 function cycleCard() {
-  if (!S.cycleOn) return `<div class="card mt private"><div class="result-head"><div><h3>🔒 私密模块 · 经期记录（可选）</h3><p class="sub">只有本人可见，不会出现在团队资料包里，随时可以关闭并清除。用不用，完全由自己决定。</p></div><button class="btn" data-act="cycle" data-v="on">开启</button></div>
+  if (!S.cycleOn) return `<div class="card mt private"><div class="result-head"><div><h3>🔒 私密模块 · 经期记录（可选）</h3><p class="sub">保存在当前浏览器；完整备份包含此记录，Markdown项目资料包不导出经期详情。随时可以关闭并清除。用不用，完全由自己决定。</p></div><button class="btn" data-act="cycle" data-v="on">开启</button></div>
     <p class="small muted">开启后：记录周期和身体感受，AI 会对照日程，提前提醒经期和拍摄、活动、出差重叠的日子。</p></div>`;
   const C = S.cycle, dayMs = 86400000, t0 = new Date(); t0.setHours(0, 0, 0, 0);
   const start = n => new Date(t0.getTime() + n * dayMs);
@@ -966,7 +1010,7 @@ function cycleCard() {
   const f = d => `${start(d).getMonth() + 1}/${start(d).getDate()}`;
   const SYM = ['痛经', '疲惫', '浮肿', '情绪低落', '皮肤状态差', '睡不好'];
   const sym = S.sym[new Date().toDateString()] || [];
-  return `<div class="card mt private"><div class="result-head"><div><h3>🔒 私密模块 · 经期记录</h3><p class="sub">仅本人可见 · 不进入团队资料包 · 不同步给任何人</p></div><button class="btn sm" data-act="cycle" data-v="off">关闭并清除</button></div>
+  return `<div class="card mt private"><div class="result-head"><div><h3>🔒 私密模块 · 经期记录</h3><p class="sub">保存在当前浏览器 · 不进入团队资料包 · 不同步给任何人</p></div><button class="btn sm" data-act="cycle" data-v="off">关闭并清除</button></div>
     <div class="grid4 kpis"><div class="kpi"><small>周期第</small><b>${cycDay}<em>天</em></b></div><div class="kpi"><small>预计下次</small><b>${f(next)}</b><span class="small muted">还有 ${next} 天</span></div><div class="kpi"><small>平均周期</small><b>${C.len}<em>天</em></b></div><div class="kpi"><small>经期时长</small><b>${C.dur}<em>天</em></b></div></div>
     <div class="cyc mt">${days.map(d => `<div class="cd ${kind(d)} ${d === 0 ? 'now' : ''}" title="${f(d)}"><small>${start(d).getDate()}</small>${tripDays.includes(d) ? '<i>✈︎</i>' : ''}</div>`).join('')}</div>
     <div class="legend mt8"><span><i style="background:var(--bad)"></i>经期</span><span><i style="background:color-mix(in srgb,var(--bad) 40%,transparent)"></i>预测经期</span><span><i style="background:color-mix(in srgb,var(--warn) 45%,transparent)"></i>经前期</span><span>✈︎ 出差 / 活动</span></div>
@@ -1079,9 +1123,9 @@ function vTrip() {
       <p class="small muted">${x.w ? `${WXC(x.w.code)[1]} ${x.w.min}–${x.w.max}° · 降雨 ${x.w.rain}%` : ''}</p><p class="small mt8"><b>活动：</b>${x.ev}</p><p class="small"><b>着装：</b>${x.dress}</p><p class="small"><b>提醒：</b>${wearFor(x.w, x.ev)}</p></div>`).join('')}</div>`)}
   </div>
   <div class="card mt"><div class="result-head"><div><h3>团队携带清单</h3><p class="sub">每个人负责什么、带齐没有，一目了然；勾选会保存</p></div>
-    <div class="row"><span class="small muted">已准备 ${doneN}/${all.length}</span><div class="bar" style="width:140px"><i style="width:${all.length ? doneN / all.length * 100 : 0}%"></i></div><button class="btn sm" data-act="toast" data-msg="已生成清单（演示：不会发送给任何人）">生成清单发给团队</button></div></div>
+    <div class="row"><span class="small muted">已准备 ${doneN}/${all.length}</span><div class="bar" style="width:140px"><i style="width:${all.length ? doneN / all.length * 100 : 0}%"></i></div><button class="btn sm" data-act="teamlist">导出团队携带清单</button></div></div>
     <div class="team">${team.map(r => { const items = [...r.items.map(i => [i, '']), ...r.ai.map(i => [i, 'ai']), ...r.add.map(i => [i, 'add'])]; const n = items.filter(([i]) => S.pack[r.role + '|' + i]).length; return `<div class="role"><div class="row" style="justify-content:space-between"><b>${r.ic} ${r.role}</b><span class="small muted">${n}/${items.length}</span></div><div class="bar mt8"><i style="width:${n / items.length * 100}%"></i></div>
-      <div class="mt8">${items.map(([i, k]) => `<label class="chk small"><input type="checkbox" data-act="pack" data-v="${r.role}|${i}" ${S.pack[r.role + '|' + i] ? 'checked' : ''}><span>${i}${k === 'ai' ? ' <span class="tag ev">✦ AI 按天气补充</span>' : ''}${k === 'add' ? ' <span class="tag">手动添加</span>' : ''}</span></label>`).join('')}</div>
+      <div class="mt8">${items.map(([i, k]) => `<label class="chk small"><input type="checkbox" data-act="pack" data-v="${esc(r.role+'|'+i)}" ${S.pack[r.role + '|' + i] ? 'checked' : ''}><span>${esc(i)}${k === 'ai' ? ' <span class="tag ev">✦ AI 按天气补充</span>' : ''}${k === 'add' ? ' <span class="tag">手动添加</span>' : ''}</span></label>`).join('')}</div>
       <input class="add-item" data-role="${r.role}" placeholder="+ 添加物品，回车确认"></div>`; }).join('')}</div>
   </div>`;
 }
@@ -1093,17 +1137,7 @@ function schedEvents() {
   C.invites.forEach(i => { if (S.inv[i.id] === 'yes' && i.day) ev.push({ t: i.t, a: i.day, b: i.day, n: i.n + '（新接）', added: true, id: 'inv-' + i.id }); });
   return ev;
 }
-function dayInfo() {
-  const C = D.sched, ev = schedEvents(), days = [];
-  for (let d = 1; d <= C.days; d++) {
-    const list = ev.filter(e => d >= e.a && d <= e.b);
-    const shoot = list.some(e => e.t === 'shoot');
-    const clash = shoot && list.some(e => ['film', 'biz', 'promo', 'variety'].includes(e.t));
-    const rest = !list.length || list.some(e => e.t === 'rest');
-    days.push({ d, list, clash, work: !rest, rest });
-  }
-  return days;
-}
+function dayInfo() { return ActorStore.scheduleDays(schedEvents(),D.sched.days); }
 function donut(parts, total) {
   let off = 0; const R = 54, L = 2 * Math.PI * R;
   return `<svg viewBox="0 0 140 140" class="donut-svg">${parts.map(([c, v]) => { const len = v / total * L; const seg = `<circle cx="70" cy="70" r="${R}" fill="none" stroke="${c}" stroke-width="18" stroke-dasharray="${len} ${L - len}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"/>`; off += len; return seg; }).join('')}
@@ -1126,7 +1160,7 @@ function vHome() {
   <div class="grid4 kpis">
     <div class="kpi"><small>本月工作日</small><b>${work}<em>/${C.days}天</em></b><div class="bar"><i style="width:${work / C.days * 100}%"></i></div></div>
     <div class="kpi"><small>休息日</small><b class="${rest < 4 ? 'warn-t' : ''}">${rest}<em>天</em></b><span class="small ${rest < 4 ? 'warn-t' : 'muted'}">${rest < 4 ? '偏少，注意身体' : '正常'}</span></div>
-    <div class="kpi"><small>档期冲突</small><b class="${clashes.length ? 'bad-t' : ''}">${clashes.length}<em>天</em></b><span class="small muted">${clashes.map(d => C.month + '/' + d.d).join('、') || '无'}</span></div>
+    <div class="kpi"><small>冲突 / 待核时段</small><b class="${clashes.length ? 'bad-t' : ''}">${clashes.length}<em>天</em></b><span class="small muted">${clashes.map(d => C.month + '/' + d.d).join('、') || '无'}</span></div>
     <div class="kpi"><small>待决定邀约</small><b>${pending}<em>项</em></b><span class="small muted">见下方 AI 排期助手</span></div>
   </div>
   <div class="row mt" style="justify-content:flex-end;gap:8px"><span class="small muted">${(S.userEvents || []).length ? `我添加了 ${S.userEvents.length} 项 · ` : ''}示例日程 ${D.sched.events.length - Object.keys(S.hiddenEv).length} 项</span>${Object.keys(S.hiddenEv).length < D.sched.events.length ? '<button class="btn sm" data-act="evclear">清空示例，从零开始</button>' : '<button class="btn sm" data-act="evrestore">恢复示例日程</button>'}</div>
@@ -1136,12 +1170,12 @@ function vHome() {
       ${'<div></div>'.repeat(C.firstWeekday - 1)}
       ${days.map(d => `<button class="dm ${d.d === C.today ? 'today' : ''} ${d.clash ? 'clash' : ''} ${S.selDay === d.d ? 'sel' : ''}" data-act="day" data-i="${d.d}">
         <span class="dn">${d.d}</span>${d.list.some(e => e.long) ? `<i class="longbar" style="background:${T.shoot.c}"></i>` : ''}
-        ${d.list.filter(e => !e.long).slice(0, 2).map(e => `<em class="${S.evDone[e.id] ? 'em-done' : ''}" style="background:${T[e.t].c}">${e.n.split(' · ')[0].split('（')[0]}</em>`).join('')}${d.list.filter(e => !e.long).length > 2 ? `<small class="more">+${d.list.filter(e => !e.long).length - 2}</small>` : ''}
+        ${d.list.filter(e => !e.long).slice(0, 2).map(e => `<em class="${S.evDone[e.id] ? 'em-done' : ''}" style="background:${T[e.t].c}">${esc(e.n.split(' · ')[0].split('（')[0])}</em>`).join('')}${d.list.filter(e => !e.long).length > 2 ? `<small class="more">+${d.list.filter(e => !e.long).length - 2}</small>` : ''}
         ${d.clash ? '<b class="cl">冲突</b>' : ''}</button>`).join('')}</div></div>
     <div>
       <div class="card"><div class="result-head"><h3>${C.month}月${sel.d}日${sel.d === C.today ? ' · 当天' : ''}</h3>${sel.clash ? tag('bad', '有冲突') : ''}</div>
         ${sel.d === C.today ? `<ol class="tl tl-check">${C.todayPlan.map(([h, n, t], i) => `<li class="${S.todayDone[i] ? 'done' : ''}"><label><input type="checkbox" data-act="tdone" data-i="${i}" ${S.todayDone[i] ? 'checked' : ''}><span class="tm">${h}</span><i style="background:${T[t].c}"></i><span>${n}</span></label></li>`).join('')}</ol>` : ''}
-        <ul class="list evl">${sel.list.filter(e => !(sel.d === C.today && !e.mine && !e.added && e.long)).map(e => `<li class="${S.evDone[e.id] ? 'done' : ''}"><label class="row" style="flex-wrap:nowrap;align-items:flex-start"><input type="checkbox" data-act="evdone" data-v="${e.id}" ${S.evDone[e.id] ? 'checked' : ''}><i class="dot" style="background:${T[e.t].c};margin-top:6px"></i><span style="flex:1"><b>${e.n}</b>${e.mine ? ' <span class="tag">我添加的</span>' : ''}<br><span class="small muted">${T[e.t].n}${e.a !== e.b ? ` · ${C.month}/${e.a}–${C.month}/${e.b}` : ''}${e.time ? ' · ' + e.time : ''}${e.note ? ' · ' + e.note.replace(/</g, '&lt;') : ''}</span></span></label>
+        <ul class="list evl">${sel.list.filter(e => !(sel.d === C.today && !e.mine && !e.added && e.long)).map(e => `<li class="${S.evDone[e.id] ? 'done' : ''}"><label class="row" style="flex-wrap:nowrap;align-items:flex-start"><input type="checkbox" data-act="evdone" data-v="${e.id}" ${S.evDone[e.id] ? 'checked' : ''}><i class="dot" style="background:${T[e.t].c};margin-top:6px"></i><span style="flex:1"><b>${esc(e.n)}</b>${e.mine ? ' <span class="tag">我添加的</span>' : ''}<br><span class="small muted">${T[e.t].n}${e.a !== e.b ? ` · ${C.month}/${e.a}–${C.month}/${e.b}` : ''}${e.time ? ' · ' + esc(e.time) : ''}${e.note ? ' · ' + e.note.replace(/</g, '&lt;') : ''}</span></span></label>
           <button class="btn sm" data-act="evdel" data-v="${e.id}">${e.mine ? '删除' : '移除'}</button></li>`).join('') || '<li class="muted small">这一天还没有安排。</li>'}</ul>
         <details class="evform" ${sel.list.length ? '' : 'open'}><summary>＋ 在 ${C.month}月${sel.d}日 添加日程</summary>
           <div class="grid2 mt8"><div class="field" style="margin-top:0"><label>内容</label><input id="evN" placeholder="例如：杂志拍摄 · 上海"></div>
@@ -1149,7 +1183,7 @@ function vHome() {
             <div class="field"><label>开始 / 结束（日）</label><div class="row" style="flex-wrap:nowrap"><input id="evA" type="number" min="1" max="${C.days}" value="${sel.d}"><span>—</span><input id="evB" type="number" min="1" max="${C.days}" value="${sel.d}"></div></div>
             <div class="field"><label>时间</label><input id="evTime" placeholder="例如：14:00–18:00"></div></div>
           <div class="field"><label>备注</label><input id="evNote" placeholder="地点、对接人、要带什么…"></div>
-          <div class="row mt8" style="justify-content:space-between"><span class="small muted">保存后，冲突、统计和图表会自动重新计算</span><button class="btn pri" data-act="evadd">添加到日程</button></div></details>
+          <div class="row mt8" style="justify-content:space-between"><span class="small muted">按时间段检查重叠；未填具体时间的事项按全天占位，提示潜在冲突。休息标记不抵消工作。</span><button class="btn pri" data-act="evadd">添加到日程</button></div></details>
         ${sel.clash ? `<div class="gate">⚠ 这一天拍摄与${sel.list.filter(e => ['film', 'biz', 'promo', 'variety'].includes(e.t)).map(e => T[e.t].n).join('、')}重叠。建议：提前与制片确认调整通告，或改为线上参与。</div>` : ''}</div>
       <div class="card mt"><h3>这个月时间花在哪</h3><div class="row mt8" style="align-items:center;flex-wrap:nowrap">${donut(parts, total)}
         <ul class="list small" style="flex:1">${parts.slice(0, 6).map(([c, v, k]) => `<li class="row" style="justify-content:space-between;padding:4px 0"><span><i class="dot" style="background:${c}"></i>${T[k].n}</span><b>${Math.round(v / total * 100)}%</b></li>`).join('')}</ul></div></div>
@@ -1175,22 +1209,25 @@ const VIEWS = [vTake, vRead, vRole, vPrev, vShoot, vPromo, vDeal, vReview];
 
 /* ---------------- 渲染 ---------------- */
 function render(keepScroll) {
+  captureDraft();
   document.documentElement.dataset.theme = S.theme;
   document.title = `${name().name} · 演员AI工作台`;
   const m = $('#main'), y = m.scrollTop;
   renderSide(); renderTop(); renderFolder();
-  if (onPage()) { m.innerHTML = VIEWP[onPage()]() + reviewBlock(); if (keepScroll) m.scrollTop = y; return; }
+  if (onPage()) { m.innerHTML = VIEWP[onPage()]() + reviewBlock(); renderedPage=pageKey();restoreDraft(); if (keepScroll) m.scrollTop = y; return; }
   const tdef = GUIDE[S.st].find(g => g[1]);
   if (tdef) S.seen[S.st + ':' + (S.tab[S.st] || tdef[1])] = true;
   const html = VIEWS[S.st](), cut = html.lastIndexOf('<div class="next">');
   m.innerHTML = cut > 0 ? html.slice(0, cut) + reviewBlock() + html.slice(cut) : html + reviewBlock();
+  renderedPage=pageKey();restoreDraft();
   if (keepScroll) m.scrollTop = y;
 }
-function go(i) {
+async function go(i) {
+  captureDraft();
   const pk = Object.keys(PAGES).find(k => PAGES[k] === i);
-  if (pk) { if (S[pk]) return; clearTimers(); Object.keys(PAGES).forEach(k => S[k] = k === pk); save(); render(); $('#main').scrollTop = 0; $('#app').classList.remove('folder-open'); return; }
+  if (pk) { if (S[pk]) return; clearTimers(); Object.keys(PAGES).forEach(k => S[k] = k === pk); await save(); render(); $('#main').scrollTop = 0; $('#app').classList.remove('folder-open'); return; }
   i = Math.max(0, Math.min(7, i)); if (i === S.st && !onPage()) return;
-  clearTimers(); Object.keys(PAGES).forEach(k => S[k] = false); S.st = i; S.hl = null; save(); render(); $('#main').scrollTop = 0;
+  clearTimers(); Object.keys(PAGES).forEach(k => S[k] = false); S.st = i; S.hl = null; await save(); render(); $('#main').scrollTop = 0;
   $('#app').classList.remove('folder-open');
 }
 
@@ -1200,11 +1237,11 @@ function settings() {
   dlg.innerHTML = `<div class="dlg"><h2>设置<button data-act="close" aria-label="关闭">×</button></h2>
     <div class="field"><label>连接 AI 模型</label>
       <div class="provider">${PROVIDERS.map(([k, n, d]) => `<button data-act="prov" data-v="${k}" class="${S.provider === k ? 'on' : ''}">${n}<small>${d}</small></button>`).join('')}</div>
-      <p class="small muted mt8">${S.provider === 'demo' ? '当前为演示模式：所有 AI 结果均为预置示例，并在页面上标注“示例结果”。' : `正式版在这里填写 ${providerName()} 的${['codex', 'claudecode'].includes(S.provider) ? '本机登录' : ' API Key'}，由演员和工作室使用自己的账号。演示版不保存、不发送任何密钥，结果仍为预置示例。`}</p></div>
+      <p class="small muted mt8">${S.provider === 'demo' ? '当前为演示模式：所有 AI 结果均为预置示例，并在页面上标注“示例结果”。' : `当前选中 ${providerName()}。公开网页可演示；真实调用需在演员自己的电脑启动本机服务，密钥只在本次页面内存中保存。`}</p><button class="btn sm" data-act="aiconnect">配置 / 测试自己的连接</button></div>
     <div class="field"><label>主题</label><div class="opt">${[['tide', '深蓝潮汐'], ['butter', '奶油便签'], ['moss', '山野片场']].map(([k, n]) => `<button data-act="theme" data-v="${k}" class="${S.theme === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
     <div class="field"><label>数据归档与备份</label>
       <div class="row"><button class="btn sm" data-act="backup">💾 导出完整备份</button><label class="btn sm" style="cursor:pointer">📥 导入备份<input type="file" id="bkFile" accept=".json" hidden></label><button class="btn sm" data-act="archive">🗄 归档这部戏</button></div>
-      ${S.archives.length ? `<ul class="list small mt8">${S.archives.map(a => `<li>🗄 ${a.title} · ${a.at} · 资料夹 ${a.folder} 项 · 人工决定 ${a.reviews} 条</li>`).join('')}</ul>` : '<p class="small muted">还没有归档记录。</p>'}</div>
+      ${S.archives.length ? `<ul class="list small mt8">${S.archives.map((a,i) => `<li>🗄 ${esc(a.title)} · ${esc(a.at)} · 资料夹 ${a.folder} 项 · 人工决定 ${a.reviews} 条 <button class="btn sm" data-act="archiveview" data-i="${i}">查看</button><button class="btn sm" data-act="archiveexport" data-i="${i}">导出</button><button class="btn sm" data-act="archiverestore" data-i="${i}">恢复</button></li>`).join('')}</ul>` : '<p class="small muted">还没有归档记录。</p>'}</div>
     <div class="field"><label>演示操作</label><p class="small">键盘 <span class="kbd">←</span> <span class="kbd">→</span> 切换上一站 / 下一站；“重新演示”清空进度，回到日程总览首页。</p>
       <div class="row mt8"><button class="btn sm" data-act="reset">↺ 重新演示</button></div></div>
     <p class="note">本演示所有项目、人物、留言、品牌均为虚构，仅用于展示工作流程，不代表任何真实演员的经历、使用或背书。数据只保存在当前浏览器。</p></div>`;
@@ -1216,7 +1253,7 @@ function exportMd() {
   const P = D.project, L = [];
   L.push(`# 《${P.title}》资料包`, '', `${name().name} · 演员AI工作台 演示导出 · ${new Date().toLocaleString('zh-CN')}`, '', '> 演示版：AI 结果为预置示例，项目与人物均为虚构。', '');
   if (has('take')) L.push('## 01 接戏评估卡', D.take.summary, '', ...D.take.fit.map(f => `- ${f.k}：${f.v}（${f.t}）`), '');
-  if (has('read')) L.push('## 02 角色分析卡', '### 人物关系', ...D.people.slice(1).map(p => `- ${p.name}：${p.edge}`), '### 成长线', ...D.growth.map(g => `- 第${g.sc}场 ${g.label}：${g.note}`), '### 第12场潜台词', ...D.subtext.map(s => `- ${s.who}：「${s.line}」→ ${s.sub}（推断）`), '### 重点场次', ...D.keyScenes.map(k => `- 第${k.sc}场 ${k.w}：${k.why}`), '### 人物小传（草稿）', ...D.bio, '### 角色分析卡', D.roleCard.oneLine, ...D.roleCard.basic.map(b => `- ${b[0]}：${b[1]}`), ...D.roleCard.timeline.map(x => `- ${x[0]}：${x[1]}`), ...D.roleCard.core.map(c => `- ${c[0]}：${c[1]}`), ...D.roleCard.surface.map(c => `- ${c[0]}：${c[1]}`), '');
+  if (has('read')) L.push('## 02 角色分析卡', '### 人物关系', ...D.people.slice(1).map(p => `- ${p.name}：${p.edge}`), '### 成长线', ...D.growth.map(g => `- 第${g.sc}场 ${g.label}：${g.note}`), '### 第12场潜台词', ...D.subtext.map(s => `- ${s.who}：「${s.line}」→ ${s.sub}（推断）`), '### 重点场次', ...D.keyScenes.map(k => `- 第${k.sc}场 ${k.w}：${k.why}`), '### 人物小传（草稿）', ...(S.bioEdits.main ? S.bioEdits.main.split('\n') : D.bio), '### 角色分析卡', D.roleCard.oneLine, ...D.roleCard.basic.map(b => `- ${b[0]}：${b[1]}`), ...D.roleCard.timeline.map(x => `- ${x[0]}：${x[1]}`), ...D.roleCard.core.map(c => `- ${c[0]}：${c[1]}`), ...D.roleCard.surface.map(c => `- ${c[0]}：${c[1]}`), '');
   if (has('line')) L.push('## 02 台词建议稿', `- 原句（保留）：${D.lineOpt.original}`, `- 建议：${S.adopt !== null ? D.lineOpt.options[S.adopt].t : '未采用'}（待导演确认）`, '');
   if (has('role')) L.push(`## 03 第12场表演方案 · ${handlingName()}`, ...D.beats.map((b, i) => `- 节拍${i + 1} ${b.t}｜目标：${b.goal}｜阻碍：${b.obs}｜动作：${b.act}`), '');
   if (has('dance')) L.push('## 03 第21场舞蹈拆解', `主题：${D.dance.theme}`, `音乐：${D.dance.music}`, ...D.dance.segs.map(s => `- ${s.n}（${s.beats}×8拍）情绪：${s.emo}；动作：${s.move}`), ...D.dance.log.map(l => `- ${l.d}：${l.t}｜观察问题：${l.q}`), '');
@@ -1227,6 +1264,7 @@ function exportMd() {
   if (has('review')) L.push('## 08 作品复盘报告', ...D.air.kpi.map(k => `- ${k[0]}：${k[1]}${k[2]}（${k[3]}）`), '### 观众记住了什么', ...D.air.topics.map(([n, v]) => `- ${n}：${v}%`), '### 表演自评', ...D.selfQ.map((q, i) => `- ${q}\n  ${(S.selfAns || {})[i] || '（未填写）'}`), '### 带进下一部戏的三件事', ...D.takeaway.map(t => `- ${t}`), '');
   const rv = Object.entries(S.reviews).filter(([, l]) => l.length);
   if (rv.length) { L.push('## 人工复核 · 最终决定'); rv.forEach(([k, l]) => { L.push(`### ${PAGE_NAME(k)}`); l.forEach(r => L.push(`- ${r.at} ${r.who}（${(STATUS.find(x => x[0] === r.status) || STATUS[3])[1]}）：${r.text.replace(/\n/g, ' ')}`)); }); L.push(''); }
+  L.push('## 项目主创资料',...Object.entries(S.projectInfo).map(([k,v])=>k+'：'+v),'## 回复修改草稿',...Object.entries(S.replyEdits).map(([k,v])=>k+'：'+v),'## 自行录入作品',...S.userWorks.map(w=>w.year+' 《'+w.title+'》 '+w.role+' '+w.genre));
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([L.join('\n')], { type: 'text/markdown' }));
   a.download = `《${P.title}》资料包.md`; a.click();
@@ -1234,107 +1272,174 @@ function exportMd() {
   toast('已导出资料包（Markdown）');
 }
 
+// The recipient owns the account. Credentials are intentionally never persisted or backed up.
+let aiConnection={model:'',apiKey:'',baseUrl:''},aiConnected=false,aiTask='自由分析',aiBusy=false,aiText='';
+function aiDialog(task) {
+ if(S.provider==='demo'){toast('先在设置里选择要连接的模型服务');return;}
+ if(task)aiTask=task;const dlg=$('#dlg');const cli=['codex','claudecode'].includes(S.provider);
+ const source=aiText||((S.files[pageKey()]||[]).filter(f=>f.text).map(f=>f.text).join('\n\n')).slice(0,150000);
+ dlg.innerHTML=`<div class="dlg"><h2>连接自己的模型<button data-act="close">×</button></h2><p>${esc(providerName())} · 仅本次页面内存保留连接信息</p><p class="note">公开演示网页不接收密钥。在本人电脑执行 npm install 与 npm start，打开本机地址后才能调用。Codex / Claude Code另需 --local-tools，由本人安装并登录。</p>
+ <div class="field"><label>模型 ID（API必填，本机工具可留空）</label><input id="aiModel" value="${esc(aiConnection.model)}" autocomplete="off"></div>
+ ${cli?'':`<div class="field"><label>本人 API Key（刷新后清除）</label><input type="password" id="aiKey" value="${esc(aiConnection.apiKey)}" autocomplete="off"></div>`}
+ ${S.provider==='compatible'?`<div class="field"><label>公开HTTPS服务地址（含API前缀，如 /v1）</label><input id="aiBase" value="${esc(aiConnection.baseUrl)}"></div>`:''}
+ <div class="row mt8"><button class="btn" data-act="aitest">测试连接</button><span id="aiStatus">尚未测试</span></div>
+ <div class="field"><label>发送给模型的资料（${esc(aiTask)}）</label><textarea id="aiSource" style="min-height:180px" placeholder="粘贴剧本、留言或需要分析的资料。此处内容会发送给所选服务。">${esc(source)}</textarea></div>
+ <p class="small">只发送此框资料，不上传附件原件。请确认有权向所选模型提供这些资料。</p><button class="btn pri" data-act="aicall">发送资料并分析</button><pre id="aiResult" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre><div class="row"><button class="btn sm" data-act="airesult">导出结果</button><button class="btn sm" data-act="aisave">保存为待复核记录</button></div></div>`;
+ if(!dlg.open)dlg.showModal();
+}
+async function callModel(test) {
+ if(aiBusy)return;const status=$('#aiStatus');
+ if(!['localhost','127.0.0.1'].includes(location.hostname)){status.textContent='此处是公开演示页。请下载源码，在自己的电脑运行 npm start 后连接。';return;}
+ const provider={claude:'anthropic',claudecode:'claude-code'}[S.provider]||S.provider;
+ aiConnection={provider,model:$('#aiModel').value.trim(),apiKey:$('#aiKey')?.value||'',baseUrl:$('#aiBase')?.value||''};
+ aiText=$('#aiSource').value;
+ if(!test&&!aiText.trim())throw Error('先填写需要分析的资料');
+ aiBusy=true;status.textContent=test?'正在测试…':'正在分析…';
+ try {
+  const response=await fetch(test?'/api/test':'/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({connection:aiConnection,prompt:'任务：'+aiTask+'\n'+aiText}),signal:AbortSignal.timeout(125000)});
+  if(!response.headers.get('content-type')?.includes('application/json'))throw Error('本机模型服务未启动。请使用 npm start 启动应用');
+  const data=await response.json();if(!response.ok||!data.ok)throw Error(data.error||'连接失败');
+  aiConnected=true;status.textContent=test?'连接测试通过':'分析完成 · '+data.model; if(!test)$('#aiResult').textContent=data.text;renderTop();
+ }catch(e){aiConnected=false;status.textContent='未完成：'+e.message;}finally{aiBusy=false;}
+}
+
+function projectInfoView() {
+ const f=S.projectInfo;return `<div class="card mt"><h3>项目资料 · 导演与制作团队</h3><p class="sub">按已有资料填写，未确认的内容可留空。</p>${[['director','导演'],['producer','出品 / 制作公司'],['team','主创与制作团队'],['notes','补充资料 / 来源链接']].map(([k,n])=>`<div class="field"><label>${n}</label><input id="project-${k}" value="${esc(f[k])}"></div>`).join('')}<button class="btn pri" data-act="saveproject">保存项目资料</button></div>`;
+}
+function editor(kind,key,text) {
+ const dlg=$('#dlg');dlg.innerHTML=`<div class="dlg"><h2>${kind==='bio'?'人物小传':'回复草稿'}<button data-act="close">×</button></h2><textarea id="editText" style="min-height:280px;width:100%">${esc(text)}</textarea><div class="row mt8"><button class="btn pri" data-act="saveedit" data-kind="${kind}" data-v="${esc(key)}">保存修改</button><button class="btn" data-act="exportedit">导出当前草稿</button></div></div>`;if(!dlg.open)dlg.showModal();
+}
+async function importWorks(file) {
+ const result=Papa.parse(await file.text(),{header:true,skipEmptyLines:true,transformHeader:h=>h.trim().replace(/^\uFEFF/,'')});
+ if(result.errors.length||!result.meta.fields.includes('作品名'))throw Error('CSV需要作品名列；建议表头：作品名,年份,角色,题材,备注');
+ const works=result.data.map(r=>({title:String(r['作品名']||'').trim(),year:String(r['年份']||''),role:String(r['角色']||''),genre:String(r['题材']||''),note:String(r['备注']||'')}));
+ if(works.some(w=>!w.title)||works.length>500)throw Error('作品名不能为空，一次最多500行');
+ const original=await ActorStore.putFile(file);S.userWorks.push(...works);(S.files.portfolio??=[]).push({name:file.name,size:file.size+' B',at:stamp(),file:original});await save();render(true);toast('已导入'+works.length+'部作品，预置雷达不会冒充重新分析');
+}
+
 /* ---------------- 事件 ---------------- */
-document.addEventListener('click', e => {
+const handle = fn => e => Promise.resolve(fn(e)).catch(showError);
+let actionBusy=false;
+const handleAction=fn=>handle(async e=>{if(actionBusy)return;actionBusy=true;document.body.dataset.busy='1';try{await fn(e);}finally{actionBusy=false;delete document.body.dataset.busy;}});
+document.addEventListener('click', handleAction(async e => {
+  captureDraft();
   const el = e.target.closest('[data-act]'); if (!el) return;
   const a = el.dataset.act, v = el.dataset.v, i = +el.dataset.i;
   switch (a) {
-    case 'go': if (el.dataset.tab) { S.tab[i] = el.dataset.tab; save(); } go(i); if (el.dataset.tab) render(); break;
-    case 'tab': clearTimers(); S.tab[el.dataset.st] = v; save(); render(true); break;
+    case 'go': if (el.dataset.tab) { S.tab[i] = el.dataset.tab; await save(); } await go(i); if (el.dataset.tab) render(); break;
+    case 'tab': clearTimers(); S.tab[el.dataset.st] = v; await save(); render(true); break;
     case 'run': runAI(el.dataset.k); break;
-    case 'save': addFolder(el.dataset.k); break;
+    case 'save': await addFolder(el.dataset.k); break;
     case 'toast': toast(el.dataset.msg); break;
-    case 'theme': S.theme = v; save(); render(true); if ($('#dlg').open) settings(); break;
+    case 'saveproject': for(const k of Object.keys(S.projectInfo))S.projectInfo[k]=$('#project-'+k).value.trim();await save();toast('项目资料已保存');break;
+    case 'editbio': editor('bio','main',S.bioEdits.main||D.bio.join('\n\n'));break;
+    case 'editreply': {const m=D.fans.inbox.find(m=>m.u===v);editor('reply',v,S.replyEdits[v]??m?.r??'');break;}
+    case 'saveedit': if(el.dataset.kind==='bio')S.bioEdits[v]=$('#editText').value;else S.replyEdits[v]=$('#editText').value;await save();$('#dlg').close();render(true);toast('修改已保存');break;
+    case 'exportedit': download('编辑草稿.txt',$('#editText').value,'text/plain');break;
+    case 'teamlist': {const team=D.trip.team||[];const lines=['# 团队携带清单（待人工发送）',...team.flatMap(r=>['## '+r.role,...[...(r.items||[]),...(r.ai||[]),...(S.packAdd[r.role]||[])].map(item=>'- ['+(S.pack[r.role+'|'+item]?'x':' ')+'] '+item)])];download('团队携带清单.md',lines.join('\n'),'text/markdown');toast('已下载清单，可自行审核后发送');break;}
+    case 'directorquestions': download('给导演的问题清单.md','# 围读沟通问题\n\n'+D.take.questions.map(x=>'- '+x).join('\n'),'text/markdown');break;
+    case 'theme': S.theme = v; localStorage.setItem('xilixiwai.theme.v2',v); await save(); render(true); if ($('#dlg').open) settings(); break;
     case 'settings': settings(); break;
+    case 'aiconnect': aiDialog();break;
+    case 'aitest': await callModel(true);break;
+    case 'aicall': await callModel(false);break;
+    case 'airesult': download('模型分析结果.txt',$('#aiResult').textContent,'text/plain');break;
+    case 'aisave': {const text=$('#aiResult').textContent;if(!text)break;(S.reviews[pageKey()]??=[]).push({status:'discuss',who:'模型辅助（待人工复核）',text,at:stamp()});await save();toast('模型结果已存为待讨论记录');break;}
     case 'close': $('#dlg').close(); break;
-    case 'nm': S.nameIdx = i; save(); render(true); settings(); break;
-    case 'prov': S.provider = v; save(); render(true); settings(); break;
+    case 'nm': S.nameIdx = i; await save(); render(true); settings(); break;
+    case 'prov': aiConnected=false;S.provider = v; await save(); render(true); settings(); break;
     case 'reset':
-      if (confirm('恢复原状、重新演示？\n工作台和肉肉的演示改动都会清空，回到「日程总览」首页（主题保留）。')) {
-        const keep = { theme: S.theme, nameIdx: S.nameIdx }; clearTimers(); S = Object.assign(fresh(), keep); save(); try { localStorage.removeItem('rourou-world-v1'); } catch {}
+      if (confirm('恢复原状、重新演示？\n工作台演示改动会清空，肉肉的独立资料保留，回到「日程总览」首页（主题保留）。')) {
+        const keep = { theme: S.theme, nameIdx: S.nameIdx }; clearTimers(); S = validateMain(Object.assign(fresh(), keep)); renderedPage=null;await save();
         if ($('#dlg').open) $('#dlg').close(); render(); toast('已重置，可以重新演示');
       } break;
     case 'folder': $('#app').classList.toggle('folder-open'); break;
     case 'export': exportMd(); break;
-    case 'rel': S.rel = v; save(); render(true); break;
+    case 'rel': S.rel = v; await save(); render(true); break;
     case 'cite': {
       S.hl = +el.dataset.sc; render(true);
       const sc = $('#sc-' + el.dataset.sc), box = $('#script');
       if (sc && box) box.scrollTop = sc.offsetTop - box.offsetTop - 8;
       toast(`已定位到原文 第${el.dataset.sc}场`); break;
     }
-    case 'adopt': S.adopt = i < 0 ? null : i; save(); render(true); toast(i < 0 ? '已撤回，恢复原句' : '已采用建议，原句仍保留'); break;
-    case 'handling': S.handling = v; save(); render(true); break;
+    case 'adopt': S.adopt = i < 0 ? null : i; await save(); render(true); toast(i < 0 ? '已撤回，恢复原句' : '已采用建议，原句仍保留'); break;
+    case 'handling': S.handling = v; await save(); render(true); break;
     case 'play': playComic(); break;
-    case 'move': S.tasks[i].col = Math.min(2, S.tasks[i].col + 1); save(); render(true); break;
-    case 'sel': S.sel = i; save(); render(true); break;
-    case 'tone': S.tone = v; save(); render(true); break;
-    case 'submit': S.submitted[S.sel] = true; save(); render(true); toast('已提交工作室审核，未对外发送'); break;
-    case 'scope': S.scope = v; S.scopeTried = true; save(); render(true); break;
-    case 'pick': S.pick = v; save(); render(true); break;
-    case 'step': { const g = GUIDE[+el.dataset.st][+el.dataset.k]; if (g[1]) { S.tab[el.dataset.st] = g[1]; save(); render(true); } const t = document.querySelector('.ai-box, .thinking, [data-ai]'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'center' }); break; }
-    case 'drill': S.drillShow = i < 0 ? {} : { ...(S.drillShow || {}), [i]: !(S.drillShow || {})[i] }; save(); render(true); break;
+    case 'move': S.tasks[i].col = Math.min(2, S.tasks[i].col + 1); await save(); render(true); break;
+    case 'sel': S.sel = i; await save(); render(true); break;
+    case 'tone': S.tone = v; await save(); render(true); break;
+    case 'submit': S.submitted[S.sel] = true; await save(); render(true); toast('已提交工作室审核，未对外发送'); break;
+    case 'scope': S.scope = v; S.scopeTried = true; await save(); render(true); break;
+    case 'pick': S.pick = v; await save(); render(true); break;
+    case 'step': { const g = GUIDE[+el.dataset.st][+el.dataset.k]; if (g[1]) { S.tab[el.dataset.st] = g[1]; await save(); render(true); } const t = document.querySelector('.ai-box, .thinking, [data-ai]'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'center' }); break; }
+    case 'drill': S.drillShow = i < 0 ? {} : { ...(S.drillShow || {}), [i]: !(S.drillShow || {})[i] }; await save(); render(true); break;
     case 'wx': loadWX(true); render(true); toast('正在获取实时天气…'); break;
-    case 'pack': S.pack[v] = el.checked; if (!el.checked) delete S.pack[v]; save(); render(true); break;
-    case 'food': { const t = ($('#foodIn').value || '').trim(); if (!t) { toast('先输入吃了什么'); break; } const g = guessKcal(t); S.meals.push({ t: new Date().toTimeString().slice(0, 5), n: t, k: g.k }); S.lastFood = `AI 估算：${t} ≈ ${g.k} 千卡（${g.how}）`; save(); render(true); break; }
-    case 'ck': S.check[v] = i; save(); render(true); break;
-    case 'cycle': if (v === 'off' && !confirm('关闭并清除经期记录？')) break; S.cycleOn = v === 'on'; if (!S.cycleOn) { S.sym = {}; S.cycle = { lastStart: -24, len: 28, dur: 5 }; } save(); render(true); toast(S.cycleOn ? '已开启（仅本人可见）' : '已关闭并清除'); break;
-    case 'sym': { const k = new Date().toDateString(), l = S.sym[k] = S.sym[k] || []; const j = l.indexOf(v); j < 0 ? l.push(v) : l.splice(j, 1); save(); render(true); break; }
-    case 'gobrief': go(-9); break;
-    case 'offer': S.offer = i; save(); render(true); break;
-    case 'fanpf': S.fanPf = v; save(); render(true); break;
-    case 'fanok': S.fanOk = S.fanOk || {}; S.fanOk[v] = true; save(); render(true); toast('已提交工作室审核，未对外发送'); break;
-    case 'bf': S.bf = v; save(); render(true); break;
-    case 'bver': S.bVerified = el.checked; save(); render(true); break;
+    case 'pack': S.pack[v] = el.checked; if (!el.checked) delete S.pack[v]; await save(); render(true); break;
+    case 'food': { const t = ($('#foodIn').value || '').trim(); if (!t) { toast('先输入吃了什么'); break; } const g = guessKcal(t); S.meals.push({ t: new Date().toTimeString().slice(0, 5), n: t, k: g.k }); S.lastFood = `AI 估算：${t} ≈ ${g.k} 千卡（${g.how}）`; await save(); render(true); break; }
+    case 'ck': S.check[v] = i; await save(); render(true); break;
+    case 'cycle': if (v === 'off' && !confirm('关闭并清除经期记录？')) break; S.cycleOn = v === 'on'; if (!S.cycleOn) { S.sym = {}; S.cycle = { lastStart: -24, len: 28, dur: 5 }; } await save(); render(true); toast(S.cycleOn ? '已开启（保存在当前浏览器）' : '已关闭并清除'); break;
+    case 'sym': { const k = new Date().toDateString(), l = S.sym[k] = S.sym[k] || []; const j = l.indexOf(v); j < 0 ? l.push(v) : l.splice(j, 1); await save(); render(true); break; }
+    case 'gobrief': await go(-9); break;
+    case 'offer': S.offer = i; await save(); render(true); break;
+    case 'fanpf': S.fanPf = v; await save(); render(true); break;
+    case 'fanok': S.fanOk = S.fanOk || {}; S.fanOk[v] = true; await save(); render(true); toast('已提交工作室审核，未对外发送'); break;
+    case 'bf': S.bf = v; await save(); render(true); break;
+    case 'bver': S.bVerified = el.checked; await save(); render(true); break;
     case 'print': document.body.classList.add('printing-card'); window.print(); setTimeout(() => document.body.classList.remove('printing-card'), 500); break;
-    case 'calc': S.showCalc = !S.showCalc; save(); render(true); break;
-    case 'wreset': delete S.wts; save(); render(true); toast('已恢复默认权重'); break;
+    case 'calc': S.showCalc = !S.showCalc; await save(); render(true); break;
+    case 'wreset': delete S.wts; await save(); render(true); toast('已恢复默认权重'); break;
     case 'evadd': { const n = ($('#evN').value || '').trim(); if (!n) { toast('先写下日程内容'); break; } let a = +$('#evA').value || S.selDay, b = +$('#evB').value || a; if (b < a) [a, b] = [b, a]; a = Math.max(1, Math.min(D.sched.days, a)); b = Math.max(1, Math.min(D.sched.days, b));
-      S.userEvents.push({ id: 'u' + Date.now(), t: $('#evT').value, a, b, n, time: ($('#evTime').value || '').trim(), note: ($('#evNote').value || '').trim() }); save(); render(true); toast('已添加到日程，冲突与统计已更新'); break; }
-    case 'evdel': if (v.startsWith('u')) S.userEvents = S.userEvents.filter(e => e.id !== v); else if (v.startsWith('inv-')) delete S.inv[v.slice(4)]; else S.hiddenEv[v] = true; save(); render(true); toast('已移除'); break;
-    case 'evdone': S.evDone[v] = el.checked; if (!el.checked) delete S.evDone[v]; save(); render(true); break;
-    case 'tdone': S.todayDone[i] = el.checked; save(); render(true); break;
-    case 'evclear': if (confirm('清空全部示例日程？你添加的日程会保留。')) { D.sched.events.forEach((_, k) => S.hiddenEv['s' + k] = true); save(); render(true); toast('已清空示例，可以从零开始录入'); } break;
-    case 'evrestore': S.hiddenEv = {}; save(); render(true); toast('已恢复示例日程'); break;
-    case 'day': S.selDay = i; save(); render(true); break;
-    case 'inv': S.inv[v] = i === 1 ? 'yes' : i === 2 ? 'no' : undefined; if (!S.inv[v]) delete S.inv[v]; save(); render(true); toast(i === 1 ? '已接受，日程已更新' : i === 2 ? '已婉拒（演示，不会发送任何消息）' : '已撤回'); break;
+      const event={ id: 'u' + Date.now(), t: $('#evT').value, a, b, n, time: ($('#evTime').value || '').trim(), note: ($('#evNote').value || '').trim() };ActorStore.timeRange(event);S.userEvents.push(event); delete S.formDrafts[pageKey()]; renderedPage=null;await save(); render(true); toast('已添加到日程，冲突与统计已更新'); break; }
+    case 'evdel': if (v.startsWith('u')) S.userEvents = S.userEvents.filter(e => e.id !== v); else if (v.startsWith('inv-')) delete S.inv[v.slice(4)]; else S.hiddenEv[v] = true; await save(); render(true); toast('已移除'); break;
+    case 'evdone': S.evDone[v] = el.checked; if (!el.checked) delete S.evDone[v]; await save(); render(true); break;
+    case 'tdone': S.todayDone[i] = el.checked; await save(); render(true); break;
+    case 'evclear': if (confirm('清空全部示例日程？你添加的日程会保留。')) { D.sched.events.forEach((_, k) => S.hiddenEv['s' + k] = true); await save(); render(true); toast('已清空示例，可以从零开始录入'); } break;
+    case 'evrestore': S.hiddenEv = {}; await save(); render(true); toast('已恢复示例日程'); break;
+    case 'day': S.selDay = i; await save(); render(true); break;
+    case 'inv': S.inv[v] = i === 1 ? 'yes' : i === 2 ? 'no' : undefined; if (!S.inv[v]) delete S.inv[v]; await save(); render(true); toast(i === 1 ? '已接受，日程已更新' : i === 2 ? '已婉拒（演示，不会发送任何消息）' : '已撤回'); break;
     case 'rvst': draftStatus = v; document.querySelectorAll('[data-act="rvst"]').forEach(b => b.classList.toggle('on', b.dataset.v === v)); break;
-    case 'rvsave': saveReview(); break;
-    case 'rvdel': if (confirm('删除这条决定？')) { S.reviews[pageKey()].splice(i, 1); save(); render(true); } break;
-    case 'rvfdel': S.files[pageKey()].splice(i, 1); save(); render(true); break;
-    case 'backup': exportBackup(); break;
-    case 'archive': archiveProject(); break;
-    case 'check': S.checks[i] = el.checked; save(); break;
+    case 'rvsave': await saveReview(); break;
+    case 'rvdel': if (confirm('删除这条决定？')) { S.reviews[pageKey()].splice(i, 1); await save(); render(true); } break;
+    case 'rvfdel': S.files[pageKey()].splice(i, 1); await save(); render(true); break;
+    case 'backup': await exportBackup(); break;
+    case 'archive': await archiveProject(); break;
+    case 'archiveview': await archiveAction(i,'view');break;
+    case 'archiveexport': await archiveAction(i,'export');break;
+    case 'archiverestore': await archiveAction(i,'restore');break;
+    case 'filedownload': await ActorStore.downloadFile(v);break;
+    case 'check': S.checks[i] = el.checked; await save(); break;
   }
-});
-document.addEventListener('change', e => {
-  if (e.target.id === 'rvFile' && e.target.files.length) importFiles(e.target.files);
-  if (e.target.id === 'bkFile' && e.target.files[0]) importBackup(e.target.files[0]);
-});
-document.addEventListener('input', e => {
-  if (e.target.dataset && e.target.dataset.wt) { S.wts = { ...(S.wts || D.scoreRule.weights), [e.target.dataset.wt]: +e.target.value }; save(); render(true); return; }
-  if (e.target.dataset && e.target.dataset.self !== undefined) { S.selfAns = S.selfAns || {}; S.selfAns[e.target.dataset.self] = e.target.value; save(); }
+}));
+document.addEventListener('change', handle(async e => {
+  if (e.target.id === 'worksFile' && e.target.files[0]) await importWorks(e.target.files[0]);
+  if (e.target.id === 'rvFile' && e.target.files.length) await importFiles(e.target.files);
+  if (e.target.id === 'bkFile' && e.target.files[0]) await importBackup(e.target.files[0]);
+}));
+document.addEventListener('input', handle(async e => {
+  captureDraft();clearTimeout(draftTimer);draftTimer=setTimeout(()=>save().catch(showError),300);
+  if (e.target.dataset && e.target.dataset.wt) { S.wts = { ...(S.wts || D.scoreRule.weights), [e.target.dataset.wt]: +e.target.value }; await save(); render(true); return; }
+  if (e.target.dataset && e.target.dataset.self !== undefined) { S.selfAns = S.selfAns || {}; S.selfAns[e.target.dataset.self] = e.target.value; await save(); }
   if (e.target.id === 'orgIn') S.orgQ = e.target.value;
   if (e.target.id === 'faq') {
     S.faqQ = e.target.value; const pos = e.target.selectionStart; render(true);
     const f = $('#faq'); f.focus(); f.setSelectionRange(pos, pos);
   }
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && e.target.id === 'kwIn' && e.target.value.trim()) { (S.bKw = S.bKw || []).push(e.target.value.trim()); save(); render(true); toast('已订阅关键词'); return; }
+}));
+document.addEventListener('keydown', handle(async e => {
+  if (e.key === 'Enter' && e.target.id === 'kwIn' && e.target.value.trim()) { (S.bKw = S.bKw || []).push(e.target.value.trim()); await save(); render(true); toast('已订阅关键词'); return; }
   if (e.key === 'Enter' && e.target.id === 'foodIn') { document.querySelector('[data-act="food"]').click(); return; }
   if (e.key === 'Enter' && e.target.classList?.contains('add-item') && e.target.value.trim()) {
-    const r = e.target.dataset.role; (S.packAdd[r] = S.packAdd[r] || []).push(e.target.value.trim()); save(); render(true); toast('已添加到「' + r + '」'); return;
+    const r = e.target.dataset.role; (S.packAdd[r] = S.packAdd[r] || []).push(e.target.value.trim()); await save(); render(true); toast('已添加到「' + r + '」'); return;
   }
   if ((e.target.closest && e.target.closest('input,textarea,select')) || $('#dlg').open || e.metaKey || e.ctrlKey || e.altKey) return;
   const SEQ = [-1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -6, -5, -7, -4, -9, -2, -3], cur = onPage() ? PAGES[onPage()] : S.st, k = SEQ.indexOf(cur);
-  if (e.key === 'ArrowRight' && k < SEQ.length - 1) go(SEQ[k + 1]);
-  if (e.key === 'ArrowLeft' && k > 0) go(SEQ[k - 1]);
-});
+  if (e.key === 'ArrowRight' && k < SEQ.length - 1) await go(SEQ[k + 1]);
+  if (e.key === 'ArrowLeft' && k > 0) await go(SEQ[k - 1]);
+}));
 $('#dlg').addEventListener('click', e => { if (e.target === $('#dlg')) $('#dlg').close(); });
 
-const fromHash = () => { const h = location.hash.slice(1), hm = h.match(/st=(\d)/); if (hm) { Object.keys(PAGES).forEach(k => S[k] = false); S.st = Math.min(7, +hm[1]); } else if (PAGES[h]) Object.keys(PAGES).forEach(k => S[k] = k === h); else return; save(); history.replaceState(null, '', location.pathname); };
-fromHash();
-addEventListener('hashchange', () => { fromHash(); clearTimers(); render(); $('#main').scrollTop = 0; });
+const fromHash = async () => { const h = location.hash.slice(1), hm = h.match(/st=(\d)/); if (hm) { Object.keys(PAGES).forEach(k => S[k] = false); S.st = Math.min(7, +hm[1]); } else if (PAGES[h]) Object.keys(PAGES).forEach(k => S[k] = k === h); else return; await save(); history.replaceState(null, '', location.pathname); };
+await fromHash();
+addEventListener('hashchange', handle(async () => { captureDraft(); await fromHash(); clearTimers(); render(); $('#main').scrollTop = 0; }));
 render();
-})();
+})().catch(error => { console.error(error); document.querySelector("#main").textContent="启动失败："+error.message; });

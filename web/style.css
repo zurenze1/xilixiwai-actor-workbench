@@ -657,3 +657,15 @@ img.ph{width:100%;height:100%;object-fit:cover;display:block}
 [data-theme="moss"] .brand-mark{color:#2f4a1c;border-radius:50%}
 [data-theme="moss"] .hero h1{font-weight:500;letter-spacing:.08em}
 [data-theme="moss"] .card{border-radius:22px}
+
+/* Mobile navigation keeps names and reachable touch targets. */
+@media(max-width:860px){
+ .side{overflow-x:auto!important;overflow-y:hidden!important;display:flex;align-items:center;gap:8px;max-width:100vw;min-height:64px}
+ .side .st{display:inline-flex!important;flex:0 0 auto;min-width:108px;min-height:48px;padding:8px 12px!important;gap:6px}
+ .side .st span{display:block!important}.side .st small{display:none}.side .st .st-dot{min-width:24px}.side .st b{font-size:12px;white-space:nowrap}
+ .side .nav-label{display:none}.side .brand{flex:0 0 auto;min-width:110px}.side .side-foot{display:none}
+ .row{flex-wrap:wrap}.main{min-width:0}.card{min-width:0;overflow-wrap:anywhere}.file{flex-wrap:wrap}.file div{min-width:0} .file img{max-width:80px}
+ .wts{grid-template-columns:1fr!important}.tbl,.heat{font-size:11px}.dlg{max-width:100%;overflow-wrap:anywhere} .grid3,.grid4{min-width:0}
+}
+
+body[data-busy="1"] [data-act]{pointer-events:none;cursor:progress}

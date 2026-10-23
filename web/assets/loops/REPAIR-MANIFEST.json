@@ -1,0 +1,650 @@
+{
+  "source": "Newly rendered 2026-10-23 theme-aligned HyperFrames previews; original audio unchanged.",
+  "loops": [
+    {
+      "file": "assets/loops/butter/body.mp4",
+      "originalSha256": "5fbd122c79c5ef6ebaa8de5c7ef6bb8f1fdfe3d0e495eaa96cd31669cf7b2d75",
+      "newSha256": "a722d40907dd25d2f13b002e1a7ca5b9188ef686f0be7caaa730b4da84e4b68b",
+      "sourceRange": {
+        "start": 110.8575,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/brief.mp4",
+      "originalSha256": "dd2a972553ef848df3bfeff3568d6b99bac304a4f949c27d7304ee6381d23748",
+      "newSha256": "3ff2c637b326bb49bc18daaa5f630f358c69d78d73085168791a1d89033d159c",
+      "sourceRange": {
+        "start": 101.7925,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/call.mp4",
+      "originalSha256": "410d186decca6b5390850a9cf4472050faf0d30a04bc4ba1d5eee66cf8235651",
+      "newSha256": "a4aef85bd848425d3849418693e283bdb3c82823fe8e67647ae0f75a0408764a",
+      "sourceRange": {
+        "start": 50.5875,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/charity.mp4",
+      "originalSha256": "f3ca2894e3341f459f0ce0b64336364ab31feae6aaad7bcaecda2f797dccfbf3",
+      "newSha256": "9ab2231230294efb1f87acd46d39dfab3e569f928d60d1b3a3d10544e0583d8f",
+      "sourceRange": {
+        "start": 97.0275,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/crisis.mp4",
+      "originalSha256": "401126b35fae26e11d9cba364c1c0b483706d073eda77d2a30e595cae2d2b128",
+      "newSha256": "1b55512372288abde7faedcb6923a837a82408871a5c7bb7f291c24756ef60e0",
+      "sourceRange": {
+        "start": 92.4275,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/dance.mp4",
+      "originalSha256": "f6094b56b352b7c5ade4d9a14ff92faa1a5187d20dd9810e3c2d9aa07ac96bf6",
+      "newSha256": "18965ba3aeaa3fee59278d60f6ce030994255a3f80ba345df1e9e2146fbdce1a",
+      "sourceRange": {
+        "start": 42.3275,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/deal.mp4",
+      "originalSha256": "d7f825dedbf3b09bfeacd29fbbb014f25918c2b29dc571af4380206ea28a5fc2",
+      "newSha256": "dc926e38ee6cd9e8766dddf813d8f28dcd05e80e9e29d0045378a10b82d7eff2",
+      "sourceRange": {
+        "start": 59.7425,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/deals.mp4",
+      "originalSha256": "527dcac94a071a437f4997be24997158a22ce44bf45ded8de3b7ddb7767247f1",
+      "newSha256": "b74de90be3a5718faa39e297ac5917f7898543c82886369afbfbdc8e6b1945df",
+      "sourceRange": {
+        "start": 82.3875,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/fans.mp4",
+      "originalSha256": "a23214211abb87b088a3a6808454a4fd693fd5766b55d1f83712ca4f5769b549",
+      "newSha256": "7eacf50f1863478bdd997d242fa52752e7f4815a5a479bbbf481a30896428189",
+      "sourceRange": {
+        "start": 87.4125,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/home.mp4",
+      "originalSha256": "dd8cd363611315cffe7d8265c81b2ccb55f8ce2c75fb61ab99dd4088650e195c",
+      "newSha256": "d054108a609a58780a8b1d275863fe4fe36db614f83baefa4b7362c7fd32f716",
+      "sourceRange": {
+        "start": 20.4725,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/portfolio.mp4",
+      "originalSha256": "771869b8f1e72ab495df2429f5f7ae2a25fe5813d49aed324caab9c7b621032e",
+      "newSha256": "359d75d706b6fa0dbcbd0f7eb38db9db1cbc9df6f5c7c45bf3dbd1422e61f68d",
+      "sourceRange": {
+        "start": 76.2775,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/prev.mp4",
+      "originalSha256": "29534dcaf402c3e0527ac00945b855dc2ed31a99a83b33503d06a1705b2e2b68",
+      "newSha256": "9e51210abd1258915e5cf067fc6bc034c4f14d74f63aba3255377c4ebb39d72b",
+      "sourceRange": {
+        "start": 46.6375,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/promo.mp4",
+      "originalSha256": "bd94016cb72b12875fa377bd85188f251229284a2c3857576e8b8c926d182577",
+      "newSha256": "b8c09259ff620941df4c8728041246e5090e4868c1d7fd09b02e2b2228b8a77a",
+      "sourceRange": {
+        "start": 54.9075,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/read.mp4",
+      "originalSha256": "c03fea3c5b432391d8547628b51f51118f1da8a02243246f61a0edde0818053a",
+      "newSha256": "715f533e3d77ccbd2d2aac800251f36c4548ce7ae7ea4e7fe9e2adc3e6250cd0",
+      "sourceRange": {
+        "start": 34.0675,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/role.mp4",
+      "originalSha256": "23014daf16eb0e0fae30eaa457df0cd57e16536d4bbee32ee88203f3a1a866bc",
+      "newSha256": "d96ef815b0c798491b54020ace3bd20e666d3bc19a2c847aa171baf00ec4da5c",
+      "sourceRange": {
+        "start": 38.0175,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/take.mp4",
+      "originalSha256": "1882a0e43f98967a5f515153e44e79b2bf76df6156f8c892ed83001bc4c3a4a1",
+      "newSha256": "ed6e32d3ded7d77f9df6db7791051cc3a486e7c08cd03818f7514e01960dc850",
+      "sourceRange": {
+        "start": 29.5175,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/butter/trip.mp4",
+      "originalSha256": "b9490c40998867b4bc2c84bb96cb49c884c6eb4c3da93e4fc5f5ecf5a3a848cb",
+      "newSha256": "8933ba68aac1ee152e606c6eececfec57dad4a6774b0e5f5b42129d8ba77fcb0",
+      "sourceRange": {
+        "start": 106.5575,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/body.mp4",
+      "originalSha256": "0fe4630fc8b9929a379547941131c4e10ea6d9a58ef73028c54a0494827f280e",
+      "newSha256": "c5fb272098fd29c8f997fb9c60e2f5213974e81a524d888afe4d4cc459ded5ba",
+      "sourceRange": {
+        "start": 110.8575,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/brief.mp4",
+      "originalSha256": "5c9a3cac0e0760a7cbb9c8bcfef1b83cd212a340ed75b96ada2ea579c44df71d",
+      "newSha256": "471351902df724cd50c5ee77a8b1149f01500748429c37bce83d136a7ed81df0",
+      "sourceRange": {
+        "start": 101.7925,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/call.mp4",
+      "originalSha256": "35edb7c095121e9b0890df0c35b6079dd7e7ca7b0330106b2ac0068677a11207",
+      "newSha256": "8bed5ff9a04768a624152b0d2e7f97a0bb38e725992daf46bf25ed0157f9a456",
+      "sourceRange": {
+        "start": 50.5875,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/charity.mp4",
+      "originalSha256": "a430e029deaa0373ef064ae920cd6aeeaf04f639155ee8f800f0fdf2b206525d",
+      "newSha256": "748f8176c923ab68a4f7bd6fbb2e227fa909870306fefe853179777d10b7fac2",
+      "sourceRange": {
+        "start": 97.0275,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/crisis.mp4",
+      "originalSha256": "30aa6ec74a27fa3edcf128b6cb430e063a47bdca6947505a41b2ab5cd768d82d",
+      "newSha256": "6e425a8e4fb0ce31e78dd8ccfafe7ba3b9beec1bff80e2aabda554d2e3685607",
+      "sourceRange": {
+        "start": 92.4275,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/dance.mp4",
+      "originalSha256": "4dd8d765ff4c70658c9f1cf3f81d47bbffb711aee3cfc6e38740f914ad2d8c3d",
+      "newSha256": "67f2edd7921ecc76de98a7b33980615cfc16f88ffadb1c516208f9163ba64254",
+      "sourceRange": {
+        "start": 42.3275,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/deal.mp4",
+      "originalSha256": "cae9f6ea181ba2f6712f3e67feca813b13eac2424f06fd3d5e856d218deb558b",
+      "newSha256": "b482c280ad1aee3ac9fb46fc10bc7195c50481967a31c1d42dd645f6764f6d0f",
+      "sourceRange": {
+        "start": 59.7425,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/deals.mp4",
+      "originalSha256": "183a48ac14525859e40a895a6465f14814e90afa410312096398720569914d7e",
+      "newSha256": "d264cbd737607d3b92de8c5b6b242e50d5ca7f065ca0445ac6a2f8adfa68c1d2",
+      "sourceRange": {
+        "start": 82.3875,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/fans.mp4",
+      "originalSha256": "68b1b38e555a41876c4df2e934f3d69fe774ddddb4dd97624f5cf3ae2faa7335",
+      "newSha256": "e3784b22abc50ac36a9cc66479a749b2980830e38ee08e180b29892c9927505f",
+      "sourceRange": {
+        "start": 87.4125,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/home.mp4",
+      "originalSha256": "40c4dc451c9c25c462e400d07f26e21fd14c9e2a4040b943a07880db3785801a",
+      "newSha256": "cf0c5d76ba3bce5757b2cc438b6597fd63d85f3621c10533eeca1318cff760fa",
+      "sourceRange": {
+        "start": 20.4725,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/portfolio.mp4",
+      "originalSha256": "92d268b6dad901df26704ece4670c4b9da1508a93effca29bf915b9e81b78df7",
+      "newSha256": "660563ab12b7218094d302dceec0ef77155fdf1f574f4149fa336fb2d5a1b4e6",
+      "sourceRange": {
+        "start": 76.2775,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/prev.mp4",
+      "originalSha256": "473407fbc10c8478c2d3a3016447c338ae5b5671d246c9f27180b91a9f5250c1",
+      "newSha256": "525a9199905c96cef9ac33b26209a11b48b69a770ac1665c4251ce19428e7d37",
+      "sourceRange": {
+        "start": 46.6375,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/promo.mp4",
+      "originalSha256": "587113b44f283c317de620737f0c53b2e6d5651c55585f8a73e9b4bf72af8c8a",
+      "newSha256": "dd47f5cc0b662a060c076fb55f625b85b59c80236dd5688fa7db39c03ad90f4f",
+      "sourceRange": {
+        "start": 54.9075,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/read.mp4",
+      "originalSha256": "8f98ebe7f6ba5a15ca04585c85c8ee9b411f47d1e7e527800e5299744862b737",
+      "newSha256": "3253d77296f8656b04c944759fb40851a0f7ae49d2e4e3b2ded50b37d774870e",
+      "sourceRange": {
+        "start": 34.0675,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/role.mp4",
+      "originalSha256": "0ed9eba83e696e4069616bd3d381c62e581ef8ee2a532aea3222fb9d089f19da",
+      "newSha256": "174f0570c7583f854212579d388a21e365e8f8da0bc8f6cfa000177a00ccfe55",
+      "sourceRange": {
+        "start": 38.0175,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/take.mp4",
+      "originalSha256": "c4603e373af0efe9afa64c52bda9107815534e9c914e662d3e790c8e9797d5c2",
+      "newSha256": "21eca110d80496ad63c1b8e7ec319aed189e4d66fb2c629d740a864d23414b8d",
+      "sourceRange": {
+        "start": 29.5175,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/moss/trip.mp4",
+      "originalSha256": "f6844e88bfbffc26e3eec865d97f357b6ebbe27a25489a62d605ffbd3b3e482a",
+      "newSha256": "3028f82b9936256e6f5ad62e79e3e302c0c037e8558b68495b1948383e3a73c1",
+      "sourceRange": {
+        "start": 106.5575,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/body.mp4",
+      "originalSha256": "eb035b21a286140bf083f02bfef73f7c9ca0cead643397a3208122b290a93962",
+      "newSha256": "3fc38f24e9be87f96d69c0a131293c3ec15a1384255f278c375de7180c8062f4",
+      "sourceRange": {
+        "start": 110.8575,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/brief.mp4",
+      "originalSha256": "4cc38a0b8323077d27cc011c8918a2ccce374c2d9b65c48af576fa4a33a5cfe0",
+      "newSha256": "f2b76288ef7fd53a2faaa9e83bd5d133c07f00658d549a77e8a3b7a024c07442",
+      "sourceRange": {
+        "start": 101.7925,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/call.mp4",
+      "originalSha256": "c9a154ef81894ac36bcf0cf5f890f7bc9c5345bc6323b5bb6195ae999cbedc43",
+      "newSha256": "fba9098ab8a975acf403d80b0bec53b6de4e79d6e0411c5c13d5a53a3e9cec2a",
+      "sourceRange": {
+        "start": 50.5875,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/charity.mp4",
+      "originalSha256": "cb0bdad4801fb4acb645bd4cd265f119009594ad8d20a0217e48bd915736bbcc",
+      "newSha256": "c98d453bdffef2b65d2bddc83965f99e86bea83703d215ac4932ddbaf79d67ab",
+      "sourceRange": {
+        "start": 97.0275,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/crisis.mp4",
+      "originalSha256": "460407b47ec70e26e0feaaccbd10e24898c622456643b318515de9d5489efdcc",
+      "newSha256": "ec525019494efb7054b20826f0867326dd118a6333c9e3b9d63ea3595f52d956",
+      "sourceRange": {
+        "start": 92.4275,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/dance.mp4",
+      "originalSha256": "f632b8b9563d3c8dff3aa813db041ef51fe9ddd5e5e3b6f6a4e90172c225dcdf",
+      "newSha256": "a728cfc56070b114812ec1f6a4f1ba6f56e514b324d7cf3252e5b8d1f7a62c3c",
+      "sourceRange": {
+        "start": 42.3275,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/deal.mp4",
+      "originalSha256": "55d7d5fdd89bd19ef6f9d2b5556836111c225bd19557c1c492953230d6f5e243",
+      "newSha256": "c4b6c90bb5a5475ea58112ca94d9ac8d1629c348bfba4bbc0bce3923b2fe6553",
+      "sourceRange": {
+        "start": 59.7425,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/deals.mp4",
+      "originalSha256": "9007ca8ce4c7f5758eee3f46e97a2677e3ef335b2ba0782d52cb2b444d5fdb28",
+      "newSha256": "a11c8990be3df86402ee12a416262f2de8ce992df4494d5978b7a0c61141e360",
+      "sourceRange": {
+        "start": 82.3875,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/fans.mp4",
+      "originalSha256": "70924f61188782ff9f18a1ee32c9df689f66e0cc62a5ec0caa71f6064d562712",
+      "newSha256": "4e89a70f7d1c2d158ecfb420bbb5240f512a327d2ec412f1041b89fe5444fae8",
+      "sourceRange": {
+        "start": 87.4125,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/home.mp4",
+      "originalSha256": "e1cbcf96d1aac4ab0c503beafa62304a21cde546c682a6c017669cecbb83de0d",
+      "newSha256": "b4685e2ebe05bad60cf2069b068ca50e1c1be47033a48da3053c19650416fe91",
+      "sourceRange": {
+        "start": 20.4725,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/portfolio.mp4",
+      "originalSha256": "945c3bfd14d8daba1e3d1fbf731354b776af99dda8ff2f01638bbf870938efce",
+      "newSha256": "c8d19dc219f027cf060ceb9dd224af3fa06b374aee41b9583f090b523099c5bb",
+      "sourceRange": {
+        "start": 76.2775,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/prev.mp4",
+      "originalSha256": "7f409d525e30e24eb0beef83e1cf21ae50ff6c4fb7318e1769dae65d2b8735d2",
+      "newSha256": "ba5b02eccd8511d891457b23b53830101427adb9fd32fdd174bf3e3d439dff92",
+      "sourceRange": {
+        "start": 46.6375,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/promo.mp4",
+      "originalSha256": "5f9f7cfcdc4d711645a59cee1597a60dd97fd2ce1991b7989fc2ed8fd6cfe5b5",
+      "newSha256": "1ddb42a93ef0dfeee8dd8394e06cf27cd06ef720cb063963ef1bb89e287cc90b",
+      "sourceRange": {
+        "start": 54.9075,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/read.mp4",
+      "originalSha256": "284ef4b1c974e1fa2eedf1eb9fe8283b7a87efe4f6a07a6ed5fbd199c922d11f",
+      "newSha256": "682f60178fc946bf87a85af9ff2f36afa03c797ae7ea8e4ee1b624059852859a",
+      "sourceRange": {
+        "start": 34.0675,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/role.mp4",
+      "originalSha256": "4e0e233d461cd6ebd2837a481d27843a380c8bb84315f7e0cf095afb99f5e502",
+      "newSha256": "31a42579ae577296522437d8f8ee197471c1d5d1a21ba1bc6343b85e62cb4d7a",
+      "sourceRange": {
+        "start": 38.0175,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/take.mp4",
+      "originalSha256": "3c6c20dc29b0898664efe762297b084a91196ce71b4292b042a4a7ef5431bf31",
+      "newSha256": "5ef2de6018de80a16fa5cbf6509a5f63c2d6fc746410b18b62e306d96de2b3d1",
+      "sourceRange": {
+        "start": 29.5175,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    },
+    {
+      "file": "assets/loops/tide/trip.mp4",
+      "originalSha256": "a38898c28bb5e5bb4729f26ebcb5d47d4caa978a16ce86136958050624614ef7",
+      "newSha256": "ff7a6ad68a2b7a33c91afaf6cf2bb00f4f1c439a96d7c89ea37ac75f07999799",
+      "sourceRange": {
+        "start": 106.5575,
+        "duration": 3.625
+      },
+      "width": 768,
+      "height": 432,
+      "fps": 24
+    }
+  ],
+  "outros": [
+    {
+      "file": "assets/loops/outro-butter-repaired.mp4",
+      "sha256": "31023e4cdd2deeb175dcfa9509f942f3c707e95a4a2bc4f25cf1156b6b9228d5",
+      "videoTimelineSeconds": 14.5,
+      "containerSeconds": 14.506,
+      "width": 1920,
+      "height": 1080,
+      "fps": 30
+    },
+    {
+      "file": "assets/loops/outro-moss-repaired.mp4",
+      "sha256": "f214fcee2bf376ca318f9e5d03c32172b750b881c4bb6923505835a6b23e0dd8",
+      "videoTimelineSeconds": 14.5,
+      "containerSeconds": 14.506,
+      "width": 1920,
+      "height": 1080,
+      "fps": 30
+    },
+    {
+      "file": "assets/loops/outro-tide-repaired.mp4",
+      "sha256": "fce4db6bf218abecd55afc91cda73ccb85a9a772fef3147ef878f5979d3a6f4f",
+      "videoTimelineSeconds": 14.5,
+      "containerSeconds": 14.506,
+      "width": 1920,
+      "height": 1080,
+      "fps": 30
+    }
+  ],
+  "unchangedAudio": {
+    "film-audio.m4a": "0aa5608f6048a7d8d509c9cda6fc78387612f2dc4ae8850634cdc6737793e00e",
+    "outro-audio.m4a": "a4b4f03467500311b77cbf298e110c3855a4b00143b36d9b6de4fb74c741c483"
+  }
+}

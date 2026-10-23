@@ -4,3 +4,14 @@
 许可：Creative Commons Attribution 3.0（CC BY 3.0）https://creativecommons.org/licenses/by/3.0/
 改动：截取 2:15–3:22，加入淡入淡出与响度标准化，用于宣发片配乐。
 · 动态漫剧预演（comic.m4a）也使用了同一首配乐的 0:18–0:34 片段作为背景。
+
+
+2026-10-23 预览修复记录
+· 沿用原工程的照片、旁白与配乐合成音轨，没有替换声音或重新生成配音。
+· film-audio.m4a SHA-256: 0aa5608f6048a7d8d509c9cda6fc78387612f2dc4ae8850634cdc6737793e00e
+· outro-audio.m4a SHA-256: a4b4f03467500311b77cbf298e110c3855a4b00143b36d9b6de4fb74c741c483
+· 三主题结尾采用同一14.5秒剪辑，MP4容器约14.506秒；新预览1920×1080/30fps/H.264/AAC。
+· 三主题循环为新版工作台实际截图与原叙事重新渲染，旧素材保留于本地originals_20261023，不将改标签当成重渲染。
+· 照片来源沿用 ../PHOTO-CREDITS.txt；原署名和许可说明保留，此次未重新核验上游授权结论。
+· 渲染：HyperFrames 0.8.188（https://github.com/heygen-com/hyperframes）。
+· 时间线依赖：GSAP 3.12.5，保留vendor文件原始版权头与许可链接；来源 https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js 。

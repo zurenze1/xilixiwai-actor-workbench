@@ -105,20 +105,41 @@ body:hover #ctrl,body.paused #ctrl{opacity:1}
 #pb{flex:1;height:4px;border-radius:4px;background:#ffffff30;cursor:pointer;overflow:hidden}#pb i{display:block;height:100%;width:0;background:#fff}
 #pt{color:#fff;font:12px var(--sans);min-width:76px;text-align:right}
 body.render #ctrl,body.render #start{display:none}
+
+/* 2026-10-23: match the final theme tokens in the workbench style.css. */
+:root,[data-theme="tide"]{color-scheme:dark;--c1:#2e3a6b;--c2:#4a6aa0;--c3:#e86a4f;--c4:#ffffff;--bg:#242424;--ink:#ffffff;--muted:#b8bfd3;--serif:"Avenir Next","Montserrat","PingFang SC",sans-serif;--sans:-apple-system,"PingFang SC",sans-serif}
+[data-theme="butter"]{color-scheme:light;--c1:#e7dcc3;--c2:#6f7a4a;--c3:#b5653a;--c4:#e9e2c8;--bg:#efe7d8;--ink:#3b3226;--muted:#7d7262;--serif:"Didot","Bodoni 72","Songti SC","STSong",serif}
+[data-theme="moss"]{color-scheme:light;--c1:#34541f;--c2:#557a35;--c3:#9a7b3c;--c4:#e4ead0;--bg:#f7f2e2;--ink:#1f2a17;--muted:#5e6a52;--serif:"Didot","Bodoni 72","Songti SC","STSong",serif}
+[data-theme="tide"] .wordmark,[data-theme="tide"] .w{font-weight:700;letter-spacing:.04em}
+[data-theme="butter"] .wordmark,[data-theme="butter"] .w{font-weight:500;letter-spacing:.12em}
+[data-theme="moss"] .wordmark,[data-theme="moss"] .w{font-weight:500;letter-spacing:.08em}
+[data-theme="butter"] .cap,[data-theme="butter"] .xili{color:#6f7a4a}
+[data-theme="moss"] .cap,[data-theme="moss"] .xili{color:#34541f;text-shadow:none}
+[data-theme="butter"] .mark{background:#6f7a4a;color:#fbf6ea;border-radius:4px}
+[data-theme="moss"] .mark{background:#34541f;color:#fbf7e8;border-radius:50%}
+[data-theme="moss"] .stations span,[data-theme="moss"] .xw-row span{border-color:#1f2a1730;background:#fffcf1b0}
+[data-theme="moss"] .answer{background:#fffcf1c0;border-color:#1f2a1720}
+#pb{height:24px;position:relative;background:transparent;overflow:visible;touch-action:none}
+#pb:before{content:"";position:absolute;left:0;right:0;top:10px;height:4px;background:#ffffff40;border-radius:4px}
+#pb i{position:absolute;left:0;top:10px;height:4px;pointer-events:none}
+#ctrl button:focus-visible,#pb:focus-visible{outline:2px solid #fff;outline-offset:4px}
+
 </style>
 </head>
 <body>
-<div id="wrap"><div id="stage"></div></div>
-<div id="start"><div><p>结尾短片 · 约 20 秒</p><button>▶ 播放</button></div></div>
+<div id="wrap"><div id="stage" data-composition-id="outro" data-width="1600" data-height="900" data-duration="14.5"></div></div>
+<div id="start"><div><p>结尾短片 · 14.5 秒 · 三主题同一剪辑</p><button>▶ 播放</button></div></div>
 <div id="ctrl"><button id="tgl">❚❚</button><button id="rp">↺</button><div id="pb"><i></i></div><span id="pt">0:00</span><button id="mute">🔊</button><button id="fs">⛶</button></div>
 <script src="assets/shots/shots.js"></script>
+<script src="scripts/actor3-render/vendor/gsap.min.js"></script>
 <audio id="music" src="assets/music/outro-audio.m4a" preload="auto"></audio>
 <script>
 (() => {
 const Q = new URLSearchParams(location.search);
 const RENDER = Q.has('render');
 let theme = Q.get('theme');
-if (!theme) { try { theme = JSON.parse(localStorage.getItem('xilixiwai-demo-v1') || '{}').theme; } catch {} }
+if (!theme) { try { theme = localStorage.getItem('xilixiwai.theme.v2'); } catch {} }
+if (!['tide','butter','moss'].includes(theme)) theme = 'tide';
 document.documentElement.dataset.theme = theme || 'tide';
 if (RENDER) document.body.classList.add('render');
 const stage = document.getElementById('stage');
@@ -182,7 +203,7 @@ const VO = {o1: 2.51, o2: 3.14, o3: 4.92};
 const ORDER = []; window.__voOrder = ORDER;
 const T = (id, min) => { if (id) ORDER.push(id); return id ? Math.max(min, VO[id] + .6) : min; };
 const S = [];
-function scene(dur, html, update, opt = {}) { const node = el(`<div class="layer">${html}</div>`); node.style.opacity = 0; stage.appendChild(node); S.push({ dur, node, update, energy: opt.energy ?? 1, leak: !!opt.leak }); }
+function scene(dur, html, update, opt = {}) { const node = el(`<div class="layer">${html}</div>`); node.style.opacity = 0; stage.appendChild(node); S.push({ dur, node, update, energy: opt.energy ?? 1, leak: !!opt.leak, key:opt.key||null }); }
 
 // 开头无声快切已按要求剪掉，片子一开就有旁白
 // 2 戏里
@@ -231,11 +252,19 @@ function renderAt(t) {
   const dark = document.documentElement.dataset.theme !== 'butter';
   bg.style.opacity = 1; bg.style.filter = ''; void dark;
 }
-window.__seek = ms => renderAt(ms / 1000);
+window.__seek = ms => renderAt(clamp(ms / 1000, 0, TOTAL));
+window.__sceneMeta = S.map((s,i)=>({start:starts[i],duration:s.dur,key:s.key||null}));
+if (RENDER && window.gsap) {
+  const renderClock = { t: 0 };
+  const renderTimeline = gsap.timeline({paused:true});
+  renderTimeline.to(renderClock,{t:TOTAL,duration:TOTAL,ease:'none',onUpdate:()=>renderAt(renderClock.t)});
+  window.__timelines = window.__timelines || {};
+  window.__timelines[document.getElementById('stage').dataset.compositionId] = renderTimeline;
+}
 
 /* ---------- 播放控制 ---------- */
 const music = document.getElementById('music');
-let playing = false, t0 = 0, cur = 0;
+let playing = false, t0 = 0, cur = 0, rafId = 0;
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 function tick() {
   if (!playing) return;
@@ -244,27 +273,41 @@ function tick() {
   renderAt(cur);
   document.querySelector('#pb i').style.width = cur / TOTAL * 100 + '%';
   document.getElementById('pt').textContent = `${fmt(cur)} / ${fmt(TOTAL)}`;
-  if (playing) requestAnimationFrame(tick);
+  if (playing) rafId = requestAnimationFrame(tick);
 }
 function play(from = cur) {
   if (from >= TOTAL - .05) from = 0;
   cur = from; t0 = performance.now() - from * 1000; playing = true; document.body.classList.remove('paused');
   document.getElementById('start').style.display = 'none'; document.getElementById('tgl').textContent = '❚❚';
-  try { music.currentTime = from; music.play().catch(() => {}); } catch {}
-  requestAnimationFrame(tick);
+  try { music.currentTime = from; music.play().catch(() => {document.getElementById('pt').textContent='声音未启动，点播放重试';}); } catch {}
+  rafId = requestAnimationFrame(tick);
 }
-function pause() { playing = false; document.body.classList.add('paused'); document.getElementById('tgl').textContent = '▶'; music.pause(); }
+function pause() { playing = false; cancelAnimationFrame(rafId); rafId = 0; document.body.classList.add('paused'); document.getElementById('tgl').textContent = '▶'; music.pause(); }
 document.getElementById('start').onclick = () => play(0);
 document.getElementById('tgl').onclick = () => playing ? pause() : play();
 document.getElementById('rp').onclick = () => play(0);
 document.getElementById('mute').onclick = e => { music.muted = !music.muted; e.target.textContent = music.muted ? '🔇' : '🔊'; };
 document.getElementById('fs').onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.();
-document.getElementById('pb').onclick = e => { const r = e.currentTarget.getBoundingClientRect(); play((e.clientX - r.left) / r.width * TOTAL); };
+const seekBar = document.getElementById('pb');
+seekBar.setAttribute('role','slider');seekBar.setAttribute('tabindex','0');seekBar.setAttribute('aria-label','播放进度');seekBar.setAttribute('aria-valuemin','0');seekBar.setAttribute('aria-valuemax',String(TOTAL));
+const seekTo = seconds => { const resume=playing;pause();cur=clamp(seconds,0,TOTAL);renderAt(cur);try{music.currentTime=Math.min(cur,Number.isFinite(music.duration)?music.duration:cur)}catch{};document.querySelector('#pb i').style.width=cur/TOTAL*100+'%';document.getElementById('pt').textContent=fmt(cur)+' / '+fmt(TOTAL);seekBar.setAttribute('aria-valuenow',String(cur));if(resume&&cur<TOTAL)play(cur); };
+const seekPointer = e => {const r=seekBar.getBoundingClientRect();seekTo((e.clientX-r.left)/r.width*TOTAL)};
+let dragging=false;
+seekBar.addEventListener('pointerdown',e=>{dragging=true;seekBar.setPointerCapture(e.pointerId);seekPointer(e)});
+seekBar.addEventListener('pointermove',e=>{if(dragging)seekPointer(e)});
+seekBar.addEventListener('pointerup',e=>{dragging=false;seekBar.releasePointerCapture(e.pointerId)});
+seekBar.addEventListener('pointercancel',()=>dragging=false);
+seekBar.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();e.stopPropagation();seekTo(e.key==='Home'?0:e.key==='End'?TOTAL:cur+(e.key==='ArrowRight'?2:-2))}});
+const controlLabels={tgl:'播放或暂停',rp:'从头重播',mute:'切换静音',fs:'全屏或退出全屏'};for(const [id,label]of Object.entries(controlLabels))document.getElementById(id).setAttribute('aria-label',label);
+window.__playbackStatus=()=>({playing,currentTime:cur,duration:TOTAL,audioTime:music.currentTime,audioError:music.error?.code||null});
+
 addEventListener('keydown', e => { if (e.key === ' ') { e.preventDefault(); playing ? pause() : play(); } });
-addEventListener('message', e => { if (e.data === 'pause') pause(); if (e.data === 'play') play(0); });
+addEventListener('message', e => { if (e.origin !== location.origin) return; if (e.data === 'pause') pause(); if (e.data === 'play') play(0); });
+addEventListener('visibilitychange',()=>{if(document.hidden)pause()});
 document.body.classList.add('paused');
 
-SHOTS = window.__SHOTS || {}; renderAt(RENDER ? 0 : 14); window.__ready = true;
+SHOTS = window.__SHOTS || {}; renderAt(RENDER ? 0 : 1.6); window.__ready = true;
+window.__repairDuration = TOTAL;
 })();
 </script>
 </body>
