@@ -1,6 +1,23 @@
+# Explicitly selected public design references only. Raw downloads remain outside the repo.
 *
 !.gitignore
 !LOCAL-ONLY.md
 !manifest.json
 !SOURCES.md
 !placements.json
+!contiki-014.webp
+!contiki-036.webp
+!contiki-045.webp
+!contiki-052.webp
+!contiki-066.webp
+!contiki-080.webp
+!showpo-000.webp
+!showpo-007.webp
+!showpo-079.webp
+!showpo-085.webp
+!showpo-132.webp
+!rachel-gilbert-011.webp
+!rachel-gilbert-012.webp
+!rachel-gilbert-027.webp
+!rachel-gilbert-061.webp
+!rachel-gilbert-089.webp

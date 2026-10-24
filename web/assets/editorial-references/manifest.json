@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "retrievedAt": "2026-10-24T07:07:50.091336+00:00",
-  "scope": "local-design-review",
-  "publicReleaseConfirmed": false,
+  "scope": "user-authorized-public-repository",
+  "publicReleaseConfirmed": true,
   "label": "第三方品牌视觉参考，非演员本人／代言",
   "transformation": "保留下载原件；仅按原比例缩小至最长边1920px并转WebP quality90，没有裁切、改色、去水印或人物改造。",
   "access": [
@@ -440,5 +440,10 @@
       "id": "rachel-gilbert-016",
       "reason": "与061为同一画面的不同裁切，保留分辨率更高的061"
     }
-  ]
+  ],
+  "publicationAuthorization": {
+    "date": "2026-10-24",
+    "request": "新更新的所有东西都在GitHub上更新",
+    "meaning": "用户授权将当前完整产品版本及这些参考素材同步到其公开仓库；不改变第三方图片权利归属或构成代言。"
+  }
 }
