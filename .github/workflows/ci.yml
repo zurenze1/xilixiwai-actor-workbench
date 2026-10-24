@@ -17,6 +17,8 @@ jobs:
       - run: npm run test:practical
       - run: npm run build:demo-lab
       - run: git diff --exit-code -- web/demo-lab/forms.js web/demo-lab/sources.json
+      - run: npm run build:demo-operations
+      - run: git diff --exit-code -- web/demo-operations
       - run: npm run build:guide
       - run: git diff --exit-code -- web/guide/catalog.json
       - run: npm run build:store

@@ -17,7 +17,7 @@ const $ = (s, el = document) => el.querySelector(s);
 /* ---------------- 状态 ---------------- */
 const fresh = () => ({
   theme: 'tide', nameIdx: 0, st: 0, userEvents: [], hiddenEv: {}, evDone: {}, todayDone: {}, home: true, trip: false, body: false, charity: false, fans: false, deals: false, crisis: false, portfolio: false, rourou: false, meals: [], check: {}, reviews: {}, files: {}, archives: [], cycleOn: false, cycle: { lastStart: -24, len: 28, dur: 5 }, sym: {}, inv: {}, selDay: 12, pack: {}, packAdd: {}, tab: {}, ran: {}, folder: [], provider: 'demo',
-  demoEdits:{}, radarPlan:null, guide: false, lab:false, labKind:'scene',visionPreferences:{}, experience: {active:false,step:0,checks:{}}, replySubmissions:{}, rel: 'xia', adopt: null, handling: 'probe', tasks: D.tasks.map(t => ({ ...t })),
+  demoEdits:{}, radarPlan:null, business:false, social:false, guide: false, lab:false, labKind:'scene',visionPreferences:{}, experience: {active:false,step:0,checks:{}}, replySubmissions:{}, rel: 'xia', adopt: null, handling: 'probe', tasks: D.tasks.map(t => ({ ...t })),
   sel: null, tone: 'warm', submitted: {}, scope: 'ad', scopeTried: false, checks: {}, faqQ: '', seen: {}, pick: 'nl'
 });
 const esc = x => String(x ?? '').replace(/&(?!amp;|lt;|gt;|quot;|#39;)|[<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -117,7 +117,7 @@ function modelOrbitPreview(){return `<section class="model-orbit-preview"><div><
 let lookPreviewMode='reveal',extractionRows=[];
 function lookRevealPreview(){const images=rawDemoData().looks.map(l=>({src:'assets/photos/'+l.img+'.jpg',alt:l.sc+' · '+l.k+'（虚构氛围配图）',label:l.k}));return `<section class="card look-reveal-preview"><div><div class="eyebrow">FROM A PERSON TO A ROLE</div><h3>从一束光，走进角色。</h3><p class="sub">切换氛围，或拖动对比两种方案。预置配图仅供选方向。</p><div class="row mt"><button class="btn ${lookPreviewMode==='reveal'?'pri':''}" data-act="look-mode" data-v="reveal">光边揭图</button><button class="btn ${lookPreviewMode==='compare'?'pri':''}" data-act="look-mode" data-v="compare">两图对比</button></div></div>${lookPreviewMode==='compare'?`<div data-comparison-slider data-images="${attrEsc(JSON.stringify(images.slice(0,2)))}"></div>`:`<div data-ember-reveal data-images="${attrEsc(JSON.stringify(images))}"></div>`}</section>`;}
 function portfolioItems(){return [...S.userWorks.map(w=>({...w,origin:'自行录入'})),...rawDemoData().portfolio.works.map(w=>({year:String(w[0]),title:w[1],genre:w[2],role:w[3],note:w[4]?'示例评分 '+w[4]:'拍摄中（示例）',origin:'虚构作品示例'}))];}
-function portfolioCarousel(){const photos=['20_award','09_script','02_window','15_studio'];return `<section class="card"><div data-gradient-carousel data-items="${attrEsc(JSON.stringify(portfolioItems().slice(0,32).map((w,index)=>({src:'assets/photos/'+photos[index%photos.length]+'.jpg',title:'《'+w.title+'》',subtitle:[w.year,w.role].filter(Boolean).join(' · '),index}))))}"></div><p class="small muted">氛围配图，非作品正式海报；点击中央作品查看已登记资料。</p></section>`;}
+function portfolioCarousel(){const photos=['20_award','09_script','15_studio','24_scripts','25_night','26_director','21_variety','19_body','11_wardrobe'];return '<section class="card"><div data-gradient-carousel data-items="'+attrEsc(JSON.stringify(portfolioItems().slice(0,32).map((w,index)=>({src:w.origin==='虚构作品示例'&&photos[index-S.userWorks.length]?'assets/photos/'+photos[index-S.userWorks.length]+'.jpg':null,title:'《'+w.title+'》',subtitle:[w.year,w.role].filter(Boolean).join(' · '),index}))))+'"></div><p class="small muted">每部示例作品使用独立氛围图，非正式海报；自行录入的作品使用专属文字封面。点击中央作品可查看资料。</p></section>';}
 function taskTransformPreview(text,rows){return `<div data-magic-transform data-document="${attrEsc(JSON.stringify({title:'当前会议纪要',text}))}" data-results="${attrEsc(JSON.stringify(rows.slice(0,24).map(x=>({title:x.t,subtitle:x.who+' · '+x.due}))))}"></div>`;}
 function taskExtractionDialog(){
  const text=$('#minutes')?.value||'';try{extractionRows=ActorTaskExtract.extract(text);}catch(e){toast(e.message);return;}
@@ -305,26 +305,29 @@ async function archiveAction(i,action) {
 }
 
 /* ---------------- 页面结构：今天 / 戏里 / 戏外·事业 / 戏外·生活 ---------------- */
-const PAGES = { home: -1, trip: -2, body: -3, charity: -4, fans: -5, deals: -6, crisis: -7, portfolio: -8, brief: -9, rourou: -10, guide: -11, lab:-12 };
+const PAGES = { home: -1, trip: -2, body: -3, charity: -4, fans: -5, deals: -6, crisis: -7, portfolio: -8, brief: -9, rourou: -10, guide: -11, lab:-12, business:-13, social:-14 };
 const onPage = () => Object.keys(PAGES).find(k => S[k]) || '';
 const VIEWP = { home: () => vHome(), trip: () => vTrip(), body: () => vBody(), charity: () => vCharity(), fans: () => vFans(), deals: () => vDeals(), crisis: () => vCrisis(), portfolio: () => vPortfolio(), brief: () => vBrief() };
-const CRUMB = { home: () => `<b>日程总览</b><span>示例：拍摄期 ${D.sched.year}年${D.sched.month}月 · 当天 ${D.sched.month}月${D.sched.today}日 · ${D.actor.name}</span>`, trip: () => `<b>出行与天气</b><span>${D.trip.title}</span>`, body: () => `<b>身体与状态</b><span>角色：许知夏 · 定妆前 6 周</span>`, charity: () => `<b>公益与影响力</b><span>把热爱变成看得见的善意</span>`, fans: () => `<b>粉丝与社群</b><span>真诚对待粉丝，也守住边界</span>`, deals: () => `<b>合同与品牌</b><span>AI 先背调评估，人来做决定</span>`, crisis: () => `<b>危机公关与舆情</b><span>先核实，再回应</span>`, portfolio: () => `<b>作品库与发展规划</b><span>适合什么角色，下一步往哪走</span>`, brief: () => `<b>行业简报</b><span>${D.brief2.week} · 逐条核验来源</span>`, rourou: () => '<b>肉肉的小世界</b><span>日常陪伴 · 健康 · 时光机 · 照护记录</span>' };
+const CRUMB = { home: () => `<b>日程总览</b><span>示例：拍摄期 ${D.sched.year}年${D.sched.month}月 · 当天 ${D.sched.month}月${D.sched.today}日 · ${D.actor.name}</span>`, trip: () => `<b>出行与天气</b><span>${D.trip.title}</span>`, body: () => `<b>身体与状态</b><span>角色：许知夏 · 定妆前 6 周</span>`, charity: () => `<b>公益与影响力</b><span>把热爱变成看得见的善意</span>`, fans: () => `<b>粉丝与社群</b><span>真诚对待粉丝，也守住边界</span>`, deals: () => `<b>商务合作与代言</b><span>AI 先背调评估，人来做决定</span>`, crisis: () => `<b>危机公关与舆情</b><span>先核实，再回应</span>`, portfolio: () => `<b>作品库与发展规划</b><span>适合什么角色，下一步往哪走</span>`, brief: () => `<b>行业简报</b><span>${D.brief2.week} · 逐条核验来源</span>`, rourou: () => '<b>肉肉的小世界</b><span>日常陪伴 · 健康 · 时光机 · 照护记录</span>' };
 async function flushPet() {
   const module = $('#rourouFrame')?.contentWindow?.PetModule;
   if (module?.whenIdle) await module.whenIdle();
   const lab=$('#labFrame')?.contentWindow?.DemoLab;if(lab?.whenIdle)await lab.whenIdle();
+  const operation=$('#operationsFrame')?.contentWindow?.DemoOperations;if(operation?.whenIdle)await operation.whenIdle();
 }
 function renderEmbeddedPage(main) {
-  const pet = S.rourou,lab=S.lab, id = pet ? 'rourouFrame' : lab?'labFrame':'guideFrame';
-  const src = pet ? 'rourou/?embedded=1' : lab?'demo-lab/?embedded=1&kind='+encodeURIComponent(S.labKind):'guide/?embedded=1&mode=demo';
+  const pet = S.rourou,lab=S.lab,operation=S.business?'business':S.social?'social':'', id = pet ? 'rourouFrame' : lab?'labFrame':operation?'operationsFrame':'guideFrame';
+  const src = pet ? 'rourou/?embedded=1' : lab?'demo-lab/?embedded=1&kind='+encodeURIComponent(S.labKind):operation?'demo-operations/'+operation+'/?embedded=1':'guide/?embedded=1&mode=demo';
   let frame = $('#'+id);
-  if (!frame) {
-    main.innerHTML = `<iframe id="${id}" class="workbench-frame" title="${pet ? '肉肉的小世界' : lab?'业务资料实验室':'使用说明'}" src="${src}&theme=${encodeURIComponent(S.theme)}" data-kind="${esc(S.labKind)}"></iframe>`;
+  if (!frame || operation && frame.dataset.operation!==operation) {
+    main.innerHTML = `<iframe id="${id}" class="workbench-frame" title="${pet ? '肉肉的小世界' : lab?'业务资料实验室':operation==='business'?'工作室经营与自有品牌':operation==='social'?'内容与账号运营':'使用说明'}" src="${src}&theme=${encodeURIComponent(S.theme)}" data-kind="${esc(S.labKind)}" data-operation="${operation}"></iframe>`;
     frame = $('#'+id);
   }
   if(lab&&frame.dataset.kind!==S.labKind){frame.dataset.kind=S.labKind;frame.src=src+'&theme='+encodeURIComponent(S.theme);}
   frame.contentWindow?.postMessage({type:'workbench:theme',theme:S.theme},location.origin);
 }
+CRUMB.business=()=>'<b>工作室经营与自有品牌</b><span>自有工作室 · 经纪签约 · 收支 · 资产财税 · 自有品牌</span>';
+CRUMB.social=()=>'<b>内容与账号运营</b><span>选题 · 内容日历 · 账号档案 · 发布审核 · 数据复盘</span>';
 CRUMB.guide = () => '<b>使用说明</b><span>图示 · 功能地图 · 操作卡</span>';
 CRUMB.lab = () => '<b>业务资料实验室</b><span>25 类业务表单 · 虚构示例 · 真实增改与导出 · 独立备份</span>';
 
@@ -384,7 +387,9 @@ function renderSide() {
   </div>
   <div class="side-cap">戏外 · 事业</div>
   ${it('portfolio', '🎞', '作品库与发展规划', '作品 · 雷达 · 年度规划')}
-  ${it('deals', '📑', '合同与品牌', '资料库 · 代言 · 背调')}
+  ${it('business', '▧', '工作室经营与自有品牌', '自有工作室 · 经纪 · 财税 · 品牌')}
+  ${it('social', '↗', '内容与账号运营', '选题 · 排期 · 账号 · 数据复盘')}
+  ${it('deals', '📑', '商务合作与代言', '合作品牌 · 合同 · 背调')}
   ${it('fans', '💬', '粉丝与社群', '后援会 · 全平台留言')}
   ${it('crisis', '🛡', '危机公关与舆情', '监测 · 研判 · 回应')}
   ${it('charity', '💛', '公益与影响力', '项目 · 核验 · 联动')}
@@ -424,13 +429,13 @@ function renderFolder() {
     : `<div class="fi empty"><span class="fi-no">${D.stations[v.st].no}</span><div><b>${v.t}</b><small>待生成 · ${D.stations[v.st].name}</small></div></div>`).join('')}
   </div>
   <div class="folder-foot"><button class="btn ${S.folder.length ? 'pri' : ''}" data-act="export" ${S.folder.length ? '' : 'disabled'}>导出整部戏资料包</button>
-    <div class="row mt8 foot3"><button class="btn sm" data-act="backup" title="主线、肉肉与附件；实验室请在模块内独立备份">💾 备份</button><label class="btn sm" title="导入备份文件">📥 导入<input type="file" id="bkFile" accept=".json,application/json" hidden></label><button class="btn sm" data-act="archive" title="给这部戏留一份快照">🗄 归档</button></div></div>`;
+    <div class="row mt8 foot3"><button class="btn sm" data-act="backup" title="主线、肉肉与附件；经营、账号运营和实验室请在各自模块内完整备份">💾 备份</button><label class="btn sm" title="导入备份文件">📥 导入<input type="file" id="bkFile" accept=".json,application/json" hidden></label><button class="btn sm" data-act="archive" title="给这部戏留一份快照">🗄 归档</button></div></div>`;
   newFolder = null;
 }
 const HERO_IMG = ['09_script', '02_window', '07_rooftop', '11_wardrobe', '10_set', '13_press', '14_rights', '08_station'];
 function hero(s) {
-  const art=['script','script','performance','previs','studio','fans','rights','script'][D.stations.indexOf(s)];
-  return `<section class="hero has-img" data-illustration="${art}" data-rising-lines style="--img:url('assets/photos/${HERO_IMG[D.stations.indexOf(s)]}.jpg')"><div class="eyebrow">STATION ${s.no} · ${s.en}</div><h1>${s.title}</h1><p>${s.desc}</p>
+  const art=['take','read','role','prev','shoot','promo','deal','review'][D.stations.indexOf(s)];
+  return `<section class="hero" data-illustration="${art}" data-rising-lines><div class="eyebrow">STATION ${s.no} · ${s.en}</div><h1>${s.title}</h1><p>${s.desc}</p>
   <div class="needs">${s.need.map(n => `<span class="need">${n}</span>`).join('')}</div></section>${stepBar(D.stations.indexOf(s))}`;
 }
 function next(i, carry) {
@@ -625,7 +630,7 @@ function vRole() {
 }
 
 /* ---------------- 第4站：预演 ---------------- */
-const PHOTO = { wide: '04_two', letter: '03_letter', lu: '05_lu', xia: '06_xia', two: '02_window' };
+const PHOTO = { wide: '04_two', letter: '03_letter', lu: '05_lu', xia: '29_storyboard', two: '10_set' };
 const photo = (n, cls = '') => `<img class="ph ${cls}" src="assets/photos/${n}.jpg" alt="" loading="lazy">`;
 function pic(kind, uid) {
   if (PHOTO[kind]) return photo(PHOTO[kind]);
@@ -651,7 +656,7 @@ function vPrev() {
   let body;
   if (t === 'look') body = aiBlock('looks', 'AI 生成造型参考', '根据每场戏的人物状态和环境，生成造型方向和色彩参考，作为和造型老师沟通的起点。', () => `
     <div class="result-head"><h3>造型参考 · 角色氛围</h3>${demoTag()}</div>
-    <div class="grid3">${D.looks.map(l => `<div class="card look">${photo(l.img, 'look-img')}<span class="tag">${l.sc}</span><h3 class="serif mt8" style="font-size:19px">${l.k}</h3>
+    <div class="grid3">${D.looks.map(l => `<div class="card look"><span class="tag">${l.sc}</span><h3 class="serif mt8" style="font-size:19px">${l.k}</h3>
       <div class="swatch">${l.pal.map(c => `<i style="background:${c}"></i>`).join('')}</div><p class="small muted">氛围：${l.mood}</p></div>`).join('')}</div>
     <p class="note">造型参考只是方向，最终方案由造型团队设计。生成图像涉及本人肖像时，按第 07 站的授权规则处理。</p>`);
   else if (t === 'board') body = aiBlock('shots', 'AI 生成轻量分镜', `按第 03 站选定的「${handlingName()}」演法，把第12场拆成 5 个镜头。`, () => `
@@ -867,7 +872,7 @@ function vPortfolio() {
   const P = D.portfolio, H = P.heat;
   const genres = {}; [...P.works.map(w=>w[2]),...S.userWorks.map(w=>w.genre)].forEach(genre => { const g = genre.split(' · ')[0]||'未分类'; genres[g] = (genres[g] || 0) + 1; });
   const hc = v => `color-mix(in srgb,var(--accent) ${Math.round((v - 40) / 60 * 85)}%,var(--panel2))`;
-  return `<section class="hero has-img" style="--img:url('assets/photos/20_award.jpg')"><div class="eyebrow">MY WORKS & DIRECTION</div><h1>作品库与发展规划</h1>
+  return `<section class="hero"><div class="eyebrow">MY WORKS & DIRECTION</div><h1>作品库与发展规划</h1>
     <p>把演过的每一部戏导进来，和你的年龄、气质、体态、声线放在一起，AI 帮你看清：最适合什么题材、什么角色，下一步往哪走。</p>
     <div class="needs"><span class="need">个人作品库</span><span class="need">自我画像</span><span class="need">多维能力雷达</span><span class="need">题材 × 角色适配</span><span class="need">发展路线</span></div></section>
   ${portfolioCarousel()}<div class="card"><div class="result-head"><div><h3>我的作品时间轴</h3><p class="sub">${P.works.length} 部预置示例 + ${S.userWorks.length} 部自行录入 · CSV表头：作品名,年份,角色,题材,备注</p></div><button class="btn sm" data-act="work-new">＋ 新增作品</button><label class="btn sm" style="cursor:pointer">📥 导入CSV作品<input type="file" id="worksFile" accept=".csv" hidden></label></div>
@@ -940,7 +945,7 @@ function radar(scores) {
 function vDeals() {
   const X = D.deals, o = X.offers[S.offer || 0];
   const cats = X.brands.map(b => b.cat);
-  return `<section class="hero has-img" style="--img:url('assets/photos/14_rights.jpg')"><div class="eyebrow">CONTRACTS & BRANDS</div><h1>合同与品牌</h1>
+  return `<section class="hero"><div class="eyebrow">CONTRACTS & BRANDS</div><h1>合同与品牌</h1>
     <p>合同、证件、作品资料都放在一个地方；正在代言的品牌、交付进度、到期时间一目了然。新的代言找上门，AI 先做背调、给出评估，最后由人决定接不接。</p>
     <div class="needs"><span class="need">资料库</span><span class="need">合同库</span><span class="need">AI 条款审阅</span><span class="need">代言品牌管理</span><span class="need">品牌背调</span><span class="need">该不该接</span></div></section>
   <div class="vault">${X.vault.map(v => `<div class="vt"><span>${v[0]}</span><b>${v[1]}</b><small>${v[2]} 份</small></div>`).join('')}<label class="vt add"><span>📥</span><b>导入资料</b><small>PDF · Word · 图片</small><input type="file" id="rvFile" multiple hidden></label></div>
@@ -967,7 +972,7 @@ function vDeals() {
 
 /* ---------------- 行业简报 ---------------- */
 function vBrief() {
-  return `<section class="hero has-img" style="--img:url('assets/photos/13_press.jpg')"><div class="eyebrow">INDUSTRY BRIEFING</div><h1>行业简报</h1>
+  return `<section class="hero"><div class="eyebrow">INDUSTRY BRIEFING</div><h1>行业简报</h1>
     <p>影视、舞蹈、音乐、时尚、AI 内容、行业活动、公益：每周一份，只推和你有关的。每一条都标清来源和核验状态，不把网络传闻当成事实。</p>
     <div class="needs"><span class="need">定向搜集</span><span class="need">分类摘要</span><span class="need">来源核验</span><span class="need">趋势提示</span><span class="need">合作灵感</span></div></section>
   ${aiBlock('brief', 'AI 生成本周行业简报', '围绕七个方向整理公开信息：每一条都标出来源、核验状态、和你有没有关系、建议怎么做。', briefView)}`;
@@ -1037,13 +1042,13 @@ function vFans() {
 function vCharity() {
   const C = D.charity, P = C.projects;
   const maxM = Math.max(1,...C.months.map(m => m[1]));
-  return `<section class="hero has-img" style="--img:url('assets/photos/22_charity.jpg')"><div class="eyebrow">CHARITY & IMPACT</div><h1>公益与影响力</h1>
+  return `<section class="hero"><div class="eyebrow">CHARITY & IMPACT</div><h1>公益与影响力</h1>
     <p>把热爱变成看得见的善意。参与过哪些公益、下一步做什么、机构靠不靠谱、粉丝怎么一起参与，都在这里，透明、可追溯。</p>
     <div class="needs"><span class="need">公益项目</span><span class="need">机构核验</span><span class="need">粉丝公益联动</span><span class="need">公益日历</span><span class="need">年度公益报告</span></div></section>
   <div class="grid4 kpis">${C.kpi.map(k => `<div class="kpi"><small>${k[0]}</small><b>${k[1]}<em>${k[2]}</em></b><span class="small muted">${k[3]}</span></div>`).join('')}</div>
   <div class="grid2 mt">
     <div class="card"><div class="result-head"><h3>正在参与的公益</h3>${tag('demo', '示例数据')}</div>
-      ${P.map(p => `<div class="cproj"><div class="cimg" style="background-image:url('assets/photos/${p.img}.jpg')"></div><div><div class="row" style="justify-content:space-between"><b>${p.n}</b>${tag(p.lv, p.st)}</div>
+      ${P.map(p => `<div class="cproj">${p.img.startsWith('16_')?'<span class="cimg charity-text-mark" aria-hidden="true">♡</span>':`<div class="cimg" style="background-image:url('assets/photos/${p.img}.jpg')"></div>`}<div><div class="row" style="justify-content:space-between"><b>${p.n}</b>${tag(p.lv, p.st)}</div>
         <p class="small muted">${p.org} · ${p.role}</p><div class="bar mt8"><i style="width:${p.p}%"></i></div><p class="small mt8">下一步：${p.next}</p></div></div>`).join('')}</div>
     <div>
       <div class="card"><div class="result-head"><h3>公益足迹</h3><span class="small muted">近 12 个月 · 参与次数</span></div>
@@ -1344,14 +1349,14 @@ function render(keepScroll) {
   document.documentElement.dataset.theme = S.theme;
   document.title = `${name().name} · 演员AI工作台`;
   const m = $('#main'), y = m.scrollTop;
-  m.classList.toggle('module-view', ['rourou','guide','lab'].includes(onPage()));
+  m.classList.toggle('module-view', ['rourou','guide','lab','business','social'].includes(onPage()));
   renderSide(); renderTop(); renderFolder();
-  if (['rourou','guide','lab'].includes(onPage())) {
+  if (['rourou','guide','lab','business','social'].includes(onPage())) {
     renderEmbeddedPage(m);
     renderedPage = null;
     return;
   }
-  if (onPage()) { m.innerHTML = (S.home?'':experiencePanel()) + editablePageToolbar() + VIEWP[onPage()]() + reviewBlock(); const hero=m.querySelector('.hero');if(hero&&!S.body){hero.dataset.illustration=({trip:'life',body:'life',charity:'fans',fans:'fans',deals:'rights',crisis:'fans',portfolio:'script',brief:'script'})[onPage()]||'studio';if(!S.body)hero.setAttribute(S.brief?'data-blinking-dots':'data-rising-lines','');} renderedPage=pageKey();restoreDraft(); if (keepScroll) m.scrollTop = y; return; }
+  if (onPage()) { m.innerHTML = (S.home?'':experiencePanel()) + editablePageToolbar() + VIEWP[onPage()]() + reviewBlock(); const hero=m.querySelector('.hero');if(hero&&!S.body){hero.dataset.illustration=({trip:'trip',body:'body',charity:'charity',fans:'fans',deals:'deals',crisis:'crisis',portfolio:'portfolio',brief:'brief'})[onPage()]||'home';if(!S.body)hero.setAttribute(S.brief?'data-blinking-dots':'data-rising-lines','');} renderedPage=pageKey();restoreDraft(); if (keepScroll) m.scrollTop = y; return; }
   const tdef = GUIDE[S.st].find(g => g[1]);
   if (tdef) S.seen[S.st + ':' + (S.tab[S.st] || tdef[1])] = true;
   const html = VIEWS[S.st](), cut = html.lastIndexOf('<div class="next">');

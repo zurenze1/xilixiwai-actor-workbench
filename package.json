@@ -12,9 +12,10 @@
     "test:browser": "node practical/tests/browser.mjs && node practical/tests/pet-browser.mjs",
     "build:guide": "node scripts/build-usage-guide.mjs",
     "build:demo-lab": "node scripts/build-demo-lab.mjs",
-    "prestart": "npm run build:demo-lab && npm run build:guide",
-    "prestart:practical": "npm run build:demo-lab && npm run build:guide",
-    "test:social:browser": "node --test --test-concurrency=1 practical/tests/social-browser.test.mjs practical/tests/social-coordination.test.mjs"
+    "prestart": "npm run build:demo-lab && npm run build:demo-operations && npm run build:guide",
+    "prestart:practical": "npm run build:demo-lab && npm run build:demo-operations && npm run build:guide",
+    "test:social:browser": "node --test --test-concurrency=1 practical/tests/social-browser.test.mjs practical/tests/social-coordination.test.mjs",
+    "build:demo-operations": "node scripts/build-demo-operations.mjs"
   },
   "dependencies": {
     "@mozilla/readability": "0.6.0",

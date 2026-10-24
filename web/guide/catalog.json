@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "sourceHash": "4d7ee96c28a856a1ac9cef4f7b896cb17ba2710f2313d991b93c952d857f5ee5",
+  "sourceHash": "f75c3a16dc3eda6f7f34823e12e6b7f57daa2872931f6d85af0251627cba6202",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
-      "sha256": "646d821bea2a1f000091af1bbb410fa32eaa10990b4437b6ca9a8dba93596029"
+      "sha256": "56026db8ae15e90f90ced2499b2678060ac69861eac70b3c1f059f8020d9804a"
     },
     {
       "path": "practical/web/auth-reference.css",
@@ -20,7 +20,7 @@
     },
     {
       "path": "practical/web/business/index.html",
-      "sha256": "efee44598f3b901b4fbc2dcf326065bb00fa1ae35f021057cb3bc9ac93722179"
+      "sha256": "9de5e2d52f4aa63ddfd1522e07f3070b3cfaaf283710ccf37157442ef763c271"
     },
     {
       "path": "practical/web/business/model.js",
@@ -36,7 +36,7 @@
     },
     {
       "path": "practical/web/index.html",
-      "sha256": "516d48860c2dce58a17d47d7a93d8b1a5fabacc7ff2439b9d045c4c3a19192af"
+      "sha256": "0c5025c21395705c53cb2c90f453d6e4ead7570bd5bb460fa943c4a1d62ac9d0"
     },
     {
       "path": "practical/web/pet/app.js",
@@ -96,7 +96,7 @@
     },
     {
       "path": "practical/web/social/importer.js",
-      "sha256": "7cb96e7e5ff0d2cc4d6e37a1c58ad8018c0b49ea394ef5e9dde3a6aaa3a6a599"
+      "sha256": "c70988135a00ef0745b9c9304b925afde103ffd2a4a54759ddda3df3e01a20af"
     },
     {
       "path": "practical/web/social/index.html",
@@ -116,11 +116,19 @@
     },
     {
       "path": "practical/web/themes/tide.css",
-      "sha256": "29085dd3a2827c9de2c715986f1d756740ef848f3cf4812cc4652f3ebaa75b7f"
+      "sha256": "00aeb0ad2e62311484287dd1230d02136731dd6e85a7de08203bc17beeeaaf4c"
+    },
+    {
+      "path": "practical/web/workspace-ui.css",
+      "sha256": "a6dc0790f9943ba595f47f1a6ffcb4dc7bb80b379018457eec22ed6ba4270831"
+    },
+    {
+      "path": "practical/web/workspace-ui.js",
+      "sha256": "424e9c538cbd3e6f3b48e643f5d61193635a1232f2ebd23250d1d8e2803bde3c"
     },
     {
       "path": "web/app.js",
-      "sha256": "1a325c3e966f23c5f2c27db843f927eb38cd3f3439511d4c161c0f3d3dc802b2"
+      "sha256": "22adfbd818513f018d4cbde936e097e8a8385553b08388b6c6df8286f84fc5b8"
     },
     {
       "path": "web/data.js",
@@ -136,7 +144,7 @@
     },
     {
       "path": "web/demo-experience.js",
-      "sha256": "30cd0a5c1c008c1a1c2917611739c2a2826e6a8748afd901eb979d84cc55ddf2"
+      "sha256": "f584eda737a6882206de2c5ae6b917fe316de87272f2007fde92ac898e4356a1"
     },
     {
       "path": "web/demo-lab/app.js",
@@ -163,6 +171,62 @@
       "sha256": "4b41aaae8e8fa0073a990684824db850050babc746b4d6d4c09922ecc17f22e7"
     },
     {
+      "path": "web/demo-operations/bridge.js",
+      "sha256": "7645b43100cc5ca68622a0289464d17725afb450c21248d441278b61ef545dc2"
+    },
+    {
+      "path": "web/demo-operations/business/app.js",
+      "sha256": "56cfad1837b819f84abadc59e15b7fb38745acc16c0cafbea30bfbd9c0d47a50"
+    },
+    {
+      "path": "web/demo-operations/business/index.html",
+      "sha256": "1fdece12415e632d32e8abb813a47edc6e0a10bbac202834f5ad37a3f934969c"
+    },
+    {
+      "path": "web/demo-operations/business/model.js",
+      "sha256": "8592a5c0ca5a64623dee9e794af5bb4a7d8b4eb7666ad6f187ce7da7afb26c6c"
+    },
+    {
+      "path": "web/demo-operations/business/style.css",
+      "sha256": "9980769e680a86966d4acf379bdaa7ef26a58c180422929b35657016a8eec3a5"
+    },
+    {
+      "path": "web/demo-operations/demo.css",
+      "sha256": "107976595533f7062a20c9845811f88858c11b70315b96810e91545be77d01dd"
+    },
+    {
+      "path": "web/demo-operations/papaparse.min.js",
+      "sha256": "3553fb8bdf5b8004ce5531e6827e81c8b34e7b3992677967754544064e97b016"
+    },
+    {
+      "path": "web/demo-operations/samples.js",
+      "sha256": "4cf78f3809a38a0186c442fd67decc762ded95a04ca3f654bc022d4752100629"
+    },
+    {
+      "path": "web/demo-operations/social/app.js",
+      "sha256": "17911c1eeffcfac15e2e877afbd8275fb68177f1f6e377787ee1702e17be606d"
+    },
+    {
+      "path": "web/demo-operations/social/backup.js",
+      "sha256": "eb9e6be146f54d8a94530abc0a9c44dc195619f015fc1fd7ac27c5c418af8f30"
+    },
+    {
+      "path": "web/demo-operations/social/importer.js",
+      "sha256": "c70988135a00ef0745b9c9304b925afde103ffd2a4a54759ddda3df3e01a20af"
+    },
+    {
+      "path": "web/demo-operations/social/index.html",
+      "sha256": "2f1293023b24f74037440553d42d7831b7e595e7846b5bd6b5d87217967fa1b9"
+    },
+    {
+      "path": "web/demo-operations/social/model.js",
+      "sha256": "dac5bfeca6fe2b26b22ff651cc8d6d50669c36195d7c43e490af05bf945be752"
+    },
+    {
+      "path": "web/demo-operations/social/style.css",
+      "sha256": "2c950bd641d66a2cc37012966f7f2a91bf96dc98535897d9e4a373297cc1bffc"
+    },
+    {
       "path": "web/editorial-theme.css",
       "sha256": "8ca5630ef83fe5ed0b8f5ea18861b8aead6562865c0dd01359a8b3d1dd05d6d4"
     },
@@ -184,7 +248,7 @@
     },
     {
       "path": "web/guide/content.mjs",
-      "sha256": "61eba6e7b302725e8996c5f1a459b52a45c881d02d7865f42554c66de178eed3"
+      "sha256": "432592dee1d688b50608a064501f26cab80320772d1a8310ecde843292b0aa16"
     },
     {
       "path": "web/guide/index.html",
@@ -196,7 +260,7 @@
     },
     {
       "path": "web/index.html",
-      "sha256": "53d858fc95622b9737a1dd7c46be0d5a5628ec688578d864052c6d8ab3e8cd90"
+      "sha256": "040982f7973c8728212bb14d8675875a4e9a297e5abd4b5cf2b02a029b477b75"
     },
     {
       "path": "web/launch.html",
@@ -240,23 +304,23 @@
     },
     {
       "path": "web/scene-art.css",
-      "sha256": "bcb00ca1653ad8421bc59eed02dc19aa0ed66c8a0184d19e3a3ce338e6550229"
+      "sha256": "edcd185c515f8cc44c60b7f72ea472197a22b922dbc87a1ed08f56ea34aa834a"
     },
     {
       "path": "web/scene-art.js",
-      "sha256": "184ec1cf48b088f8198d4f7aa5390e40981236268ad2b568448357355a3a0a91"
+      "sha256": "8426ec5289b779bb46b860461c971149017dc8c2be01b5c655ac3142de01a35c"
     },
     {
       "path": "web/showcase-widgets.css",
-      "sha256": "0b32c479e4ab0fdca9f7e3c780637213578491207d3ecb86123e36d2272e1f3a"
+      "sha256": "8af3347d4c773726312fd79dc5d27c6285f2b4531459711ce00a5f3e9a241ace"
     },
     {
       "path": "web/showcase-widgets.js",
-      "sha256": "5f0f9224a0d613b875d522037c626d823b3cfa83610002a571d7a78ab5c79d87"
+      "sha256": "25bd4e3a98d6a32265e547ee66a415dc27727f9d3b6fd050726c9ae9fd2b104d"
     },
     {
       "path": "web/style.css",
-      "sha256": "a36bb75c9c3c1cdf9694cce7763b09e8bbe1deef04a365b5be00c446bc374201"
+      "sha256": "8b5a25a00e3f54c01e7b1377a6dd274934a73832f8b91cd8f17d22ed68de7408"
     },
     {
       "path": "web/task-extract.js",
@@ -1938,16 +2002,16 @@
     {
       "id": "practical-business",
       "mode": "practical",
-      "name": "公司与品牌",
+      "name": "工作室经营与自有品牌",
       "route": "business",
       "icon": "building",
       "category": "team",
       "kinds": [],
-      "lead": "把主体、款项、资产与品牌放在一起管理。",
+      "lead": "经营演员自己的工作室，并管理与经纪公司的合作、自有品牌。",
       "steps": [
         {
           "title": "点哪里",
-          "body": "管理员进入「公司与品牌」，先登记经营主体。"
+          "body": "进入「工作室经营与自有品牌」，先分清演员自有工作室与签约经纪公司。"
         },
         {
           "title": "怎么填",
@@ -2673,12 +2737,74 @@
         }
       ],
       "kinds": []
+    },
+    {
+      "id": "demo-page-business",
+      "mode": "demo",
+      "key": "business",
+      "page": -13,
+      "name": "工作室经营与自有品牌",
+      "icon": "building",
+      "category": "team",
+      "lead": "管理演员自己的工作室，不把经纪公司与自有品牌混在一起。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏「工作室经营与自有品牌」→「主体与合作」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "先看自有工作室与签约经纪的合同关系；再切「收支与回款」登记一笔到账，或在「品牌与商品」记录出库。"
+        },
+        {
+          "title": "如何保存",
+          "body": "点登记保存，待回款和库存按实际输入重算。切页会保留草稿；初始主体和金额均为虚构。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "在模块内单独下载经营完整备份或分表CSV。经营资料不在主线备份内；税务是会计确认后的人工待办。"
+        }
+      ],
+      "kinds": []
+    },
+    {
+      "id": "demo-page-social",
+      "mode": "demo",
+      "key": "social",
+      "page": -14,
+      "name": "内容与账号运营",
+      "icon": "broadcast",
+      "category": "team",
+      "lead": "用自己的输入，走完选题、排期与数据复盘。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏「内容与账号运营」，切内容制作、平台分发、作品表现、账号档案或运营复盘。"
+        },
+        {
+          "title": "怎么填",
+          "body": "选一条虚构内容修改文案与计划时间；也可登记账号、录入数据快照，或先预览CSV再导入。"
+        },
+        {
+          "title": "如何保存",
+          "body": "点击保存形成正式记录；草稿与正式记录分开。发布进度是人工记录，不会自动对外发送。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "当前页可导出CSV；在模块内单独下载含原件的运营备份。未知指标保持为空，不冒充联网同步。"
+        }
+      ],
+      "kinds": []
     }
   ],
   "notes": {
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "eb4955a076fb4a7eb2bf5f25a62783f2fa3d4a872f77da0ae58179cad8467053",
-  "generatedAt": "2026-10-24T04:28:50.937Z"
+  "contentHash": "981b783e2c2d1736ebc59155ae9c75253f9e906e3ff0e066a5e28839daa71aa2",
+  "generatedAt": "2026-10-24T05:43:59.995Z"
 }

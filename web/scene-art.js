@@ -5,7 +5,7 @@
   const scriptURL = document.currentScript?.src || new URL('scene-art.js', document.baseURI).href;
   const cssAsset = new URL('scene-art.css', scriptURL); cssAsset.search = new URL(scriptURL).search;
   const cssURL = cssAsset.href;
-  const atlasURL = new URL('assets/illustrations/actor-editorial-photo-atlas-v1.webp', scriptURL).href;
+  const photoAtlas = 'assets/illustrations/actor-editorial-photo-atlas-v1.webp';
   if (!Array.from(document.querySelectorAll('link[rel="stylesheet"]')).some(link => link.href === cssURL)) {
     const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = cssURL; document.head.append(link);
   }
@@ -16,7 +16,18 @@
   let dust = null;
   try { paused = localStorage.getItem(key) === 'paused'; } catch (_) { /* Storage may be disabled. */ }
   const scenes = new Map(), headings = new Map(), illustrations = new Map(), springs = new Set();
-  const atlas = { script: 0, performance: 1, previs: 2, studio: 3, fans: 4, rights: 5, business: 6, life: 7, pet: 8 };
+  // A photograph belongs to one business scene. Corresponding demo/practical routes may share it.
+  const scenePhotos = Object.freeze({
+    home: { src: 'assets/illustrations/scene-home-v1.webp' },
+    read: { src: photoAtlas, tile: 0 }, role: { src: photoAtlas, tile: 1 },
+    prev: { src: photoAtlas, tile: 2 }, shoot: { src: photoAtlas, tile: 3 },
+    promo: { src: photoAtlas, tile: 4 }, deal: { src: photoAtlas, tile: 5 },
+    plan: { src: photoAtlas, tile: 7 },
+    business: { src: 'assets/illustrations/scene-business-v1.webp' },
+    social: { src: 'assets/illustrations/scene-social-v1.webp' },
+    body: { src: 'assets/illustrations/blue-gold-underwater-editorial-v1.webp' }
+  });
+  const sceneAliases = Object.freeze({ today: 'home', project: 'take', script: 'read', performance: 'role', previs: 'prev', studio: 'shoot', rights: 'deal', travel: 'trip' });
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const motionOK = () => !paused && !media.matches && !document.hidden && !destroyed;
   const insideViewport = el => {
@@ -241,6 +252,7 @@
   }
   function layoutPhoto(art) {
     if (!art.isConnected) return;
+    if (art.dataset.scenePhotoLayout === 'single') { art.style.backgroundSize = 'cover'; art.style.backgroundPosition = 'center'; return; }
     const index = Number(art.dataset.scenePhotoIndex), rect = art.getBoundingClientRect();
     if (!Number.isInteger(index) || !rect.width || !rect.height) return;
     const tile = Math.max(rect.width, rect.height);
@@ -248,25 +260,49 @@
     art.style.backgroundPosition = `${-(index % 3) * tile - (tile - rect.width) / 2}px ${-Math.floor(index / 3) * tile - (tile - rect.height) / 2}px`;
   }
   const photoResize = typeof ResizeObserver === 'function' ? new ResizeObserver(entries => entries.forEach(entry => layoutPhoto(entry.target))) : null;
+  function sceneKey(host) {
+    const path = location.pathname;
+    if (/\/(?:rourou|pet)\//.test(path)) return '';
+    if (/\/(?:demo-operations|practical)\/business\//.test(path)) return 'business';
+    if (/\/(?:demo-operations|practical)\/social\//.test(path)) return 'social';
+    if (/\/practical\/previs\//.test(path)) return 'prev';
+    if (/\/demo-lab\//.test(path)) return 'lab';
+    const page = host.closest('[data-page]')?.dataset.page || document.body?.dataset.page || host.dataset.illustration;
+    return sceneAliases[page] || page;
+  }
+  function clearPhoto(host) {
+    const art = illustrations.get(host);
+    if (art) { photoResize?.unobserve(art); art.remove(); illustrations.delete(host); }
+    host.classList.remove('scene-illustrated', 'scene-illustration-slot', 'scene-photo-hero');
+  }
   function addIllustration(host) {
-    const index = atlas[host.dataset.illustration]; if (index === undefined) return;
+    const slot = host.tagName === 'SPAN' || host.hasAttribute('data-illustration-slot');
+    const hero = host.matches('.hero,.module-head,.ocean-module-banner,[data-illustration-hero]');
+    const untouched = /\/(?:rourou|pet)\//.test(location.pathname) || host.classList.contains('body-portrait');
+    if (untouched) { clearPhoto(host); host.classList.remove('scene-art-omitted', 'scene-without-photo'); return; }
+    const key = sceneKey(host), photo = !slot && hero && !untouched ? scenePhotos[key] : null;
+    host.classList.toggle('scene-art-omitted', slot);
+    host.classList.toggle('scene-without-photo', hero && !photo && !untouched);
+    if (!photo) { clearPhoto(host); return; }
     let art = illustrations.get(host);
     if (!art || !art.isConnected) {
       if (art) photoResize?.unobserve(art);
       art = document.createElement('span'); art.className = 'scene-illustration'; art.setAttribute('aria-hidden', 'true');
       host.append(art); illustrations.set(host, art); photoResize?.observe(art);
     }
-    const slot = host.tagName === 'SPAN' || host.hasAttribute('data-illustration-slot');
-    host.classList.toggle('scene-illustration-slot', slot); host.classList.toggle('scene-illustrated', !slot);
-    host.classList.toggle('scene-photo-hero', !slot && host.matches('.hero,.module-head,.ocean-module-banner,[data-illustration-hero]'));
-    art.dataset.scenePhotoIndex = String(index);
-    art.style.backgroundImage = `url("${atlasURL}")`;
+    host.classList.add('scene-illustrated', 'scene-photo-hero');
+    art.dataset.scenePhotoLayout = Number.isInteger(photo.tile) ? 'atlas' : 'single';
+    art.dataset.scenePhotoIndex = Number.isInteger(photo.tile) ? String(photo.tile) : '';
+    art.dataset.sceneKey = key;
+    art.dataset.sceneImageId = photo.src + (Number.isInteger(photo.tile) ? `#scene=${photo.tile}` : '');
+    art.style.backgroundImage = `url("${new URL(photo.src, scriptURL).href}")`;
     layoutPhoto(art);
   }
   function prune() {
     scenes.forEach(s => { if (!s.host.isConnected || !(s.host.hasAttribute('data-rising-lines') || s.host.hasAttribute('data-blinking-dots'))) removeScene(s); });
     headings.forEach(h => { if (!h.host.isConnected || !h.host.hasAttribute('data-elastic') || h.runs.some(({ run }) => !h.host.contains(run))) removeHeading(h); });
-    illustrations.forEach((art, host) => { if (!host.isConnected || atlas[host.dataset.illustration] === undefined) { photoResize?.unobserve(art); art.remove(); host.classList.remove('scene-illustrated', 'scene-illustration-slot', 'scene-photo-hero'); illustrations.delete(host); } });
+    illustrations.forEach((art, host) => { if (!host.isConnected || !host.hasAttribute('data-illustration')) clearPhoto(host); });
+    document.querySelectorAll('.scene-art-omitted,.scene-without-photo').forEach(host => { if (!host.hasAttribute('data-illustration')) host.classList.remove('scene-art-omitted', 'scene-without-photo'); });
   }
   function needsFrame() { return motionOK() && (Array.from(scenes.values()).some(s => s.visible && s.host.isConnected) || springs.size > 0 || Boolean(dust?.particles.length)); }
   function schedule() {
@@ -300,7 +336,7 @@
   }
   function queueRefresh() { if (queued || destroyed) return; queued = true; queueMicrotask(() => { queued = false; refresh(); }); }
   const observer = new MutationObserver(queueRefresh);
-  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-theme', 'data-illustration', 'data-illustration-slot', 'data-rising-lines', 'data-blinking-dots', 'data-stardust-cursor', 'data-elastic', 'hidden'] });
+  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-theme', 'data-page', 'data-illustration', 'data-illustration-slot', 'data-rising-lines', 'data-blinking-dots', 'data-stardust-cursor', 'data-elastic', 'hidden'] });
   function onVisibility() { if (!document.hidden) scenes.forEach(s => { s.visible = insideViewport(s.host); }); else clearDust(); schedule(); }
   function onViewport() { scenes.forEach(s => { s.visible = insideViewport(s.host); }); illustrations.forEach(layoutPhoto); resizeDust(); clearDust(); schedule(); }
   function onReduced() { if (media.matches) headings.forEach(h => { h.drag = null; h.chars.forEach(resetSpring); }); syncDust(); updateControls(); schedule(); }
@@ -320,6 +356,7 @@
       removeDust();
       Array.from(scenes.values()).forEach(removeScene); Array.from(headings.values()).forEach(removeHeading);
       illustrations.forEach((art, host) => { art.remove(); host.classList.remove('scene-illustrated', 'scene-illustration-slot', 'scene-photo-hero'); }); illustrations.clear();
+      document.querySelectorAll('.scene-art-omitted,.scene-without-photo').forEach(host => host.classList.remove('scene-art-omitted', 'scene-without-photo'));
       document.removeEventListener('visibilitychange', onVisibility); document.removeEventListener('click', onToggle);
       window.removeEventListener('resize', onViewport); window.removeEventListener('scroll', onViewport, true); window.removeEventListener('storage', onStorage); media.removeEventListener?.('change', onReduced);
       finePointer.removeEventListener?.('change', onFinePointer);

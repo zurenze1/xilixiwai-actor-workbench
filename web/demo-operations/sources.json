@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-10-24T05:35:59.544Z",
+  "purpose": "实战经营及运营模块原样复用；差异仅本机演示桥接、主题、真实边界文案。",
+  "sources": [
+    {
+      "source": "practical/web/business/index.html",
+      "output": "web/demo-operations/business/index.html",
+      "sourceSha256": "9de5e2d52f4aa63ddfd1522e07f3070b3cfaaf283710ccf37157442ef763c271",
+      "outputSha256": "1fdece12415e632d32e8abb813a47edc6e0a10bbac202834f5ad37a3f934969c"
+    },
+    {
+      "source": "practical/web/business/style.css",
+      "output": "web/demo-operations/business/style.css",
+      "sourceSha256": "9980769e680a86966d4acf379bdaa7ef26a58c180422929b35657016a8eec3a5",
+      "outputSha256": "9980769e680a86966d4acf379bdaa7ef26a58c180422929b35657016a8eec3a5"
+    },
+    {
+      "source": "practical/web/business/model.js",
+      "output": "web/demo-operations/business/model.js",
+      "sourceSha256": "8592a5c0ca5a64623dee9e794af5bb4a7d8b4eb7666ad6f187ce7da7afb26c6c",
+      "outputSha256": "8592a5c0ca5a64623dee9e794af5bb4a7d8b4eb7666ad6f187ce7da7afb26c6c"
+    },
+    {
+      "source": "practical/web/business/app.js",
+      "output": "web/demo-operations/business/app.js",
+      "sourceSha256": "04d37f61186b27b0d3f3f72528010f662fb5c797d4ec23198bd0b993d89d3b05",
+      "outputSha256": "56cfad1837b819f84abadc59e15b7fb38745acc16c0cafbea30bfbd9c0d47a50"
+    },
+    {
+      "source": "practical/web/social/index.html",
+      "output": "web/demo-operations/social/index.html",
+      "sourceSha256": "a47ea50503521d38e15e7db409e7fed1b1d23152aec2084d4470c8d17363044a",
+      "outputSha256": "2f1293023b24f74037440553d42d7831b7e595e7846b5bd6b5d87217967fa1b9"
+    },
+    {
+      "source": "practical/web/social/style.css",
+      "output": "web/demo-operations/social/style.css",
+      "sourceSha256": "2c950bd641d66a2cc37012966f7f2a91bf96dc98535897d9e4a373297cc1bffc",
+      "outputSha256": "2c950bd641d66a2cc37012966f7f2a91bf96dc98535897d9e4a373297cc1bffc"
+    },
+    {
+      "source": "practical/web/social/model.js",
+      "output": "web/demo-operations/social/model.js",
+      "sourceSha256": "dac5bfeca6fe2b26b22ff651cc8d6d50669c36195d7c43e490af05bf945be752",
+      "outputSha256": "dac5bfeca6fe2b26b22ff651cc8d6d50669c36195d7c43e490af05bf945be752"
+    },
+    {
+      "source": "practical/web/social/app.js",
+      "output": "web/demo-operations/social/app.js",
+      "sourceSha256": "487dc4316b0b2877ba708565857c87763ab7a18905c7bb09f9392d7f94864538",
+      "outputSha256": "17911c1eeffcfac15e2e877afbd8275fb68177f1f6e377787ee1702e17be606d"
+    },
+    {
+      "source": "practical/web/social/backup.js",
+      "output": "web/demo-operations/social/backup.js",
+      "sourceSha256": "eb9e6be146f54d8a94530abc0a9c44dc195619f015fc1fd7ac27c5c418af8f30",
+      "outputSha256": "eb9e6be146f54d8a94530abc0a9c44dc195619f015fc1fd7ac27c5c418af8f30"
+    },
+    {
+      "source": "practical/web/social/importer.js",
+      "output": "web/demo-operations/social/importer.js",
+      "sourceSha256": "c70988135a00ef0745b9c9304b925afde103ffd2a4a54759ddda3df3e01a20af",
+      "outputSha256": "c70988135a00ef0745b9c9304b925afde103ffd2a4a54759ddda3df3e01a20af"
+    }
+  ]
+}

@@ -42,7 +42,7 @@ html[data-theme=tide] #shell nav a.active:before{content:'';position:absolute;le
 html[data-theme=tide] #shell .nav-label{letter-spacing:2px;font-size:8px;color:#8198a8;margin-top:22px}
 html[data-theme=tide] #shell>.main>header{background:#ffffffc9;backdrop-filter:blur(15px);border-color:#e1ebf1;height:76px;padding-inline:38px;font-size:11px}
 html[data-theme=tide] #shell #content{padding:26px 38px 60px;max-width:1600px}
-html[data-theme=tide] #content>.hero{position:relative;isolation:isolate;overflow:hidden;min-height:214px;border-radius:17px;margin-bottom:26px;padding:30px 32px;background:#39789b var(--tide-photo) 56% 57%/cover no-repeat;color:white;box-shadow:0 15px 45px #3d719915;align-items:flex-end}
+html[data-theme=tide] #content>.hero{position:relative;isolation:isolate;overflow:hidden;min-height:214px;border-radius:17px;margin-bottom:26px;padding:30px 32px;background:linear-gradient(115deg,#183a61,#315f91 68%,#83a6bd);color:white;box-shadow:0 15px 45px #3d719915;align-items:flex-end}
 html[data-theme=tide] #content>.hero:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#0c355cdb 0%,#143e637d 49%,#183e5a18 100%),linear-gradient(0deg,#0b385c55,transparent 70%)}
 html[data-theme=tide] #content>.hero:after{content:'';position:absolute;top:20px;right:24px;width:36px;height:36px;border:1px solid #ffffff50;border-radius:50%;pointer-events:none}
 html[data-theme=tide] #content>.hero .eyebrow{color:#d5e8f5;letter-spacing:1.7px;font-size:9px;line-height:1.8}
@@ -74,7 +74,7 @@ html[data-theme=tide] #content table th{background:#f5fafd;color:#617e92;font-si
 html[data-theme=tide] #content table td{padding-block:16px}
 html[data-theme=tide] #content .module-frame{border:1px solid #d9e8f2;box-shadow:0 10px 35px #255f7e06}
 html[data-theme=tide] #content.embed-main{padding-top:18px}
-html[data-theme=tide] .module-head,html[data-theme=tide] .ocean-module-banner{position:relative;isolation:isolate;border:0!important;border-radius:16px;padding:24px 27px!important;background:linear-gradient(90deg,#10395dd9,#245b7b60),var(--tide-photo) 56% 50%/cover no-repeat;min-height:148px;margin-bottom:22px;color:#fff}
+html[data-theme=tide] .module-head,html[data-theme=tide] .ocean-module-banner{position:relative;isolation:isolate;border:0!important;border-radius:16px;padding:24px 27px!important;background:linear-gradient(115deg,#183a61,#315f91 68%,#83a6bd);min-height:148px;margin-bottom:22px;color:#fff}
 html[data-theme=tide] .module-head h1,html[data-theme=tide] .ocean-module-banner h2{color:#fff;font:400 30px/1.5 'Songti SC','STSong',serif;letter-spacing:2px;margin:6px 0}
 html[data-theme=tide] .module-head :is(.eyebrow,p,#status,#save-status),html[data-theme=tide] .ocean-module-banner p{color:#e1eef8;font-size:11px;line-height:1.8}
 html[data-theme=tide] .module-head :is(button,.file-button){background:#f5faffed;color:#295879;border-color:#ffffff70;box-shadow:none}
