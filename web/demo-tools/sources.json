@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "sourceHashes": {
+    "practical/server/analysis.mjs": "5a47411ed93426f7aeb5152e041cee26647079432c632437ccb20475443e030d",
+    "src/demo-tools-contract.js": "362c6f72c06e5def4d71d7db30e93f34db64b3dade591f51d4a02d6971db2b9b"
+  },
+  "pdfjs": "6.4.299 Apache-2.0",
+  "storage": "本机演示资料，不读取实际账号"
+}

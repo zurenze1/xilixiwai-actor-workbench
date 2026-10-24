@@ -18,16 +18,160 @@
   const scenes = new Map(), headings = new Map(), illustrations = new Map(), springs = new Set();
   // A photograph belongs to one business scene. Corresponding demo/practical routes may share it.
   const scenePhotos = Object.freeze({
-    home: { src: 'assets/illustrations/scene-home-v1.webp' },
-    read: { src: photoAtlas, tile: 0 }, role: { src: photoAtlas, tile: 1 },
-    prev: { src: photoAtlas, tile: 2 }, shoot: { src: photoAtlas, tile: 3 },
-    promo: { src: photoAtlas, tile: 4 }, deal: { src: photoAtlas, tile: 5 },
-    plan: { src: photoAtlas, tile: 7 },
-    business: { src: 'assets/illustrations/scene-business-v1.webp' },
-    social: { src: 'assets/illustrations/scene-social-v1.webp' },
-    body: { src: 'assets/illustrations/blue-gold-underwater-editorial-v1.webp' }
-  });
-  const sceneAliases = Object.freeze({ today: 'home', project: 'take', script: 'read', performance: 'role', previs: 'prev', studio: 'shoot', rights: 'deal', travel: 'trip' });
+  "home": {
+    "src": "assets/illustrations/scene-home-v1.webp"
+  },
+  "body": {
+    "src": "assets/illustrations/blue-gold-underwater-editorial-v1.webp"
+  },
+  "crisis": {
+    "src": "assets/illustrations/actor-editorial-photo-atlas-v1.webp",
+    "tile": 6
+  },
+  "settings": {
+    "src": "assets/illustrations/scene-business-v1.webp"
+  },
+  "guide": {
+    "src": "assets/illustrations/scene-social-v1.webp"
+  },
+  "lab": {
+    "src": "assets/illustrations/actor-editorial-photo-atlas-v1.webp",
+    "tile": 8
+  },
+  "trip": {
+    "src": "assets/editorial-references/contiki-014.webp",
+    "brand": "Contiki",
+    "source": "https://www.contiki.com/en-us/activity/on-contiki-coming-soon",
+    "description": "海边三位游客走向水面，远处绿色山岛和夕光。"
+  },
+  "shoot": {
+    "src": "assets/editorial-references/contiki-036.webp",
+    "brand": "Contiki",
+    "source": "https://www.contiki.com/en-us/activity/on-contiki-coming-soon",
+    "description": "彩色街道中的旅行者群像，前景行人有运动模糊，旁边为黄色车辆。",
+    "fallback": {
+      "src": "assets/illustrations/actor-editorial-photo-atlas-v1.webp",
+      "tile": 3
+    }
+  },
+  "charity": {
+    "src": "assets/editorial-references/contiki-045.webp",
+    "brand": "Contiki",
+    "source": "https://www.contiki.com/en-us/activity/on-contiki-coming-soon",
+    "description": "绿色草甸、马群与云雾中的火山，明亮自然光。"
+  },
+  "plan": {
+    "src": "assets/editorial-references/contiki-052.webp",
+    "brand": "Contiki",
+    "source": "https://www.contiki.com/en-us/activity/on-contiki-coming-soon",
+    "description": "密林山谷中的吊桥与奔流，绿植丰富，画面纵深强。",
+    "fallback": {
+      "src": "assets/illustrations/actor-editorial-photo-atlas-v1.webp",
+      "tile": 7
+    }
+  },
+  "review": {
+    "src": "assets/editorial-references/contiki-066.webp",
+    "brand": "Contiki",
+    "source": "https://www.contiki.com/en-us/activity/on-contiki-coming-soon",
+    "description": "高山、云雾和古道石墙，远处有徒步者，层次开阔。"
+  },
+  "brief": {
+    "src": "assets/editorial-references/contiki-080.webp",
+    "brand": "Contiki",
+    "source": "https://www.contiki.com/en-us/activity/on-contiki-coming-soon",
+    "description": "织布工艺交流场景，多人围坐观看织物与手作。"
+  },
+  "take": {
+    "src": "assets/editorial-references/showpo-000.webp",
+    "brand": "Showpo",
+    "source": "https://www.showpo.com/us/collections/edits/muse",
+    "description": "成年女模特穿巧克力色露肩褶皱长裙，浅灰背景，全身站姿。"
+  },
+  "social": {
+    "src": "assets/editorial-references/showpo-007.webp",
+    "brand": "Showpo",
+    "source": "https://www.showpo.com/us/collections/edits/muse",
+    "description": "成年女模特穿米白方领收腰裙，浅色背景，双肩带与腰线清楚。",
+    "fallback": {
+      "src": "assets/illustrations/scene-social-v1.webp"
+    }
+  },
+  "read": {
+    "src": "assets/editorial-references/showpo-079.webp",
+    "brand": "Showpo",
+    "source": "https://www.showpo.com/us/collections/edits/muse",
+    "description": "成年女模特穿浅蓝抹胸花纹裙，下摆为花叶状透视拼接。",
+    "fallback": {
+      "src": "assets/illustrations/actor-editorial-photo-atlas-v1.webp",
+      "tile": 0
+    }
+  },
+  "fans": {
+    "src": "assets/editorial-references/showpo-085.webp",
+    "brand": "Showpo",
+    "source": "https://www.showpo.com/us/collections/edits/muse",
+    "description": "成年女模特穿无袖白色短裙，浅色背景，手部收于侧袋附近。"
+  },
+  "deal": {
+    "src": "assets/editorial-references/showpo-132.webp",
+    "brand": "Showpo",
+    "source": "https://www.showpo.com/us/collections/edits/muse",
+    "description": "成年女模特穿黑色抹胸马甲与短裙套装，浅色背景。",
+    "fallback": {
+      "src": "assets/illustrations/actor-editorial-photo-atlas-v1.webp",
+      "tile": 5
+    }
+  },
+  "role": {
+    "src": "assets/editorial-references/rachel-gilbert-011.webp",
+    "brand": "Rachel Gilbert",
+    "source": "https://www.rachelgilbert.us/collections/new-arrivals",
+    "description": "成年女模特穿酒红珠饰礼服，手臂抬向门框，室内陈设有胶片质感。",
+    "fallback": {
+      "src": "assets/illustrations/actor-editorial-photo-atlas-v1.webp",
+      "tile": 1
+    }
+  },
+  "promo": {
+    "src": "assets/editorial-references/rachel-gilbert-012.webp",
+    "brand": "Rachel Gilbert",
+    "source": "https://www.rachelgilbert.us/collections/new-arrivals",
+    "description": "成年女模特穿酒红长裙站在狭长走廊，手扶墙面与垂落围巾。",
+    "fallback": {
+      "src": "assets/illustrations/actor-editorial-photo-atlas-v1.webp",
+      "tile": 4
+    }
+  },
+  "prev": {
+    "src": "assets/editorial-references/rachel-gilbert-027.webp",
+    "brand": "Rachel Gilbert",
+    "source": "https://www.rachelgilbert.us/collections/new-arrivals",
+    "description": "成年女模特穿金黑条纹礼服站在屋顶，暖侧光，背景为城市建筑。",
+    "fallback": {
+      "src": "assets/illustrations/actor-editorial-photo-atlas-v1.webp",
+      "tile": 2
+    }
+  },
+  "dance": {
+    "src": "assets/editorial-references/rachel-gilbert-061.webp",
+    "brand": "Rachel Gilbert",
+    "source": "https://www.rachelgilbert.us/collections/new-arrivals",
+    "description": "成年女模特穿鲜红长礼服站在室内门口，硬光、阴影及褶皱醒目。"
+  },
+  "business": {
+    "src": "assets/editorial-references/rachel-gilbert-089.webp",
+    "brand": "Rachel Gilbert",
+    "source": "https://www.rachelgilbert.us/collections/new-arrivals",
+    "description": "浅薄荷绿色长外套的商品静物图，正面展开，背景浅灰。",
+    "fallback": {
+      "src": "assets/illustrations/scene-business-v1.webp"
+    }
+  }
+});
+  const failedPhotos = new Set();
+  const scenePhoto = key => {const photo=scenePhotos[key];return photo && failedPhotos.has(photo.src) ? photo.fallback || null : photo;};
+  const sceneAliases = Object.freeze({ today: 'home', project: 'take', script: 'read', performance: 'role', previs: 'prev', studio: 'shoot', rights: 'deal', travel: 'trip', portfolio:'plan', deals:'deal' });
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const motionOK = () => !paused && !media.matches && !document.hidden && !destroyed;
   const insideViewport = el => {
@@ -102,7 +246,7 @@
       button.setAttribute('aria-label', media.matches ? '已遵循系统减少动态效果设置' : paused ? '播放页面装饰动效' : '暂停页面装饰动效');
       button.disabled = media.matches;
     });
-    document.documentElement.dataset.sceneMotion = media.matches ? 'reduced' : paused ? 'paused' : 'running';
+    const state=media.matches ? 'reduced' : paused ? 'paused' : 'running';if(document.documentElement.dataset.sceneMotion!==state)document.documentElement.dataset.sceneMotion=state;
   }
   function resetSpring(s) {
     s.x = s.y = s.vx = s.vy = 0; s.dragging = false; s.el.style.transform = ''; springs.delete(s);
@@ -252,7 +396,7 @@
   }
   function layoutPhoto(art) {
     if (!art.isConnected) return;
-    if (art.dataset.scenePhotoLayout === 'single') { art.style.backgroundSize = 'cover'; art.style.backgroundPosition = 'center'; return; }
+    if (art.dataset.scenePhotoLayout === 'single') { art.style.backgroundSize = art.dataset.scenePhotoFit || 'cover'; art.style.backgroundPosition = 'center'; return; }
     const index = Number(art.dataset.scenePhotoIndex), rect = art.getBoundingClientRect();
     if (!Number.isInteger(index) || !rect.width || !rect.height) return;
     const tile = Math.max(rect.width, rect.height);
@@ -273,6 +417,7 @@
   function clearPhoto(host) {
     const art = illustrations.get(host);
     if (art) { photoResize?.unobserve(art); art.remove(); illustrations.delete(host); }
+    host.querySelector(':scope > .scene-photo-credit')?.remove();
     host.classList.remove('scene-illustrated', 'scene-illustration-slot', 'scene-photo-hero');
   }
   function addIllustration(host) {
@@ -280,7 +425,7 @@
     const hero = host.matches('.hero,.module-head,.ocean-module-banner,[data-illustration-hero]');
     const untouched = /\/(?:rourou|pet)\//.test(location.pathname) || host.classList.contains('body-portrait');
     if (untouched) { clearPhoto(host); host.classList.remove('scene-art-omitted', 'scene-without-photo'); return; }
-    const key = sceneKey(host), photo = !slot && hero && !untouched ? scenePhotos[key] : null;
+    const key = sceneKey(host), photo = !slot && hero && !untouched ? scenePhoto(key) : null;
     host.classList.toggle('scene-art-omitted', slot);
     host.classList.toggle('scene-without-photo', hero && !photo && !untouched);
     if (!photo) { clearPhoto(host); return; }
@@ -294,8 +439,17 @@
     art.dataset.scenePhotoLayout = Number.isInteger(photo.tile) ? 'atlas' : 'single';
     art.dataset.scenePhotoIndex = Number.isInteger(photo.tile) ? String(photo.tile) : '';
     art.dataset.sceneKey = key;
+    art.dataset.scenePhotoFit = photo.brand==='Showpo' || photo.src.endsWith('rachel-gilbert-089.webp') ? 'contain' : 'cover';
     art.dataset.sceneImageId = photo.src + (Number.isInteger(photo.tile) ? `#scene=${photo.tile}` : '');
     art.style.backgroundImage = `url("${new URL(photo.src, scriptURL).href}")`;
+    if (photo.source) {
+      let credit=host.querySelector(':scope > .scene-photo-credit');
+      if(!credit){credit=document.createElement('a');credit.className='scene-photo-credit';credit.target='_blank';credit.rel='noopener noreferrer';host.append(credit);}
+      if(credit.getAttribute('href')!==photo.source)credit.setAttribute('href',photo.source);const label='视觉参考 · '+photo.brand+' ↗';if(credit.textContent!==label)credit.textContent=label;const title=photo.description+' 第三方品牌视觉参考，非演员本人或代言。';if(credit.title!==title)credit.title=title;
+      const probe=new Image();const requested=art.dataset.sceneImageId;
+      probe.onerror=()=>{if(art.dataset.sceneImageId!==requested||!art.isConnected)return;failedPhotos.add(photo.src);credit.remove();if(photo.fallback){const fallback=photo.fallback;art.dataset.scenePhotoLayout=Number.isInteger(fallback.tile)?'atlas':'single';art.dataset.scenePhotoIndex=String(fallback.tile??'');art.dataset.sceneImageId=fallback.src+(Number.isInteger(fallback.tile)?'#scene='+fallback.tile:'');art.style.backgroundImage=`url("${new URL(fallback.src,scriptURL).href}")`;layoutPhoto(art);}else clearPhoto(host);};
+      probe.src=new URL(photo.src,scriptURL).href;
+    }
     layoutPhoto(art);
   }
   function prune() {

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "f75c3a16dc3eda6f7f34823e12e6b7f57daa2872931f6d85af0251627cba6202",
+  "sourceHash": "ce4fb3f59ad4902d3a15079fb5ab2ec8474baeb29a8b226d55f6ec496c45688d",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -36,7 +36,7 @@
     },
     {
       "path": "practical/web/index.html",
-      "sha256": "0c5025c21395705c53cb2c90f453d6e4ead7570bd5bb460fa943c4a1d62ac9d0"
+      "sha256": "7d11fcce5576150f25cde2fc07d57e643436ab84bdfd45dce1f7d73e7635a877"
     },
     {
       "path": "practical/web/pet/app.js",
@@ -128,7 +128,7 @@
     },
     {
       "path": "web/app.js",
-      "sha256": "22adfbd818513f018d4cbde936e097e8a8385553b08388b6c6df8286f84fc5b8"
+      "sha256": "67ad263f68d338d3a075c54c436f868fbbc4454136a37c4287c8cb131cac6abe"
     },
     {
       "path": "web/data.js",
@@ -148,11 +148,11 @@
     },
     {
       "path": "web/demo-lab/app.js",
-      "sha256": "783fcb740ad099dfae5ad366f5a6c187b2d27b7e92864b2732147102714dbc67"
+      "sha256": "5f04b430101c217f72d543960c200687aea9cd07db78b44e93ec34412c7593d3"
     },
     {
       "path": "web/demo-lab/catalog.js",
-      "sha256": "3b83e1f741e1cf84081de612bf5014674d2201176b90d64b10d7425c3389a7d9"
+      "sha256": "01b2ef0deb46d04ed99519e7961c7340fd162372112b2452845c66d93ffc8097"
     },
     {
       "path": "web/demo-lab/csv.min.js",
@@ -180,7 +180,7 @@
     },
     {
       "path": "web/demo-operations/business/index.html",
-      "sha256": "1fdece12415e632d32e8abb813a47edc6e0a10bbac202834f5ad37a3f934969c"
+      "sha256": "79fcd69a347161a91efb8db5867f192aa99d08ac8d3b7e05cfda6804d487e479"
     },
     {
       "path": "web/demo-operations/business/model.js",
@@ -216,7 +216,7 @@
     },
     {
       "path": "web/demo-operations/social/index.html",
-      "sha256": "2f1293023b24f74037440553d42d7831b7e595e7846b5bd6b5d87217967fa1b9"
+      "sha256": "5921db1fbf19d18b9f4543893b2fcdb461b2ebd63178c81d49c7a6c199658a69"
     },
     {
       "path": "web/demo-operations/social/model.js",
@@ -225,6 +225,86 @@
     {
       "path": "web/demo-operations/social/style.css",
       "sha256": "2c950bd641d66a2cc37012966f7f2a91bf96dc98535897d9e4a373297cc1bffc"
+    },
+    {
+      "path": "web/demo-previs/app.js",
+      "sha256": "d6b0bcb4f192be6b22167bd1bee61eae691c5a69db4647ded79378caad754f8c"
+    },
+    {
+      "path": "web/demo-previs/bridge.js",
+      "sha256": "3552f21e67d14575643c835cd7c6a1a201fcfba3e091ce8f9937416e1ee982ac"
+    },
+    {
+      "path": "web/demo-previs/demo.css",
+      "sha256": "c6bd6fee039fb65897ddb0ae11bc62c392de5d653bbbf1dd349106c49def8898"
+    },
+    {
+      "path": "web/demo-previs/export.js",
+      "sha256": "4fdf19bc9e72df693789efe8607492a1ac322c6983ee8d3a8840df0d5ae11687"
+    },
+    {
+      "path": "web/demo-previs/index.html",
+      "sha256": "a55f788bc5b5ba31ddad4ee61f843b14719cb8e4b52edaf55e918e4c4f58d382"
+    },
+    {
+      "path": "web/demo-previs/player.js",
+      "sha256": "b7a2d73b4057c3475de8ed38b6a6bf2fe996500d32e492c949de165cca2cac11"
+    },
+    {
+      "path": "web/demo-previs/schema.js",
+      "sha256": "f3097a4728397319fbc0f0199ce253831524b02c714e220ef17d90422d8c70c1"
+    },
+    {
+      "path": "web/demo-previs/style.css",
+      "sha256": "24d4f18bb046f1a36ee6bf8a50b4efffcb18dd3ab6c0f1f3b49f80b8e3a8fdba"
+    },
+    {
+      "path": "web/demo-settings/app.js",
+      "sha256": "863d8ee4f7e47de30e7ab7f337b45298801dd1cd24654aa42cc9662901a92211"
+    },
+    {
+      "path": "web/demo-settings/index.html",
+      "sha256": "a9893aa98010a91a42f5966e32afea5f782c29bf91e4460c9837f9bf8607a2de"
+    },
+    {
+      "path": "web/demo-settings/schema.js",
+      "sha256": "c1e5916ab787cf904c3d0b49016aa15bd528d29640f016048605c833e2211721"
+    },
+    {
+      "path": "web/demo-tools/app.js",
+      "sha256": "85e8caa6d11784dc1cabdc220c6ddd0d92701b34d4a421b38b8ae0da539e1ab2"
+    },
+    {
+      "path": "web/demo-tools/contract.js",
+      "sha256": "fc54f0ead8127671725d90ff2598cb1e8003d7fbf0566e2ced9fd805eea53009"
+    },
+    {
+      "path": "web/demo-tools/index.html",
+      "sha256": "d3a17fa9c67db2f18d8148bde2ee799aa75aa282cc92e3bfd10a0f2c4f2f1037"
+    },
+    {
+      "path": "web/demo-tools/pdf/pdf.min.js",
+      "sha256": "57456c8e0c81e46be31174b499ef77f2b9f5ee46d04412ba627320a36755d4c2"
+    },
+    {
+      "path": "web/demo-tools/pdf/pdf.worker.min.js",
+      "sha256": "9536359f1b8367850d485731ca1d5e45c159a7b7a0912325e539937aa21ceb18"
+    },
+    {
+      "path": "web/demo-tools/schema.js",
+      "sha256": "5ce7b6486e8a9b5095e2267320607b9c04ef9070a2d0bc54c95fdf0f4af3185f"
+    },
+    {
+      "path": "web/demo-tools/style.css",
+      "sha256": "2e15c8b8e1b6675b29021ab87053ecc5633cc9bcc164d50aabd5342907259eec"
+    },
+    {
+      "path": "web/demo-workspace/index.html",
+      "sha256": "8c74b7c06a75e8ef7b708869dbb2a2ee7bdd23726e8fb2147b3020a361ceccca"
+    },
+    {
+      "path": "web/demo-workspace/style.css",
+      "sha256": "4af15f5395d50f436ece26eac573ad3df8cc659e1929284958402dc25c37bfb3"
     },
     {
       "path": "web/editorial-theme.css",
@@ -248,11 +328,19 @@
     },
     {
       "path": "web/guide/content.mjs",
-      "sha256": "432592dee1d688b50608a064501f26cab80320772d1a8310ecde843292b0aa16"
+      "sha256": "435a4699d788e9386275ab384ab97f447cdf9e9e9cd61445d120e2a49993a81b"
     },
     {
       "path": "web/guide/index.html",
-      "sha256": "fcc21c933a13b04bd1957f5105d5c55a0768a3039c18c6810934e29c4841db08"
+      "sha256": "7b91e7ada2da3a5afb8b88ee8c9c31d48ca8a62845d4188827b662edee1659e2"
+    },
+    {
+      "path": "web/guide/personal.css",
+      "sha256": "02c7e832a8b1222922a30bf1b66b11b8c11439be7fb36339299890c5244cba89"
+    },
+    {
+      "path": "web/guide/personal.js",
+      "sha256": "7461c29652eecef1a0f311f700e476bd2a77c4057885d601bd9e0ff6d0e68508"
     },
     {
       "path": "web/guide/style.css",
@@ -260,7 +348,7 @@
     },
     {
       "path": "web/index.html",
-      "sha256": "040982f7973c8728212bb14d8675875a4e9a297e5abd4b5cf2b02a029b477b75"
+      "sha256": "2b188ef0b15f56d69546c79bc67278aa87083ee2b0401e0fc56cf3d8d2ad132c"
     },
     {
       "path": "web/launch.html",
@@ -269,6 +357,14 @@
     {
       "path": "web/outro.html",
       "sha256": "4e99026dba69be904bb6d9f7bb8a4cbf32eebd2217109a8941f704cf76e10ba8"
+    },
+    {
+      "path": "web/parity-map.js",
+      "sha256": "fc38bda5017b06cc36b416f3410935de5eb97c3dc9879cf8cc26c7489dbd0c85"
+    },
+    {
+      "path": "web/parity.css",
+      "sha256": "f72b89bad2917a3418bb8eb681dadde5281282735b460fedae14d67155cfc7c9"
     },
     {
       "path": "web/radar-goals.css",
@@ -280,35 +376,51 @@
     },
     {
       "path": "web/reliable-store.js",
-      "sha256": "48c58a74b16622159b7a239f64698439bce1fd41141cf46a576bba917c576501"
+      "sha256": "523ddaede96cb2ad75c22cbe4a1623d551f8925bad09f71af0cdbf85cb296a55"
     },
     {
       "path": "web/reset.html",
       "sha256": "5b28ffd687f90959a6d0ef58e770b8bfe6b470424ca4ed4a4699fd13705dd93b"
     },
     {
+      "path": "web/rourou/additions.css",
+      "sha256": "45a6b6defb2807a7e6be6c59d959f8f6842f3a504f4ea78193b6d6ef117344de"
+    },
+    {
       "path": "web/rourou/app.js",
-      "sha256": "83ac21361649408c0952e61a6c4db6715b6197f02ffe5d8ffe72f57fe3a38c26"
+      "sha256": "7b601b37c583e0248b54318a781c4729ada1316bc2457e5728db8ee56e767fc8"
     },
     {
       "path": "web/rourou/backup.js",
       "sha256": "9d2950ee71406244e46dc0f8c6ddda2fa1ae002a34b74d87256e27299123fb62"
     },
     {
+      "path": "web/rourou/garden.css",
+      "sha256": "e05d90201e81b883d3f63bd1c0bf3b3418c85efbe0e0eb02d69d9687ba0dafbd"
+    },
+    {
+      "path": "web/rourou/garden.js",
+      "sha256": "1a3bfe60134709ba418ff1d5d75841fe0cdcd08de22b429255d2f1813e3e9d09"
+    },
+    {
       "path": "web/rourou/index.html",
-      "sha256": "3d39939265febbca8afa5135c366876c03d91e87d44913b6a227d07def57c968"
+      "sha256": "71f41919b0f11529575fba856ec26ac30fee48a70acefdf253a21173d8939170"
     },
     {
       "path": "web/rourou/schema.js",
-      "sha256": "aba226f486e575fefeaf5b0c9a56deab68fe40f22b578d9110c0f9d4d8eb2e17"
+      "sha256": "666b208f33698e5b9f14f19cc3de5fffba74f7eb1f536f6ae14d89c21bef7142"
+    },
+    {
+      "path": "web/rourou/sticker.js",
+      "sha256": "dffe656200db42f1edbe2093a41e7ec614c5e61f1fe8cb7330edbf53228bf39c"
     },
     {
       "path": "web/scene-art.css",
-      "sha256": "edcd185c515f8cc44c60b7f72ea472197a22b922dbc87a1ed08f56ea34aa834a"
+      "sha256": "04c5abeb24544a2c326ec2ee120045868ec3523eb7c0ae48fa316f173a669b24"
     },
     {
       "path": "web/scene-art.js",
-      "sha256": "8426ec5289b779bb46b860461c971149017dc8c2be01b5c655ac3142de01a35c"
+      "sha256": "05a644b1d0b038612a98991ca15e503ca333a6da2abcd07700dd2c7c6a61cbb2"
     },
     {
       "path": "web/showcase-widgets.css",
@@ -2208,7 +2320,7 @@
         },
         {
           "title": "保存 / 输出",
-          "body": "可导出表演方案与训练记录；实战版支持自己持续添加笔记。"
+          "body": "顶部「亲手操作·真实保存」能持续新增和编辑表演笔记；可导出CSV、历史版本与含原件备份。"
         }
       ],
       "curated": true,
@@ -2240,7 +2352,7 @@
         },
         {
           "title": "保存 / 输出",
-          "body": "这里是虚构预置预演；要编辑自己的镜头、图片和时长，请用实战版造型与分镜。"
+          "body": "点顶部「编辑镜头预演」可在演示版直接改镜头、图片和时长；可导出镜头CSV、含原图JSON与独立播放HTML。"
         }
       ],
       "curated": true,
@@ -2725,7 +2837,7 @@
         },
         {
           "title": "怎么填",
-          "body": "选择25类表单之一；可先载入虚构示例，再新增或修改负责人、日期、状态和具体内容。"
+          "body": "选择26类表单之一；可先载入虚构示例，再新增或修改负责人、日期、状态和具体内容。"
         },
         {
           "title": "如何保存",
@@ -2799,12 +2911,76 @@
         }
       ],
       "kinds": []
+    },
+    {
+      "id": "demo-page-settings",
+      "mode": "demo",
+      "key": "settings",
+      "page": -15,
+      "name": "账号与模型配置演练",
+      "icon": "shield",
+      "category": "tools",
+      "lead": "先演练配置，再由演员接入自己的服务。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "顶部「20板块操作入口」→「账号与模型配置」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "编辑虚构成员、角色与连接计划；填写服务地址和模型名，不填写真实密钥。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存后核对成员与连接数量；模拟邀请可转为演练成员。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "可下载配置JSON。权限和密码仅为演练，本页不创建真实账号或调用模型。"
+        }
+      ],
+      "kinds": []
+    },
+    {
+      "id": "demo-page-dance",
+      "mode": "demo",
+      "key": "dance",
+      "page": -16,
+      "name": "舞蹈训练",
+      "icon": "dance",
+      "category": "story",
+      "lead": "把舞蹈想法变成可跟踪的排练记录。",
+      "curated": true,
+      "fields": [],
+      "steps": [
+        {
+          "title": "点哪里",
+          "body": "侧栏「舞蹈训练」→「亲手操作·真实保存」。"
+        },
+        {
+          "title": "怎么填",
+          "body": "填写音乐段落、情绪、动作观察、时间码与老师反馈，可附原视频。"
+        },
+        {
+          "title": "如何保存",
+          "body": "保存后列表和统计立即变化；刷新后可继续编辑历史版本。"
+        },
+        {
+          "title": "保存 / 输出",
+          "body": "可导出训练CSV和含原件备份。身体安全和动作纠正由专业人员判断。"
+        }
+      ],
+      "kinds": [
+        "dance"
+      ]
     }
   ],
   "notes": {
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "981b783e2c2d1736ebc59155ae9c75253f9e906e3ff0e066a5e28839daa71aa2",
-  "generatedAt": "2026-10-24T05:43:59.995Z"
+  "contentHash": "764713a7af98cf3fb77c5d4f20aa4aea4a4f72be1fa4969894777a66fe83a562",
+  "generatedAt": "2026-10-24T07:22:51.107Z"
 }

@@ -1,6 +1,6 @@
 (function (root) {
   'use strict';
-  const TABS = ['today', 'health', 'breed', 'beh', 'care', 'album'];
+  const TABS = ['garden', 'today', 'profile', 'health', 'breed', 'beh', 'care', 'album', 'studio'];
   const CONTACTS = ['ownerName', 'ownerPhone', 'assistantName', 'assistantPhone', 'hospitalName', 'hospitalPhone', 'hospitalAddress', 'emergencyName', 'emergencyPhone', 'emergencyAddress', 'careNote'];
   const fail = (path, message) => { throw new Error('肉肉资料校验失败：' + path + message); };
   const obj = (x, p) => {
@@ -36,13 +36,28 @@
       ['groom','✂️','美容修剪',-26,30,'示例记录']
     ].map(([id,ic,n,days,every,note]) => ({id,ic,n,last:d(days),every,note}));
     const behLog = [[-6,'主人出门就叫'],[-5,'主人出门就叫'],[-5,'像猪一样哼哼（反向喷嚏）'],[-3,'一直舔爪子'],[-2,'主人出门就叫'],[-1,'摇尾巴翻肚皮']].map(([days,b]) => ({d:d(days),b}));
-    return { schemaVersion: 2, tab: 'today', logs: {}, health, behLog, photos: [], notes: {}, contacts: Object.fromEntries(CONTACTS.map(k => [k, ''])), drafts: {} };
+    return { schemaVersion: 3, tab: 'today', profile: {name:'肉肉',breed:'马尔济斯',birth:'2022-05-20',sex:'',weight:2.9,targetWeight:null,food:'小型犬成犬粮',meals:2,gram:40,water:160,walk:2,notes:''}, studio: {photoId:'',caption:'今天也要开心呀',layout:'bottom',background:'#fff7ed',textColor:'#302a26',fontSize:52,fontFamily:'sans'}, logs: {}, health, behLog, photos: [], notes: {}, contacts: Object.fromEntries(CONTACTS.map(k => [k, ''])), drafts: {} };
   }
   function validate(raw) {
     obj(raw, '资料');
-    if (raw.schemaVersion !== undefined && ![1, 2].includes(raw.schemaVersion)) fail('版本', '不受当前页面支持');
+    if (raw.schemaVersion !== undefined && ![1, 2, 3].includes(raw.schemaVersion)) fail('版本', '不受当前页面支持');
     const out = fresh();
     if (raw.tab !== undefined) { if (!TABS.includes(raw.tab)) fail('当前页面', '无效'); out.tab = raw.tab; }
+    if (raw.profile !== undefined) {
+      const p=obj(raw.profile,'档案');
+      for(const k of ['name','breed','sex','food','notes'])if(p[k]!==undefined)out.profile[k]=str(p[k],'档案.'+k,k==='notes'?10000:1000);
+      if(p.birth!==undefined)out.profile.birth=p.birth?date(p.birth,'生日'):'';
+      for(const k of ['weight','targetWeight','meals','gram','water','walk'])if(p[k]!==undefined)out.profile[k]=p[k]===null||p[k]===''?null:num(p[k],'档案.'+k,100000);
+      for(const k of ['meals','walk'])if(out.profile[k]!==null&&!Number.isInteger(out.profile[k]))fail('档案.'+k,'请填写整数');
+      for(const k of ['weight','targetWeight'])if(out.profile[k]===0)fail('档案.'+k,'须大于0，或留空');
+    }
+    if (raw.studio !== undefined) {
+      const v=obj(raw.studio,'表情工坊');out.studio.photoId=str(v.photoId||'','选中照片',200);out.studio.caption=str(v.caption||'','表情文字',300);
+      if(!['bottom','top','square'].includes(v.layout))fail('表情排版','无效');out.studio.layout=v.layout;
+      for(const k of ['background','textColor']){const color=v[k]??out.studio[k];if(!/^#[a-f0-9]{6}$/i.test(color))fail('表情颜色','无效');out.studio[k]=color;}
+      if(v.fontSize!==undefined){out.studio.fontSize=num(v.fontSize,'表情字号',80);if(out.studio.fontSize<24)fail('表情字号','至少24');}
+      if(v.fontFamily!==undefined){if(!['sans','serif'].includes(v.fontFamily))fail('表情字体','无效');out.studio.fontFamily=v.fontFamily;}
+    }
     if (raw.logs !== undefined) {
       obj(raw.logs, '每日记录');
       if (Object.keys(raw.logs).length > 10000) fail('每日记录', '数量过多');
@@ -93,6 +108,7 @@
         const d = {};
         for (const k of ['note', 'behavior', 'healthId', 'healthDate', 'photoCaption', 'photoDate']) if (value[k] !== undefined) d[k] = str(value[k], '草稿.' + tab + '.' + k, k === 'note' ? 100000 : 5000);
         if (value.contacts !== undefined) { obj(value.contacts, '托管草稿'); d.contacts = {}; for (const k of CONTACTS) if (value.contacts[k] !== undefined) d.contacts[k] = str(value.contacts[k], '托管草稿.' + k, k === 'careNote' ? 10000 : 1000); }
+        if (value.profile !== undefined) { obj(value.profile,'档案草稿');d.profile={};for(const k of ['name','breed','birth','sex','weight','targetWeight','food','meals','gram','water','walk','notes'])if(value.profile[k]!==undefined)d.profile[k]=str(value.profile[k],'档案草稿.'+k,k==='notes'?10000:1000); }
         out.drafts[tab] = d;
       }
     }

@@ -6,11 +6,13 @@ if ! command -v node >/dev/null || ! node -e 'process.exit(Number(process.versio
   read 'reply?按回车退出。'
   exit 1
 fi
-if [[ ! -d node_modules/better-auth ]]; then
+if [[ ! -d node_modules/better-auth || ! -d node_modules/esbuild || ! -d node_modules/pdfjs-dist ]]; then
   npm ci --ignore-scripts
 fi
 node scripts/build-demo-lab.mjs
 node scripts/build-demo-operations.mjs
+node scripts/build-demo-previs.mjs
+node scripts/build-demo-tools.mjs
 node scripts/build-usage-guide.mjs
 if curl -fsS http://127.0.0.1:4930/api/health 2>/dev/null | node -e 'let s="";process.stdin.on("data",x=>s+=x);process.stdin.on("end",()=>{try{process.exit(JSON.parse(s).version==="3.1-practical"?0:1)}catch{process.exit(1)}})' ; then
   open http://127.0.0.1:4930/practical/

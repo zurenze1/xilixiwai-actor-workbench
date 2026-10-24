@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-10-24T07:12:00.416Z",
+  "purpose": "完整复用实战预演界面、校验器、播放器与导出；差异仅独立本机演示桥、首次虚构资料、提示和父页面等待接口。",
+  "sources": [
+    {
+      "source": "practical/web/previs/index.html",
+      "output": "web/demo-previs/index.html",
+      "sourceSha256": "6167b04f38979538401ac3286bcc72b5e5e98fd34645591dde449dee03e8c510",
+      "outputSha256": "a55f788bc5b5ba31ddad4ee61f843b14719cb8e4b52edaf55e918e4c4f58d382"
+    },
+    {
+      "source": "practical/web/previs/style.css",
+      "output": "web/demo-previs/style.css",
+      "sourceSha256": "24d4f18bb046f1a36ee6bf8a50b4efffcb18dd3ab6c0f1f3b49f80b8e3a8fdba",
+      "outputSha256": "24d4f18bb046f1a36ee6bf8a50b4efffcb18dd3ab6c0f1f3b49f80b8e3a8fdba"
+    },
+    {
+      "source": "practical/web/previs/schema.js",
+      "output": "web/demo-previs/schema.js",
+      "sourceSha256": "f3097a4728397319fbc0f0199ce253831524b02c714e220ef17d90422d8c70c1",
+      "outputSha256": "f3097a4728397319fbc0f0199ce253831524b02c714e220ef17d90422d8c70c1"
+    },
+    {
+      "source": "practical/web/previs/player.js",
+      "output": "web/demo-previs/player.js",
+      "sourceSha256": "b7a2d73b4057c3475de8ed38b6a6bf2fe996500d32e492c949de165cca2cac11",
+      "outputSha256": "b7a2d73b4057c3475de8ed38b6a6bf2fe996500d32e492c949de165cca2cac11"
+    },
+    {
+      "source": "practical/web/previs/export.js",
+      "output": "web/demo-previs/export.js",
+      "sourceSha256": "4fdf19bc9e72df693789efe8607492a1ac322c6983ee8d3a8840df0d5ae11687",
+      "outputSha256": "4fdf19bc9e72df693789efe8607492a1ac322c6983ee8d3a8840df0d5ae11687"
+    },
+    {
+      "source": "practical/web/previs/app.js",
+      "output": "web/demo-previs/app.js",
+      "sourceSha256": "83347cda025a450fdbec2d1957750531218ac6a9a2a8c3d72ab59db67cb3dff3",
+      "outputSha256": "d6b0bcb4f192be6b22167bd1bee61eae691c5a69db4647ded79378caad754f8c"
+    },
+    {
+      "source": "practical/web/previs/vendor/gsap.min.js",
+      "output": "web/demo-previs/vendor/gsap.min.js",
+      "sourceSha256": "a992e24e9726b97cf7320b0a88d2262459c9a11cb919e6d9765dd6eb88bbeead",
+      "outputSha256": "a992e24e9726b97cf7320b0a88d2262459c9a11cb919e6d9765dd6eb88bbeead"
+    }
+  ]
+}

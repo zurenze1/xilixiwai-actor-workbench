@@ -7,6 +7,10 @@ const knownFolders=['take','read','line','role','dance','prev','comic','shoot','
 const file=z.object({name:z.string().max(1000),size:z.union([z.string(),z.number()]),at:z.string(),text:text.optional(),img:z.string().regex(/^data:image\/(jpeg|png|webp|gif);base64,/).optional(),file:z.object({id:z.string(),name:z.string(),type:z.string(),size:z.number().int().nonnegative(),sha256:z.string().regex(/^[a-f0-9]{64}$/)}).optional()}).passthrough();
 const review=z.object({status:z.enum(['adopt','modify','reject','discuss']),who:z.string(),text,at:z.string()});
 export const mainSchema=z.object({
+ operationModes:z.record(z.string().max(30),z.enum(['overview','edit','materials','analysis','reports','previs'])).optional(),
+ operationSummaries:z.record(z.string().max(30),z.object({active:z.number().int().nonnegative(),archived:z.number().int().nonnegative(),actualRevision:z.number().int().nonnegative(),latest:z.object({title:z.string().max(500),status:z.string().max(500),revision:z.number().int().nonnegative()}).nullable()})).optional(),
+ pendingActions:z.object({batchId:z.string().min(1).max(200),sourceTitle:z.string().max(500),actions:z.array(z.object({task:z.string().min(1).max(5000),owner:z.string().min(1).max(500),due:z.iso.date()})).min(1).max(100)}).nullable().optional(),
+ settings:z.boolean().optional(),dance:z.boolean().optional(),
  demoEdits:z.record(z.string(),z.json()).refine(v=>JSON.stringify(v).length<=2000000,'编辑资料过多').optional(),
  radarPlan:z.custom(v=>{try{globalThis.ActorRadar.validate(v);return true;}catch{return false;}},'发展目标格式无效').nullable().optional(),
  theme:z.enum(['tide','butter','moss']).optional(),st:z.number().int().min(0).max(7).optional(),

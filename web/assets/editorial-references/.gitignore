@@ -1,0 +1,6 @@
+*
+!.gitignore
+!LOCAL-ONLY.md
+!manifest.json
+!SOURCES.md
+!placements.json

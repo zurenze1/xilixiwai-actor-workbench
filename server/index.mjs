@@ -7,7 +7,7 @@ import {spawn} from 'node:child_process';
 import {runModel} from './models.mjs';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),pub=join(root,'web');
 const local=process.argv.includes('--local-tools'),port=Number(process.env.PORT||4890),cliRoot=join(root,'.runtime','cli');
-const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.gif':'image/gif','.webp':'image/webp','.json':'application/json','.m4a':'audio/mp4','.mp4':'video/mp4','.mp3':'audio/mpeg','.txt':'text/plain; charset=utf-8'};
+const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.gif':'image/gif','.webp':'image/webp','.json':'application/json','.m4a':'audio/mp4','.mp4':'video/mp4','.mp3':'audio/mpeg','.txt':'text/plain; charset=utf-8'};
 async function findProgram(name){for(const p of (process.env.PATH||'').split(delimiter)){const file=join(p,name);try{await access(file);return file;}catch{}}if(name==='codex'){const p='/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex';try{await access(p);return p;}catch{}}return null;}
 async function runCLI(connection,prompt,signal){
  const isCodex=connection.provider==='codex',program=await findProgram(isCodex?'codex':'claude');if(!program)throw new Error(`这台电脑尚未找到${isCodex?'Codex':'Claude Code'}，请由使用者安装并登录自己的工具后再测试。`);

@@ -2,6 +2,7 @@
 'use strict';
 const F=root.ActorForms.F;
 const extra={
+ project:{name:'项目资料',fields:[F('actor','演员 / 虚名'),F('phase','项目阶段','select',true,['接本','读本','入角','预演','开机','宣传','商务','复盘']),F('director','导演'),F('production','制作团队'),F('notes','项目说明与待确认事项','textarea')]},
  company:{name:'公司与工作室',fields:[F('name','主体名称','text',true),F('kind','主体类型','select',true,['影视工作室','公司','个人','其他']),F('registrationNo','登记编号'),F('jurisdiction','登记地区'),F('contact','对接人'),F('note','合作边界与备注','textarea')]},
  finance:{name:'收支与纳税准备',fields:[F('entity','所属主体','text',true),F('counterparty','往来方','text',true),F('direction','收支方向','select',true,['收入','支出']),F('currency','币种','select',true,['CNY','USD','EUR','HKD','GBP']),F('amount','事项金额（元）','money',true),F('due','预计收付日期','date'),F('status','台账进度','select',true,['待确认','待收付','已记录收付','待会计核验']),F('taxPeriod','税务资料期间（如 2026-Q4）'),F('accountant','确认会计'),F('note','分期、凭据与待核验问题','textarea')]},
  asset:{name:'资产管理',fields:[F('entity','所属主体','text',true),F('name','资产名称','text',true),F('serial','资产编号'),F('category','资产分类'),F('purchased','购置日期','date'),F('currency','币种','select',true,['CNY','USD','EUR','HKD','GBP']),F('cost','购置成本（元）','money'),F('location','存放位置'),F('holder','保管人'),F('status','资产状态','select',true,['在库','借出','维修','待盘点','已处置']),F('note','领用、归还与盘点说明','textarea')]},
@@ -10,9 +11,11 @@ const extra={
  'social-content':{name:'内容作品',fields:[F('category','内容分类','text',true),F('goal','创作目标','textarea'),F('description','脚本、素材与版本说明','textarea'),F('owner','负责人'),F('reviewer','审核人'),F('status','制作状态','select',true,['选题','制作中','待审核','已完成','暂缓']),F('dueAt','预计交付时间','datetime-local'),F('url','人工发布后的作品链接','url')]},
  'social-metric':{name:'作品表现',fields:[F('work','对应作品','text',true),F('platform','平台','select',true,['抖音','小红书','B站','微博','视频号','其他平台']),F('account','账号','text',true),F('asOf','数据截止时间','datetime-local',true),F('basis','统计口径','select',true,['累计快照','区间数据']),F('periodStart','区间起点（区间数据必填）','datetime-local'),F('views','播放量（未知留空）','count'),F('likes','点赞（未知留空）','count'),F('comments','评论（未知留空）','count'),F('shares','分享（未知留空）','count'),F('followers','账号粉丝总数（未知留空）','count'),F('source','数据来源与口径说明','textarea',true)]}
 };
-const groups=[{name:'一部戏的全过程',keys:['evaluation','contract','scene','dance','task','event','meeting','review','work']},{name:'团队与个人',keys:['message','right','knowledge','brief','goal','travel','health','crisis','charity']},{name:'经营与品牌',keys:['company','finance','asset','brand']},{name:'内容与账号',keys:['social-content','social-account','social-metric']}];
+const groups=[{name:'一部戏的全过程',keys:['project','evaluation','contract','scene','dance','task','event','meeting','review','work']},{name:'团队与个人',keys:['message','right','knowledge','brief','goal','travel','health','crisis','charity']},{name:'经营与品牌',keys:['company','finance','asset','brand']},{name:'内容与账号',keys:['social-content','social-account','social-metric']}];
+const scopes={project:{name:'项目与合作',keys:['project','evaluation','contract']},script:{name:'剧本研读',keys:['scene','knowledge']},performance:{name:'表演准备',keys:['scene']},studio:{name:'工作室协作',keys:['task','meeting','knowledge']},fans:{name:'粉丝沟通',keys:['message']},rights:{name:'版权与数字人',keys:['right','contract']},review:{name:'作品与复盘',keys:['review','work']},dance:{name:'舞蹈训练',keys:['dance']},brief:{name:'行业信息',keys:['brief']},plan:{name:'发展规划',keys:['goal']},travel:{name:'出行与健康',keys:['travel','health']},crisis:{name:'公共沟通',keys:['crisis']},charity:{name:'公益项目',keys:['charity']},today:{name:'今日与日历',keys:['task','event']}};
 const MOD={...root.ActorForms.MOD,...extra};
 const samples={
+ project:['《逆光来信》项目资料（虚构）',{actor:'把子肉',phase:'接本',director:'陈映（虚构导演）',production:'晨屿影业 / 制片小禾（均为虚构）',notes:'本项目、人物、制作团队与报价均为虚构，供实际流程验收。重点检查完整剧本、导演履历、拍摄档期与授权范围。'}],
  evaluation:['《逆光来信》合作邀约',{counterparty:'晨屿影业（虚构）',role:'林知夏',fit:'人物目标清晰；试拍与训练可衔接。待确认导演与制作团队资料。',start:'2027-03-01',end:'2027-04-20',amount:'CNY 360,000（虚构报价，未签约）',status:'评估中',notes:'补充导演作品、制作履历、完整剧本；邀请经纪人与本人一起评估。'}],
  contract:['《逆光来信》合同交接清单',{counterparty:'晨屿影业（虚构）',scope:'角色表演与约定场次宣传；声音克隆、数字替身与训练用途单独书面授权。',start:'2027-03-01',end:'2027-04-20',payment:'签约、开机、杀青三个节点；具体金额由合同确认。',status:'待审核',notes:'确认加班、补拍、宣发范围与原件归档；此条非法律意见。'}],
  scene:['第 12 场：窗边的来信',{scene:'第 12 场 · 咖啡店 · 黄昏',objective:'让姐姐留下来听完信的最后一句。',obstacle:'姐姐一直避开视线；自己不愿暴露恐惧。',subtext:'“咖啡凉了”其实是在争取她再坐一分钟。',emotion:'克制 → 试探 → 短暂失控 → 收住。',action:'先移开杯子，再抬眼；读到名字时停两拍。',alternatives:'A：轻声念信，以停顿蓄力。B：先开玩笑，再突然认真。排练比较导演反馈。',notes:'不把每个情绪都做成表情；重点观察对手反应。'}],
@@ -39,5 +42,5 @@ const samples={
  'social-content':['一封信的三种读法',{category:'角色排练日记',goal:'让观众感受同一句台词在不同目的下的变化。',description:'虚构脚本：先展示一句原台词，再并排写三种潜台词。素材版本：竖屏 30 秒预览、封面草图、发布文案。',owner:'小禾（虚构）',reviewer:'把子肉',status:'待审核',dueAt:'2027-03-10T18:00',url:''}],
  'social-metric':['排练日记 · 一次虚构快照',{work:'一封信的三种读法（虚构）',platform:'小红书',account:'把子肉的排练日记（虚构）',asOf:'2027-03-12T18:00',basis:'累计快照',periodStart:'',views:'12800',likes:'840',comments:'76',shares:'',followers:'',source:'完全虚构的演示数据；分享与粉丝未提供，保持空白。不同平台或不同时间快照不直接相加。'}]
 };
-root.DemoCatalog=Object.freeze({MOD,groups,samples,extra});
+root.DemoCatalog=Object.freeze({MOD,groups,samples,extra,scopes});
 })(globalThis);

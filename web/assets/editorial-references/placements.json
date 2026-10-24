@@ -1,0 +1,21 @@
+{
+  "note": "同一业务的演示与实战共享一张；不同业务不复用。本轮仅本机验收，未公开上传新增素材。",
+  "placements": {
+    "trip": "contiki-014",
+    "shoot": "contiki-036",
+    "charity": "contiki-045",
+    "plan": "contiki-052",
+    "review": "contiki-066",
+    "brief": "contiki-080",
+    "take": "showpo-000",
+    "social": "showpo-007",
+    "read": "showpo-079",
+    "fans": "showpo-085",
+    "deal": "showpo-132",
+    "role": "rachel-gilbert-011",
+    "promo": "rachel-gilbert-012",
+    "prev": "rachel-gilbert-027",
+    "dance": "rachel-gilbert-061",
+    "business": "rachel-gilbert-089"
+  }
+}

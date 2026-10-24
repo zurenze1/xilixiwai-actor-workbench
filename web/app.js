@@ -17,7 +17,7 @@ const $ = (s, el = document) => el.querySelector(s);
 /* ---------------- 状态 ---------------- */
 const fresh = () => ({
   theme: 'tide', nameIdx: 0, st: 0, userEvents: [], hiddenEv: {}, evDone: {}, todayDone: {}, home: true, trip: false, body: false, charity: false, fans: false, deals: false, crisis: false, portfolio: false, rourou: false, meals: [], check: {}, reviews: {}, files: {}, archives: [], cycleOn: false, cycle: { lastStart: -24, len: 28, dur: 5 }, sym: {}, inv: {}, selDay: 12, pack: {}, packAdd: {}, tab: {}, ran: {}, folder: [], provider: 'demo',
-  demoEdits:{}, radarPlan:null, business:false, social:false, guide: false, lab:false, labKind:'scene',visionPreferences:{}, experience: {active:false,step:0,checks:{}}, replySubmissions:{}, rel: 'xia', adopt: null, handling: 'probe', tasks: D.tasks.map(t => ({ ...t })),
+  demoEdits:{}, radarPlan:null, business:false, social:false, settings:false, dance:false, operationModes:{}, operationSummaries:{}, pendingActions:null, guide: false, lab:false, labKind:'scene',visionPreferences:{}, experience: {active:false,step:0,checks:{}}, replySubmissions:{}, rel: 'xia', adopt: null, handling: 'probe', tasks: D.tasks.map(t => ({ ...t })),
   sel: null, tone: 'warm', submitted: {}, scope: 'ad', scopeTried: false, checks: {}, faqQ: '', seen: {}, pick: 'nl'
 });
 const esc = x => String(x ?? '').replace(/&(?!amp;|lt;|gt;|quot;|#39;)|[<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -101,7 +101,7 @@ function experiencePanel() {
 }
 function updateExperiencePanel(){const panel=$('#experiencePanel');if(panel)panel.outerHTML=experiencePanel();}
 async function positionExperience(i,checkIndex,locate=false) {
- captureDraft();S.experience.active=true;S.experience.step=i;S.provider='demo';
+ await flushPet();captureDraft();S.experience.active=true;S.experience.step=i;S.provider='demo';S.operationModes[PARITY_STAGE[i]]='overview';
  const m=experienceStatus()[i],c=m.checks[checkIndex??Math.max(0,m.checks.findIndex(c=>!c.done))];
  const targetTab=c.tab||m.tab;if(targetTab)S.tab[i]=targetTab;
  const already=!onPage()&&S.st===i;
@@ -110,9 +110,9 @@ async function positionExperience(i,checkIndex,locate=false) {
 }
 function experienceResults() {
  const all=experienceStatus(),done=all.filter(x=>x.done).length,dlg=$('#dlg');
- dlg.innerHTML=`<div class="dlg experience-results"><h2>我的体验成果<button data-act="close" aria-label="关闭">×</button></h2><p class="mt8">《逆光来信》 · ${done}/8 个体验任务已完成 · 资料夹 ${S.folder.length}/11 项</p><p class="note">每个勾选都来自你实际保存的操作。尚未完成的会保留空缺，不会替你填好。</p><div class="experience-result-list">${all.map((m,i)=>`<button data-act="exp-result-open" data-i="${i}"><span>${m.done?'✓':'○'}</span><div><b>${m.output}</b><small>${m.checks.filter(c=>c.done).length}/${m.checks.length} 项操作完成</small></div><span>查看 ↗</span></button>`).join('')}</div><div class="row mt"><button class="btn pri" data-act="exp-export">下载我的体验成果单 .md</button><button class="btn" data-act="export">下载资料夹 .md</button><button class="btn" data-act="backup">主线与肉肉备份 .json</button></div><p class="small muted mt8">文字成果单含实际选择、已保存回复、审核快照和个人批注。此JSON备份还保留主线与肉肉附件原件；业务资料实验室请使用其独立备份。</p></div>`;if(!dlg.open)dlg.showModal();
+ dlg.innerHTML=`<div class="dlg experience-results"><h2>我的体验成果<button data-act="close" aria-label="关闭">×</button></h2><p class="mt8">《逆光来信》 · ${done}/8 个体验任务已完成 · 资料夹 ${S.folder.length}/11 项</p><p class="note">每个勾选都来自你实际保存的操作。尚未完成的会保留空缺，不会替你填好。</p><div class="experience-result-list">${all.map((m,i)=>`<button data-act="exp-result-open" data-i="${i}"><span>${m.done?'✓':'○'}</span><div><b>${m.output}</b><small>${m.checks.filter(c=>c.done).length}/${m.checks.length} 项操作完成</small></div><span>查看 ↗</span></button>`).join('')}</div><div class="row mt"><button class="btn pri" data-act="exp-export">下载我的体验成果单 .md</button><button class="btn" data-act="export">下载资料夹 .md</button><button class="btn" data-act="backup">主线与肉肉备份 .json</button></div><p class="small muted mt8">文字成果单含实际选择、已保存回复、审核快照和个人批注。此JSON备份还保留主线与肉肉附件原件；业务台账、原文分析、镜头预演、经营、内容运营和配置演练请分别使用模块内备份。</p></div>`;if(!dlg.open)dlg.showModal();
 }
-function capabilityPreview(){return `<section class="capability-preview card"><div><div class="eyebrow">THE WHOLE PICTURE</div><h2>一部戏之外，还有整个工作室。</h2><p class="sub">实战业务在这里有对应入口；用虚构资料试操作，也看看下一阶段的产品愿景。</p></div><div class="capability-teasers"><button data-act="capabilities"><span data-illustration="studio"></span><b>20 个能力入口</b><small>工作 · 事业 · 生活</small></button><button data-act="lab-open" data-v="company"><span data-illustration="business"></span><b>自己填，真的存</b><small>25 类业务记录 · 可导入导出</small></button><button data-act="visions"><span data-illustration="previs"></span><b>未来也值得期待</b><small>5 个规划预览 · 明确能力边界</small></button></div></section>`;}
+function capabilityPreview(){return `<section class="capability-preview card"><div><div class="eyebrow">THE WHOLE PICTURE</div><h2>一部戏之外，还有整个工作室。</h2><p class="sub">实战业务在这里有对应入口；用虚构资料试操作，也看看下一阶段的产品愿景。</p></div><div class="capability-teasers"><button data-act="capabilities"><span data-illustration="studio"></span><b>20 个能力入口</b><small>工作 · 事业 · 生活</small></button><button data-act="lab-open" data-v="company"><span data-illustration="business"></span><b>自己填，真的存</b><small>26 类业务记录 · 可导入导出</small></button><button data-act="visions"><span data-illustration="previs"></span><b>未来也值得期待</b><small>5 个规划预览 · 明确能力边界</small></button></div></section>`;}
 function modelOrbitPreview(){return `<section class="model-orbit-preview"><div><div class="eyebrow">ONE WORKSPACE · MANY TOOLS</div><h3>不同模型，围绕你的工作。</h3><p class="small muted mt8">旋转光环是协作示意。真实连接状态、权限与模型配置单独显示。</p><div class="row mt8">${['DeepSeek','ChatGPT / OpenAI','Codex','Claude Code'].map(n=>`<span class="tag">${n}</span>`).join('')}</div></div><div class="model-orbit-slot" data-chrome-orbit aria-label="多模型协作的金属环视觉示意"></div></section>`;}
 let lookPreviewMode='reveal',extractionRows=[];
 function lookRevealPreview(){const images=rawDemoData().looks.map(l=>({src:'assets/photos/'+l.img+'.jpg',alt:l.sc+' · '+l.k+'（虚构氛围配图）',label:l.k}));return `<section class="card look-reveal-preview"><div><div class="eyebrow">FROM A PERSON TO A ROLE</div><h3>从一束光，走进角色。</h3><p class="sub">切换氛围，或拖动对比两种方案。预置配图仅供选方向。</p><div class="row mt"><button class="btn ${lookPreviewMode==='reveal'?'pri':''}" data-act="look-mode" data-v="reveal">光边揭图</button><button class="btn ${lookPreviewMode==='compare'?'pri':''}" data-act="look-mode" data-v="compare">两图对比</button></div></div>${lookPreviewMode==='compare'?`<div data-comparison-slider data-images="${attrEsc(JSON.stringify(images.slice(0,2)))}"></div>`:`<div data-ember-reveal data-images="${attrEsc(JSON.stringify(images))}"></div>`}</section>`;}
@@ -123,7 +123,7 @@ function taskExtractionDialog(){
  const text=$('#minutes')?.value||'';try{extractionRows=ActorTaskExtract.extract(text);}catch(e){toast(e.message);return;}
  const dlg=$('#dlg');dlg.innerHTML=`<div class="dlg task-extraction"><h2>先确认，再变成待办<button data-act="close" aria-label="关闭">×</button></h2><p class="small muted mt8">本地按行拆分，不调用模型。每行一件事；只有明确填写的负责人和截止时间会带入，其余由你确认。</p>${taskTransformPreview(text,extractionRows)}<div class="extraction-list">${extractionRows.map((r,i)=>`<article data-extraction-row="${i}"><label class="row"><input type="checkbox" data-extraction-select checked> 事项 ${i+1}</label><div class="field"><label>要做什么<input data-extraction-title maxlength="500" value="${esc(r.t)}"></label></div><div class="grid2"><div class="field"><label>负责人<input data-extraction-owner maxlength="100" value="${esc(r.who)}"></label></div><div class="field"><label>截止时间<input data-extraction-due maxlength="100" value="${esc(r.due)}"></label></div></div><details><summary class="small">查看原话${r.timeHint?' · 时间线索 '+esc(r.timeHint):''}</summary><p class="small">${esc(r.sourceText)}</p></details></article>`).join('')}</div><p id="extractError" role="alert" class="bad-t"></p><div class="row mt"><button class="btn pri" data-act="task-extract-save">确认，加入任务看板</button><button class="btn" data-act="close">取消</button></div></div>`;if(!dlg.open)dlg.showModal();
 }
-function capabilityDialog(){const dlg=$('#dlg');dlg.innerHTML=`<div class="dlg capability-dialog"><h2>工作台的完整能力<button data-act="close" aria-label="关闭">×</button></h2><p class="sub mt8">看场景、亲手填资料、继续自由探索。实战与演示共用18类业务表单字段；模型分析在这里展示预置示例。</p><div class="capability-grid">${DemoExperience.capabilities.map((c,i)=>`<article><span class="capability-picture" data-illustration="${c.art}"></span><h3>${c.name}</h3><p>${c.description}</p><div class="row">${c.page!==null?`<button class="btn sm" data-act="cap-open" data-i="${i}">进入场景 →</button>`:''}${c.kind?`<button class="btn sm" data-act="lab-open" data-v="${c.kind}">自己填一条 ↗</button>`:''}${c.page===null&&!c.kind?'<button class="btn sm" data-act="deployment-info">查看实战部署说明</button>':''}</div></article>`).join('')}</div><p class="note">本机演示记录可保存、修改、导出。账号权限、团队在线协作、真实模型与外部平台连接，以实战版实际部署配置为准。</p></div>`;if(!dlg.open)dlg.showModal();}
+function capabilityDialog(){const dlg=$('#dlg');dlg.innerHTML=`<div class="dlg capability-dialog"><h2>工作台的完整能力<button data-act="close" aria-label="关闭">×</button></h2><p class="sub mt8">看场景、亲手填资料、继续自由探索。实战与演示共用18类业务表单字段；模型分析在这里展示预置示例。</p><div class="capability-grid">${DemoExperience.capabilities.map((c,i)=>`<article><span class="capability-picture" data-illustration="${c.art}"></span><h3>${c.name}</h3><p>${c.description}</p><div class="row">${c.page!==null?`<button class="btn sm" data-act="parity-open" data-v="${ActorParityMap.routes[i].route}">进入场景 →</button>`:''}${c.kind?`<button class="btn sm" data-act="lab-open" data-v="${c.kind}">自己填一条 ↗</button>`:''}${c.page===null&&!c.kind?'<button class="btn sm" data-act="deployment-info">查看实战部署说明</button>':''}</div></article>`).join('')}</div><p class="note">本机演示记录可保存、修改、导出。账号权限、团队在线协作、真实模型与外部平台连接，以实战版实际部署配置为准。</p></div>`;if(!dlg.open)dlg.showModal();}
 function visionsDialog(id){const dlg=$('#dlg'),v=DemoExperience.visions.find(x=>x.id===id);if(!v){dlg.innerHTML=`<div class="dlg"><h2>更进一步的想象<button data-act="close" aria-label="关闭">×</button></h2><p class="sub mt8">这些属于规划预览。可以选择场景、看输入与结果设想；不会发起真实生成、监测或对外动作。</p><div class="capability-grid">${DemoExperience.visions.map(v=>`<article><span class="capability-picture" data-illustration="${v.art}"></span><span class="tag warn">规划预览</span><h3>${v.title}</h3><p>${v.lead}</p><button class="btn" data-act="vision-open" data-v="${v.id}">展开规划预览 →</button></article>`).join('')}</div></div>`;}else{const choice=S.visionPreferences[v.id]||v.choices[0];dlg.innerHTML=`<div class="dlg vision-dialog"><h2>${v.title}<button data-act="close" aria-label="关闭">×</button></h2><p class="mt8">${tag('warn','规划预览 · 尚未接入')} ${v.lead}</p>${v.image?`<img class="world-concept" src="${v.image}" alt="作品走向世界：彩色地球概念预览，虚构案例，非实际发行数据">`:`<span class="vision-picture" data-illustration="${v.art}"></span>`}<h3 class="mt">先选一个方向</h3><div class="opt">${v.choices.map((c,i)=>`<button data-act="vision-choice" data-kind="${v.id}" data-i="${i}" class="${choice===c?'on':''}">${c}</button>`).join('')}</div><div class="vision-flow">${v.steps.map((s,i)=>`<div><b>0${i+1}</b><span>${s}</span></div>`).join('')}</div><div class="gate"><b>当前设想：${esc(choice)}</b><p class="small mt8">${v.result}</p></div><div class="row mt"><button class="btn pri" data-act="vision-export" data-v="${v.id}">导出这份功能设想</button><button class="btn" data-act="visions">看其他规划</button></div></div>`;}if(!dlg.open)dlg.showModal();}
 async function openLab(kind='scene'){await flushPet();S.labKind=kind;if($('#dlg').open)$('#dlg').close();if(S.lab){await save();render();}else await go(PAGES.lab);}
 const tab = (st, def) => S.tab[st] || def;
@@ -277,7 +277,7 @@ const download = ActorStore.download;
 async function exportBackup() {
   await flushPet();
   captureDraft();await save();const bundle=await ActorStore.exportBundle();await ActorStore.validateBundle(bundle,{validateMain,validatePet:PetSchema.validate});
-  download(`戏里戏外-备份-${new Date().toLocaleDateString('sv')}.json`,JSON.stringify(bundle),'application/json');toast('已导出工作台与肉肉资料；实验室请另行备份');
+  download(`戏里戏外-备份-${new Date().toLocaleDateString('sv')}.json`,JSON.stringify(bundle),'application/json');toast('已导出主线与肉肉资料；其余操作模块请分别备份');
 }
 async function importBackup(file) {
   const doc=JSON.parse(await file.text());
@@ -305,31 +305,52 @@ async function archiveAction(i,action) {
 }
 
 /* ---------------- 页面结构：今天 / 戏里 / 戏外·事业 / 戏外·生活 ---------------- */
-const PAGES = { home: -1, trip: -2, body: -3, charity: -4, fans: -5, deals: -6, crisis: -7, portfolio: -8, brief: -9, rourou: -10, guide: -11, lab:-12, business:-13, social:-14 };
+const PAGES = { home: -1, trip: -2, body: -3, charity: -4, fans: -5, deals: -6, crisis: -7, portfolio: -8, brief: -9, rourou: -10, guide: -11, lab:-12, business:-13, social:-14, settings:-15, dance:-16 };
 const onPage = () => Object.keys(PAGES).find(k => S[k]) || '';
-const VIEWP = { home: () => vHome(), trip: () => vTrip(), body: () => vBody(), charity: () => vCharity(), fans: () => vFans(), deals: () => vDeals(), crisis: () => vCrisis(), portfolio: () => vPortfolio(), brief: () => vBrief() };
+const VIEWP = { dance:()=>{S.tab[2]='dance';return vRole().replace('data-illustration="role"','data-illustration="dance"');}, home: () => vHome(), trip: () => vTrip(), body: () => vBody(), charity: () => vCharity(), fans: () => vFans(), deals: () => vDeals(), crisis: () => vCrisis(), portfolio: () => vPortfolio(), brief: () => vBrief() };
 const CRUMB = { home: () => `<b>日程总览</b><span>示例：拍摄期 ${D.sched.year}年${D.sched.month}月 · 当天 ${D.sched.month}月${D.sched.today}日 · ${D.actor.name}</span>`, trip: () => `<b>出行与天气</b><span>${D.trip.title}</span>`, body: () => `<b>身体与状态</b><span>角色：许知夏 · 定妆前 6 周</span>`, charity: () => `<b>公益与影响力</b><span>把热爱变成看得见的善意</span>`, fans: () => `<b>粉丝与社群</b><span>真诚对待粉丝，也守住边界</span>`, deals: () => `<b>商务合作与代言</b><span>AI 先背调评估，人来做决定</span>`, crisis: () => `<b>危机公关与舆情</b><span>先核实，再回应</span>`, portfolio: () => `<b>作品库与发展规划</b><span>适合什么角色，下一步往哪走</span>`, brief: () => `<b>行业简报</b><span>${D.brief2.week} · 逐条核验来源</span>`, rourou: () => '<b>肉肉的小世界</b><span>日常陪伴 · 健康 · 时光机 · 照护记录</span>' };
 async function flushPet() {
   const module = $('#rourouFrame')?.contentWindow?.PetModule;
   if (module?.whenIdle) await module.whenIdle();
   const lab=$('#labFrame')?.contentWindow?.DemoLab;if(lab?.whenIdle)await lab.whenIdle();
   const operation=$('#operationsFrame')?.contentWindow?.DemoOperations;if(operation?.whenIdle)await operation.whenIdle();
+  const guide=$('#guideFrame')?.contentWindow?.ActorGuidePersonal;if(guide?.whenIdle)await guide.whenIdle();
+  const settings=$('#settingsFrame')?.contentWindow?.DemoSettings;if(settings?.whenIdle)await settings.whenIdle();
+  const pane=$('#parityFrame')?.contentWindow;if(pane){for(const api of [pane.DemoWorkspace,pane.DemoMaterials,pane.PrevisApp])if(api?.whenIdle)await api.whenIdle();}
+
 }
 function renderEmbeddedPage(main) {
-  const pet = S.rourou,lab=S.lab,operation=S.business?'business':S.social?'social':'', id = pet ? 'rourouFrame' : lab?'labFrame':operation?'operationsFrame':'guideFrame';
-  const src = pet ? 'rourou/?embedded=1' : lab?'demo-lab/?embedded=1&kind='+encodeURIComponent(S.labKind):operation?'demo-operations/'+operation+'/?embedded=1':'guide/?embedded=1&mode=demo';
+  const pet = S.rourou,lab=S.lab,settingsPage=S.settings,operation=S.business?'business':S.social?'social':'', id = pet ? 'rourouFrame' : lab?'labFrame':operation?'operationsFrame':settingsPage?'settingsFrame':'guideFrame';
+  const src = pet ? 'rourou/?embedded=1' : lab?'demo-lab/?embedded=1&kind='+encodeURIComponent(S.labKind):operation?'demo-operations/'+operation+'/?embedded=1':settingsPage?'demo-settings/?embedded=1':'guide/?embedded=1&mode=demo';
   let frame = $('#'+id);
   if (!frame || operation && frame.dataset.operation!==operation) {
-    main.innerHTML = `<iframe id="${id}" class="workbench-frame" title="${pet ? '肉肉的小世界' : lab?'业务资料实验室':operation==='business'?'工作室经营与自有品牌':operation==='social'?'内容与账号运营':'使用说明'}" src="${src}&theme=${encodeURIComponent(S.theme)}" data-kind="${esc(S.labKind)}" data-operation="${operation}"></iframe>`;
+    main.innerHTML = `<iframe id="${id}" class="workbench-frame" title="${pet ? '肉肉的小世界' : lab?'业务资料实验室':operation==='business'?'工作室经营与自有品牌':operation==='social'?'内容与账号运营':settingsPage?'账号与模型配置演练':'使用说明'}" src="${src}&theme=${encodeURIComponent(S.theme)}" data-kind="${esc(S.labKind)}" data-operation="${operation}"></iframe>`;
     frame = $('#'+id);
   }
   if(lab&&frame.dataset.kind!==S.labKind){frame.dataset.kind=S.labKind;frame.src=src+'&theme='+encodeURIComponent(S.theme);}
   frame.contentWindow?.postMessage({type:'workbench:theme',theme:S.theme},location.origin);
 }
+CRUMB.settings=()=>'<b>账号与模型配置演练</b><span>虚构成员 · 权限 · 配置计划 · 不收取真实密钥</span>';
+CRUMB.dance=()=>'<b>舞蹈训练</b><span>主题 · 动作段落 · 排练视频 · 教师反馈</span>';
 CRUMB.business=()=>'<b>工作室经营与自有品牌</b><span>自有工作室 · 经纪签约 · 收支 · 资产财税 · 自有品牌</span>';
 CRUMB.social=()=>'<b>内容与账号运营</b><span>选题 · 内容日历 · 账号档案 · 发布审核 · 数据复盘</span>';
 CRUMB.guide = () => '<b>使用说明</b><span>图示 · 功能地图 · 操作卡</span>';
-CRUMB.lab = () => '<b>业务资料实验室</b><span>25 类业务表单 · 虚构示例 · 真实增改与导出 · 独立备份</span>';
+CRUMB.lab = () => '<b>业务资料实验室</b><span>26 类业务表单 · 虚构示例 · 真实增改与导出 · 独立备份</span>';
+
+
+const PARITY_STAGE=['project','script','performance','previs','studio','fans','rights','review'];
+function parityRoute(){const page=onPage();return ({home:'today',trip:'travel',body:'travel',charity:'charity',fans:'fans',deals:'rights',crisis:'crisis',portfolio:'plan',brief:'brief',dance:'dance',settings:'settings'})[page]||(!page?PARITY_STAGE[S.st]:'');}
+function parityModes(route){const values=[['overview','示例讲解'],['edit','亲手操作 · 真实保存']];if(route==='previs')return [['overview','示例讲解'],['previs','编辑我的造型与镜头'],['analysis','分析工作稿']];if(route==='script')values.push(['materials','导入 / 修改我的原文']);if(['script','performance','studio','fans','rights','dance','brief','plan'].includes(route))values.push(['analysis','分析工作稿']);if(route==='review')values.push(['reports','报告与行动']);return values;}
+function parityHeader(route){const meta=ActorParityMap.find(route),mode=S.operationModes[route]||'overview',summary=S.operationSummaries[meta?.scope];if(!meta)return '';return '<section class="parity-header"><div class="row"><div><h2>'+esc(meta.title)+' · 从示例走到自己的操作</h2><p>示例用于看效果；亲手操作会保存你的输入，列表、状态和统计随记录变化。</p></div><button class="btn sm" data-act="parity-map">全部20个板块 →</button></div><div class="parity-modes">'+parityModes(route).map(([id,label])=>'<button class="btn '+(mode===id?'pri':'')+'" data-act="parity-mode" data-v="'+id+'">'+label+'</button>').join('')+'</div><div class="parity-summary" id="myOperationSummary">'+(summary?'<b>我的台账：'+summary.active+' 条在用</b><span>'+summary.archived+' 条已归档</span><span>最近：'+esc(summary.latest?.title||'暂无')+'</span>':'<span>进入亲手操作，可新增、修改、查看历史版本和导出；不会改变示例图的含义。</span>')+'</div></section>';}
+function parityFrameURL(route,mode){const scope=ActorParityMap.find(route)?.scope||route;if(mode==='previs')return 'demo-previs/?embedded=1';if(mode==='materials')return 'demo-tools/?embedded=1&view=documents';if(mode==='analysis')return 'demo-tools/?embedded=1&view=analysis&task='+encodeURIComponent(route);if(mode==='reports')return 'demo-tools/?embedded=1&view=reports';return 'demo-workspace/?embedded=1&scope='+encodeURIComponent(scope);}
+function renderParity(main,route){const mode=S.operationModes[route]||'overview',url=parityFrameURL(route,mode)+'&theme='+encodeURIComponent(S.theme);main.classList.add('module-view');const old=$('#parityFrame');if(old?.dataset.route===route&&old.dataset.mode===mode){old.contentWindow?.postMessage({type:'workbench:theme',theme:S.theme},location.origin);return;}main.innerHTML='<div class="parity-main">'+parityHeader(route)+'<iframe id="parityFrame" class="workbench-frame" title="'+esc(ActorParityMap.find(route)?.title)+' · 亲手操作" src="'+url+'" data-route="'+route+'" data-mode="'+mode+'"></iframe><p class="parity-backup-note">当前操作空间独立备份：业务台账、原文分析、镜头预演、经营、内容运营和配置演练均在各模块里下载完整备份；主线备份不冒充包含这些独立资料。</p></div>';deliverPendingActions();}
+async function setParityMode(mode){const route=parityRoute();if(!parityModes(route).some(x=>x[0]===mode))throw Error('当前板块不支持此入口');await flushPet();S.operationModes[route]=mode;await save();render();$('#main').scrollTop=0;}
+async function openParityRoute(route,{overview=false}={}){const meta=ActorParityMap.find(route);if(!meta)throw Error('板块不存在');await flushPet();if(route==='dance')S.tab[2]='dance';if(route==='performance')S.tab[2]='scene';if(!['business','social','pet','guide','settings'].includes(route))S.operationModes[route]=overview?'overview':route==='previs'?'previs':route==='script'?'materials':'edit';await go(meta.page);await save();render();$('#main').scrollTop=0;}
+function parityMap(){const dlg=$('#dlg');dlg.innerHTML='<div class="dlg"><h2>20个实战板块，逐一亲手体验<button data-act="close">×</button></h2><p class="sub mt8">每个入口都到实际操作页。资料与数据在本浏览器保存；账号权限、外部平台与模型状态会清楚标记。</p><div class="parity-route-list mt">'+ActorParityMap.routes.map((r,i)=>'<button class="btn" data-act="parity-open" data-v="'+r.route+'"><span class="route-num">'+String(i+1).padStart(2,'0')+'</span><span>'+esc(r.title)+'<small>'+(['business','social','pet'].includes(r.route)?'完整模块 · 编辑与导出':r.route==='guide'?'图解说明 · 自己编排演示路线':r.route==='settings'?'配置与角色演练 · 不收真实密钥':'示例讲解＋自己的操作台')+'</small></span></button>').join('')+'</div></div>';if(!dlg.open)dlg.showModal();}
+let delivering=false;
+async function deliverPendingActions(){if(delivering||!S.pendingActions||parityRoute()!=='studio')return;delivering=true;try{for(let i=0;i<100;i++){const frame=$('#parityFrame'),api=frame?.contentWindow?.DemoWorkspace;if(!frame||parityRoute()!=='studio')return;if(api?.importActions){const pending=S.pendingActions,result=await api.importActions(pending.actions,{batchId:pending.batchId,sourceTitle:pending.sourceTitle});S.pendingActions=null;await save();toast('已保存 '+result.created+' 项实际任务'+(result.skipped?'，已有任务保留不重复':'')+'；可继续编辑与推进');return;}await new Promise(resolve=>setTimeout(resolve,100));}throw Error('任务操作台尚未就绪，行动已暂存。可稍后重新进入工作室。');}catch(e){showError(e);}finally{delivering=false;}}
+addEventListener('message',event=>{(async()=>{const frame=$('#parityFrame');if(!frame||event.origin!==location.origin||event.source!==frame.contentWindow)return;const d=event.data;if(d?.type==='actor:workspace-updated'){const route=frame.dataset.route,scope=ActorParityMap.find(route)?.scope;if(d.scope!==scope||!Number.isSafeInteger(d.active)||!Number.isSafeInteger(d.archived)||d.active<0||d.archived<0)return;S.operationSummaries[scope]={active:d.active,archived:d.archived,latest:d.latest?{title:String(d.latest.title).slice(0,500),status:String(d.latest.status||''),revision:d.latest.revision}:null,actualRevision:d.actualRevision};await save();const target=$('#myOperationSummary');if(target)target.innerHTML='<b>我的台账：'+d.active+' 条在用</b><span>'+d.archived+' 条已归档</span><span>最近：'+esc(d.latest?.title||'暂无')+'</span>';}else if(d?.type==='actor:materials-actions'){if(!Array.isArray(d.actions)||!d.actions.length||d.actions.length>100||typeof d.batchId!=='string'||d.batchId.length>200)throw Error('行动资料格式错误');for(const a of d.actions)if(typeof a.task!=='string'||!a.task.trim()||a.task.length>5000||typeof a.owner!=='string'||!a.owner.trim()||a.owner.length>500||typeof a.due!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(a.due))throw Error('请完整填写事项、负责人和截止日期');S.pendingActions={batchId:d.batchId,sourceTitle:String(d.sourceTitle||'分析工作稿').slice(0,500),actions:structuredClone(d.actions)};await save();await openParityRoute('studio');deliverPendingActions();}})().catch(showError);});
+window.ActorDemoParity=Object.freeze({open:openParityRoute,getMap:()=>ActorParityMap.routes.map(x=>({...x}))});
 
 /* ---------------- 框架渲染 ---------------- */
 const name = () => D.names[0];
@@ -387,6 +408,7 @@ function renderSide() {
   </div>
   <div class="side-cap">戏外 · 事业</div>
   ${it('portfolio', '🎞', '作品库与发展规划', '作品 · 雷达 · 年度规划')}
+  ${it('dance', '♪', '舞蹈训练', '主题 · 音乐 · 段落 · 训练记录')}
   ${it('business', '▧', '工作室经营与自有品牌', '自有工作室 · 经纪 · 财税 · 品牌')}
   ${it('social', '↗', '内容与账号运营', '选题 · 排期 · 账号 · 数据复盘')}
   ${it('deals', '📑', '商务合作与代言', '合作品牌 · 合同 · 背调')}
@@ -400,8 +422,9 @@ function renderSide() {
   ${it('rourou', '🐾', '肉肉的小世界', '日常 · 健康 · 时光机')}
   <div class="side-cap">发布会与使用说明</div>
   <button class="st" data-act="capabilities"><span class="st-dot">✦</span><span><b>完整能力与愿景</b><small>已可用 · 可体验 · 规划预览</small></span></button>
-  ${it('lab', '🗂', '业务资料实验室', '25 类表单 · 增改 · 导出')}
-  ${it('guide', '📖', '使用说明', '图示 · 功能地图 · 操作卡')}
+  ${it('lab', '🗂', '业务资料实验室', '26 类表单 · 增改 · 导出')}
+  ${it('guide', '📖', '使用说明', '图示 · 我的演示路线')}
+  ${it('settings', '⚙', '账号与模型配置', '虚构成员 · 权限 · 连接计划')}
   <a class="st extra" href="launch.html" target="_blank" rel="noopener"><span class="st-dot">▶</span><span><b>发布会页</b><small>暖场 · 宣发片 · 讲解</small></span></a>
   <div class="side-foot">
     <div class="me"><div class="avatar">${D.actor.initial}</div><div><b>${D.actor.name}</b><small>${D.actor.role}</small></div></div>
@@ -414,6 +437,7 @@ function renderTop() {
   $('#top').innerHTML = `
   <div class="crumb">${onPage() ? CRUMB[onPage()]() : `<b>《${D.project.title}》</b><span>${D.project.role} · 第 ${s.no} 站 / 08 · ${s.title}</span>`}</div>
   <div class="prog" title="已完成站数"><i><em style="width:${done / 8 * 100}%"></em></i><span>完整站点 ${done}/8</span></div>
+  <button class="btn sm" data-act="parity-map">20板块操作入口</button>
   <button class="btn sm" data-act="exp-resume">${S.experience.active?'继续引导':'带我体验'} ↗</button>
   <button class="chip" data-act="${publicDemo ? 'deployment-info' : demoHost ? 'switch-practical' : 'settings'}" title="${publicDemo ? '查看实战版使用与部署说明' : demoHost ? '保存当前草稿并切换实战版' : '连接模型'}"><span class="led ${!publicDemo && aiConnected ? 'live' : ''}"></span>${publicDemo ? '演示版 · 实战部署说明' : demoHost ? '演示版 · 切换实战' : S.provider === 'demo' ? '演示模式 · 示例结果' : providerName() + (aiConnected?' · 已测试连接':' · 待配置')}</button>
   <div class="themes" title="切换主题">${[['tide', '#2e3a6b', '深蓝潮汐'], ['butter', '#e7dcc3', '奶油便签'], ['moss', '#34541f', '山野片场']].map(([k, c, n]) => `<button data-act="theme" data-v="${k}" title="${n}" class="${S.theme === k ? 'on' : ''}" style="background:${c}"></button>`).join('')}</div>
@@ -1349,18 +1373,19 @@ function render(keepScroll) {
   document.documentElement.dataset.theme = S.theme;
   document.title = `${name().name} · 演员AI工作台`;
   const m = $('#main'), y = m.scrollTop;
-  m.classList.toggle('module-view', ['rourou','guide','lab','business','social'].includes(onPage()));
+  m.classList.toggle('module-view', ['rourou','guide','lab','business','social','settings'].includes(onPage()));
   renderSide(); renderTop(); renderFolder();
-  if (['rourou','guide','lab','business','social'].includes(onPage())) {
+  if (['rourou','guide','lab','business','social','settings'].includes(onPage())) {
     renderEmbeddedPage(m);
     renderedPage = null;
     return;
   }
-  if (onPage()) { m.innerHTML = (S.home?'':experiencePanel()) + editablePageToolbar() + VIEWP[onPage()]() + reviewBlock(); const hero=m.querySelector('.hero');if(hero&&!S.body){hero.dataset.illustration=({trip:'trip',body:'body',charity:'charity',fans:'fans',deals:'deals',crisis:'crisis',portfolio:'portfolio',brief:'brief'})[onPage()]||'home';if(!S.body)hero.setAttribute(S.brief?'data-blinking-dots':'data-rising-lines','');} renderedPage=pageKey();restoreDraft(); if (keepScroll) m.scrollTop = y; return; }
+  const currentParity=parityRoute();if(currentParity&&(S.operationModes[currentParity]||'overview')!=='overview'){renderParity(m,currentParity);renderedPage=null;return;}
+  if (onPage()) { m.innerHTML = parityHeader(currentParity) + (S.home?'':experiencePanel()) + editablePageToolbar() + VIEWP[onPage()]() + reviewBlock(); const hero=m.querySelector('.hero');if(hero&&!S.body){hero.dataset.illustration=({dance:'dance',trip:'trip',body:'body',charity:'charity',fans:'fans',deals:'deals',crisis:'crisis',portfolio:'portfolio',brief:'brief'})[onPage()]||'home';if(!S.body)hero.setAttribute(S.brief?'data-blinking-dots':'data-rising-lines','');} renderedPage=pageKey();restoreDraft(); if (keepScroll) m.scrollTop = y; return; }
   const tdef = GUIDE[S.st].find(g => g[1]);
   if (tdef) S.seen[S.st + ':' + (S.tab[S.st] || tdef[1])] = true;
   const html = VIEWS[S.st](), cut = html.lastIndexOf('<div class="next">');
-  m.innerHTML = experiencePanel() + editablePageToolbar() + (cut > 0 ? html.slice(0, cut) + reviewBlock() + html.slice(cut) : html + reviewBlock());
+  m.innerHTML = parityHeader(currentParity) + experiencePanel() + editablePageToolbar() + (cut > 0 ? html.slice(0, cut) + reviewBlock() + html.slice(cut) : html + reviewBlock());
   renderedPage=pageKey();restoreDraft();
   if (keepScroll) m.scrollTop = y;
 }
@@ -1506,6 +1531,9 @@ document.addEventListener('click', handleAction(async e => {
     case 'work-edit': workEditor(i);break;
     case 'work-delete': if(S.userWorks[i]&&confirm('删除这条自行录入作品？导入文件原件会保留。')){const old=S.userWorks;S.userWorks=old.filter((_,n)=>n!==i);try{await save();render(true);}catch(e){S.userWorks=old;throw e;}}break;
     case 'work-save': {const w=Object.fromEntries(['title','year','role','genre','note'].map(k=>[k,$('#work-'+k).value.trim()]));if(!w.title){$('#workEditError').textContent='请填写作品名';break;}const old=S.userWorks;S.userWorks=i<0?[...old,w]:old.map((x,n)=>n===i?w:x);try{await save();$('#dlg').close();render(true);toast('作品已保存，时间轴、轮播和题材统计已更新');}catch(e){S.userWorks=old;$('#workEditError').textContent=e.message;}break;}
+    case 'parity-mode': await setParityMode(v);break;
+    case 'parity-open': if($('#dlg').open)$('#dlg').close();await openParityRoute(v);break;
+    case 'parity-map': parityMap();break;
     case 'demo-page-edit': await editCurrentDemoPage();break;
     case 'demo-page-export': exportCurrentDemoPage();break;
     case 'effect-map': effectMap();break;
@@ -1546,7 +1574,7 @@ document.addEventListener('click', handleAction(async e => {
       if(i<0)S.tasks.push(task);else S.tasks[i]={...S.tasks[i],...task};
       await save();$('#dlg').close();render(true);toast('任务已保存，可以继续编辑和推进');break;
     }
-    case 'exp-home': await go(-1);$('#main').scrollTop=0;break;
+    case 'exp-home': await flushPet();S.operationModes.today='overview';await go(-1);await save();render();$('#main').scrollTop=0;break;
     case 'exp-resume': await positionExperience(S.experience.active?S.experience.step:Math.max(0,experienceStatus().findIndex(m=>!m.done)));break;
     case 'exp-open': case 'exp-result-open': if($('#dlg').open)$('#dlg').close();await positionExperience(i);break;
     case 'exp-locate': await positionExperience(S.experience.step,el.dataset.check===undefined?undefined:+el.dataset.check,true);break;
@@ -1575,7 +1603,7 @@ document.addEventListener('click', handleAction(async e => {
     case 'directorquestions': download('给导演的问题清单.md','# 围读沟通问题\n\n'+D.take.questions.map(x=>'- '+x).join('\n'),'text/markdown');break;
     case 'theme': await flushPet();S.theme = v; localStorage.setItem('xilixiwai.theme.v2',v); await save(); render(true); if ($('#dlg').open) settings(); break;
     case 'deployment-info': deploymentDialog(); break;
-    case 'settings': settings(); break;
+    case 'settings': await openParityRoute('settings'); break;
     case 'aiconnect': aiDialog();break;
     case 'aipromptcopy': {
       const field=$('#demoAiPrompt');if(!field)break;
@@ -1690,6 +1718,7 @@ const fromHash = async () => { const h = location.hash.slice(1), hm = h.match(/s
 addEventListener('message', handle(async event => {
   const frame = $('#guideFrame');
   if (!frame || event.origin !== location.origin || event.source !== frame.contentWindow || event.data?.type !== 'actor:guide-open') return;
+  if(typeof event.data.route==='string'&&ActorParityMap.find(event.data.route)){await openParityRoute(event.data.route);return;}
   const page = event.data.page;
   if (!Number.isInteger(page) || !(page >= 0 && page <= 7 || Object.values(PAGES).includes(page))) return;
   await go(page);

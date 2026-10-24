@@ -45,7 +45,8 @@ function saveDraft() {
   status('草稿待保存…');
   clearTimeout(draftTimer); draftTimer = setTimeout(() => save().catch(failed), 350);
 }
-window.PetModule=Object.freeze({async whenIdle(){if(importing)throw Error('肉肉正在保存文件，请稍候再切换');if(dirty||draftTimer)await save();await writes;if(dirty)throw Error('肉肉资料尚未保存，请先重试或导出备份');}});
+async function whenIdle(){if(importing)throw Error('肉肉正在保存文件，请稍候再切换');if(dirty||draftTimer)await save();await writes;if(dirty)throw Error('肉肉资料尚未保存，请先重试或导出备份');}
+window.PetModule=Object.freeze({whenIdle,flush:whenIdle,getState:()=>structuredClone(S)});
 const draft = (tab = S.tab) => (S.drafts[tab] = S.drafts[tab] || {});
 const stamp = () => new Date().toLocaleString('zh-CN', { hour12: false });
 const objectURLs = new Map();
@@ -69,9 +70,9 @@ const fmt = d => `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
 const daysTo = d => Math.round((new Date(d) - new Date(T0)) / 86400000);
 
 /* ---------- 档案（示例） ---------- */
-const PROFILE = { name: '肉肉', breed: '马尔济斯', birth: '2022-05-20', weight: 2.9, food: '小型犬成犬粮', meals: 2, gram: 40 };
-const ageY = ((today - new Date(PROFILE.birth)) / 31557600000).toFixed(1);
-const TARGET = { food: PROFILE.meals * PROFILE.gram, water: Math.round(PROFILE.weight * 55), walk: 2 };
+let PROFILE,ageY,TARGET;
+function profileValues(){PROFILE=S.profile;ageY=PROFILE.birth?((today-new Date(PROFILE.birth))/31557600000).toFixed(1):'';TARGET={food:(PROFILE.meals||0)*(PROFILE.gram||0),water:PROFILE.water||0,walk:PROFILE.walk||0};}
+profileValues();
 if (!S.health) {
   const d = n => ymd(addDays(today, n));
   S.health = [
@@ -147,7 +148,7 @@ const LV = { ok: ['正常', 'ok'], warn: ['多观察', 'warn'], bad: ['建议就
 /* ---------- 今天 ---------- */
 const day = () => (S.logs[T0] = S.logs[T0] || { food: [], water: 0, walk: [], poop: [], care: {} });
 function ring(v, max, color, label, unit) {
-  const p = Math.min(1, v / max), R = 40, L = 2 * Math.PI * R;
+  const p = max>0?Math.min(1, v / max):0, R = 40, L = 2 * Math.PI * R;
   return `<div class="ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--line)" stroke-width="10"/><circle cx="50" cy="50" r="${R}" fill="none" stroke="${color}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${L * p} ${L}" transform="rotate(-90 50 50)" style="transition:stroke-dasharray .6s"/><text x="50" y="55" text-anchor="middle" font-size="18" font-weight="700" fill="var(--ink)">${Math.round(p * 100)}%</text></svg><b>${label}</b><small>${v}/${max} ${unit}</small></div>`;
 }
 const now = () => new Date().toTimeString().slice(0, 5);
@@ -167,7 +168,7 @@ function vToday() {
         <button class="q" data-a="reset"><span class="ic">↺</span><b>清空今天</b><small>演示用</small></button>
       </div>
       <div class="poop mt8" id="poopPick" hidden>${['正常', '偏软', '拉稀', '有血 / 异常'].map(s => `<button class="btn sm" data-a="poopset" data-v="${s}">${s}</button>`).join('')}</div></div>
-    <div class="card"><h3>今天的肉肉</h3><p class="sub">吃饭目标 ${TARGET.food} 克（${PROFILE.meals} 顿）· 喝水约 ${TARGET.water} 毫升（按体重 ${PROFILE.weight} 公斤估算）</p>
+    <div class="card"><h3>今天的肉肉</h3><p class="sub">吃饭计划 ${TARGET.food||'待填'} 克（${PROFILE.meals??'待填'} 顿）· 加水计划 ${TARGET.water||'待填'} 毫升（来自手动档案，可修改）</p>
       <ul class="tl mt8">${evs.map(([t, x]) => `<li><span class="tm">${esc(t)}</span><span>${esc(x)}</span></li>`).join('') || '<li class="muted">今天还没有记录，点左边的按钮开始吧。</li>'}</ul>
       ${tips(L, food)}</div>
   </div>`;
@@ -184,18 +185,18 @@ function tips(L, food) {
 /* ---------- 健康档案 ---------- */
 function vHealth() {
   const rows = S.health.map(h => { const next = addDays(new Date(h.last), h.every); const n = daysTo(next); const lv = n < 0 ? 'bad' : n <= 14 ? 'warn' : ''; return { ...h, next, dl: n, lv }; }).sort((a, b) => a.dl - b.dl);
-  const W = 560, H = 190, x = i => 40 + i * (W - 60) / 11, y = v => 160 - (v - 2.2) / 1.6 * 140;
+  const weights=[...WEIGHTS.slice(0,-1),PROFILE.weight||WEIGHTS.at(-1)],low=Math.min(2.2,...weights)-.1,high=Math.max(3.8,...weights)+.1,W = 560, H = 190, x = i => 40 + i * (W - 60) / 11, y = v => 160 - (v-low)/(high-low)*140;
   return `<div class="grid2">
     <div class="card"><div class="row between"><h3>疫苗、驱虫与体检</h3><span class="tag demo">示例记录</span></div><p class="sub">按“上次日期 + 周期”自动算出下次时间，快到期时提醒</p>
       <div class="mt8">${rows.map(r => `<div class="rec"><div class="ic">${esc(r.ic)}</div><div><b>${esc(r.n)}</b><div class="small muted">上次 ${fmt(new Date(r.last))} · ${esc(r.note)}</div></div>
         <div class="cd"><strong class="${r.lv}">${r.dl < 0 ? '已过期 ' + (-r.dl) : r.dl} 天</strong>${r.dl < 0 ? '请尽快安排' : '下次 ' + fmt(r.next)}<br><button class="btn sm mt8" data-a="done" data-v="${esc(r.id)}">今天已完成</button></div></div>`).join('')}</div></div>
     <div>
-      <div class="card"><div class="row between"><h3>体重趋势</h3><span class="small muted">近 12 个月</span></div><p class="sub">马尔济斯成犬一般在 4 公斤以内，阴影是参考范围</p>
+      <div class="card"><div class="row between"><h3>体重趋势</h3><span class="small muted">历史点为示例</span></div><p class="sub">末点来自档案中的当前体重；历史月份为演示，不自动判断健康范围。</p>
         <svg class="chart" viewBox="0 0 ${W} ${H}"><rect x="30" y="${y(3.4)}" width="${W - 40}" height="${y(2.5) - y(3.4)}" fill="#e1f0e5" rx="6"/>
-          <path d="${WEIGHTS.map((v, i) => `${i ? 'L' : 'M'}${x(i)},${y(v)}`).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
-          ${WEIGHTS.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="#fff" stroke="var(--accent)" stroke-width="2"/>${i % 2 === 1 || i === 11 ? `<text x="${x(i)}" y="${y(v) - 10}" text-anchor="middle">${v}</text>` : ''}<text x="${x(i)}" y="182" text-anchor="middle">${addDays(today, -30 * (11 - i)).getMonth() + 1}月</text>`).join('')}
+          <path d="${weights.map((v, i) => `${i ? 'L' : 'M'}${x(i)},${y(v)}`).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+          ${weights.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="#fff" stroke="var(--accent)" stroke-width="2"/>${i % 2 === 1 || i === 11 ? `<text x="${x(i)}" y="${y(v) - 10}" text-anchor="middle">${v}</text>` : ''}<text x="${x(i)}" y="182" text-anchor="middle">${addDays(today, -30 * (11 - i)).getMonth() + 1}月</text>`).join('')}
         </svg>
-        <div class="row mt8"><span class="tag ok">当前 ${PROFILE.weight} 公斤 · 在合理范围</span><span class="small muted">体重稳定有利于保护膝盖</span></div></div>
+        <div class="row mt8"><span class="tag">当前 ${PROFILE.weight??'待填'} 公斤</span><button class="btn sm" data-a="tab" data-v="profile">修改档案与计划</button></div></div>
       <div class="card mt"><h3>添加一条记录</h3><div class="grid2 mt8">
         <div class="field"><label for="hSel">项目</label><select id="hSel">${S.health.map(h => `<option value="${esc(h.id)}" ${draft().healthId === h.id ? 'selected' : ''}>${esc(h.n)}</option>`).join('')}</select></div>
         <div class="field"><label for="hDate">日期</label><input id="hDate" type="date" value="${esc(draft().healthDate || T0)}"></div></div>
@@ -282,9 +283,9 @@ function vCare() {
   </section>
   <div class="handoff mt"><div class="row between"><h3>🐾 肉肉托管卡</h3><span class="small muted">${fmt(from)} – ${fmt(to)}</span></div>
     <div class="hgrid">
-      <div><h4>吃饭</h4><ul><li>${PROFILE.food}，每天 ${PROFILE.meals} 顿，每顿 ${PROFILE.gram} 克（早 8 点、晚 6 点）</li><li>少量多餐，不额外加零食</li><li>每顿吃完在小世界里点一下「喂食」</li></ul></div>
+      <div><h4>吃饭</h4><ul><li>${esc(PROFILE.food||'主粮待填写')}，每天 ${PROFILE.meals??'待填'} 顿，每顿 ${PROFILE.gram??'待填'} 克（按实际安排调整）</li><li>少量多餐，不额外加零食</li><li>每顿吃完在小世界里点一下「喂食」</li></ul></div>
       <div><h4>喝水</h4><ul><li>每天约 ${TARGET.water} 毫升，水碗每天换两次</li><li>喝得少可以用温水泡粮</li></ul></div>
-      <div><h4>每天要做</h4><ul><li>遛弯 2 次，每次 20 分钟，用胸背带</li><li>梳毛、擦泪痕、刷牙</li><li>晚上 9 点视频连线（固定时间，减少分离焦虑）</li></ul></div>
+      <div><h4>每天要做</h4><ul><li>遛弯计划 ${TARGET.walk||'待填'} 次，每次时长按实际安排</li><li>梳毛、擦泪痕、刷牙</li><li>固定时间联系照顾者</li></ul></div>
       <div><h4>绝对不能吃</h4><ul class="no"><li>巧克力、葡萄 / 葡萄干、洋葱、大蒜</li><li>木糖醇（口香糖、无糖食品）、酒精、咖啡</li><li>煮过的骨头、太咸太油的人类食物</li></ul></div>
       <div><h4>需要注意</h4><ul><li>不要让它从沙发上跳下来（保护膝盖）</li><li>发抖无力、超过一天不吃 → 立刻联系</li><li>突然像猪哼哼（反向喷嚏）一般会自己停下</li></ul></div>
       <div><h4>紧急联系</h4><ul>${contactLine('主人', S.contacts.ownerName, S.contacts.ownerPhone)}${contactLine('助理 / 照顾者', S.contacts.assistantName, S.contacts.assistantPhone)}${contactLine('常去的宠物医院', S.contacts.hospitalName, S.contacts.hospitalPhone, S.contacts.hospitalAddress)}${contactLine('24小时急诊医院', S.contacts.emergencyName, S.contacts.emergencyPhone, S.contacts.emergencyAddress)}</ul></div>
@@ -295,23 +296,48 @@ function vCare() {
 }
 
 /* ---------- 时光机 ---------- */
+const PET_SAMPLE_PHOTOS=[['12_maltese','在家等你回来的一天'],['16_maltese_walk','第一次穿新的胸背带出去散步'],['17_maltese_groom','每天的梳毛时间'],['18_maltese_sleep','晒着太阳睡着了']];
 let albumOrbit = false;
 function photoViewControls(){return `<section class="card mt photo-view-controls"><div class="row between"><div><h3>把照片，转到眼前。</h3><p class="sub">照片网格便于找原件；环绕看图可以拖动、暂停和放大，只改变浏览方式。</p></div><div class="row"><button class="btn sm ${albumOrbit?'':'pri'}" data-a="album-view" data-v="grid">照片网格</button><button class="btn sm ${albumOrbit?'pri':''}" data-a="album-view" data-v="orbit">环绕看图 ✦</button></div></div></section><section id="petPhotoOrbit" data-photo-orbit data-orbit-source=".album .ph img" ${albumOrbit?'':'hidden'} aria-label="肉肉照片环绕视图"></section>`;}
 function vAlbum() {
-  const base = [['12_maltese', '在家等你回来的一天'], ['16_maltese_walk', '第一次穿新的胸背带出去散步'], ['17_maltese_groom', '每天的梳毛时间'], ['18_maltese_sleep', '晒着太阳睡着了']];
+  const base = PET_SAMPLE_PHOTOS;
   return `<div class="row between"><div><h3 style="font:600 20px var(--serif)">肉肉的时光机</h3><p class="sub">拍戏间隙，把和肉肉的日常存下来</p></div></div>
-  ${photoViewControls()}<div class="album mt" id="petPhotoGrid" ${albumOrbit?'hidden':''}>${base.map(([p, c], i) => `<div class="ph"><img src="../assets/photos/${p}.jpg" alt="" onerror="this.parentNode.style.display='none'"><div>${c}<small>${fmt(addDays(today, -i * 23 - 2))}</small></div></div>`).join('')}
-    ${S.photos.map((p, i) => `<div class="ph"><img ${p.file ? `data-original="${esc(p.file.id)}"` : `src="${p.src}"`} alt="${esc(p.c || '肉肉的照片')}" loading="lazy"><div>${esc(p.c)}<small>${esc(p.d)}</small><small>${p.file ? '已保存原件 · ' + esc(p.file.name) : '旧版照片副本，无法还原上传前原件'}</small><div class="file-actions"><button class="btn sm" data-a="photo-download" data-v="${i}">${p.file ? '下载照片原件' : '下载现存副本'}</button><button class="btn sm" data-a="photo-remove" data-v="${i}">移除照片</button></div></div></div>`).join('')}
+  ${photoViewControls()}<div class="album mt" id="petPhotoGrid" ${albumOrbit?'hidden':''}>${base.map(([p, c], i) => `<div class="ph"><img src="../assets/photos/${p}.jpg" alt="" onerror="this.parentNode.style.display='none'"><div>${c}<small>${fmt(addDays(today, -i * 23 - 2))}</small><button class="btn sm" data-a="photo-sticker" data-v="sample-${p}">做成表情包 ☺</button></div></div>`).join('')}
+    ${S.photos.map((p, i) => `<div class="ph"><img ${p.file ? `data-original="${esc(p.file.id)}"` : `src="${p.src}"`} alt="${esc(p.c || '肉肉的照片')}" loading="lazy"><div>${esc(p.c)}<small>${esc(p.d)}</small><small>${p.file ? '已保存原件 · ' + esc(p.file.name) : '旧版照片副本，无法还原上传前原件'}</small><div class="file-actions"><button class="btn sm" data-a="photo-sticker" data-v="${esc(p.id)}">做成表情包 ☺</button><button class="btn sm" data-a="photo-download" data-v="${i}">${p.file ? '下载照片原件' : '下载现存副本'}</button><button class="btn sm" data-a="photo-remove" data-v="${i}">移除照片</button></div></div></div>`).join('')}
     <label class="add"><input type="file" accept="image/*" id="ph" multiple hidden><div><div style="font-size:30px">＋</div>添加照片原件<br><small>保存在本机，支持完整备份</small></div></label></div>
     <div class="card mt"><h3>下一张照片的说明</h3><div class="grid2 mt8"><div class="field"><label for="photoCaption">照片说明</label><input id="photoCaption" maxlength="5000" value="${esc(draft().photoCaption || '')}" placeholder="今天发生了什么"></div><div class="field"><label for="photoDate">照片日期</label><input id="photoDate" type="date" value="${esc(draft().photoDate || T0)}"></div></div><p class="sub">上传时带入以上说明和日期；未填写说明时使用原文件名。</p></div>`;
 }
 
+/* ---------- 可编辑档案与本机表情工坊 ---------- */
+function vProfile(){
+ const p={...S.profile,...(draft('profile').profile||{})},contacts={...S.contacts,...(draft('care').contacts||{})};
+ const field=(key,label,type='text')=>`<div class="field"><label for="profile-${key}">${label}</label><input id="profile-${key}" data-profile="${key}" type="${type}" ${type==='number'?'min="0" step="'+(['meals','walk'].includes(key)?'1':'any')+'"':''} maxlength="1000" value="${esc(p[key]??'')}"></div>`;
+ return `<section class="card"><div class="row between"><div><h3>📋 ${esc(p.name||'肉肉')}的档案</h3><p class="sub">生日、体重与饮食初值是原演示资料。请按实际情况确认；计划由你和照顾者填写，不自动作健康判断。</p></div><span class="tag">可编辑 · 本机保存</span></div><div class="grid2 mt">${[['name','名字'],['breed','品种'],['birth','生日（不知道可留空）','date'],['sex','性别 / 绝育情况'],['weight','目前体重（公斤）','number'],['targetWeight','目标体重（公斤，可留空）','number'],['food','目前主粮'],['meals','每天计划几顿','number'],['gram','每顿计划多少克','number'],['water','每天加水计划（毫升）','number'],['walk','每天散步计划次数','number']].map(args=>field(...args)).join('')}</div><div class="field mt8"><label for="profile-notes">照护习惯、禁忌和医生交代</label><textarea id="profile-notes" data-profile="notes" rows="3" maxlength="10000">${esc(p.notes)}</textarea></div><p class="sub mt8">填写时先保存草稿；点下方“保存档案与联系”后，今天的照护计划与托管卡同步采用这些值。</p></section><section class="card mt contacts-form"><h3>☎ 联系人与交接资料</h3><p class="sub">与“出差托管”共用同一组联系资料，不需要重复填写。</p><div class="grid2 mt8">${contactFields(PetSchema.contactKeys.filter(k=>k!=='careNote'),contacts)}</div><div class="field mt8"><label for="contact-careNote">交接补充说明</label><textarea id="contact-careNote" data-contact="careNote" maxlength="10000" rows="3">${esc(contacts.careNote)}</textarea></div><button class="btn pri mt8" data-a="profile-save">保存档案与联系</button></section>`;
+}
+function studioPhotos(){return [...PET_SAMPLE_PHOTOS.map(([id,c])=>({id:'sample-'+id,c,src:'../assets/photos/'+id+'.jpg',example:true})),...S.photos];}
+function selectedStudioPhoto(){const photos=studioPhotos();return photos.find(p=>p.id===S.studio.photoId)||photos[0];}
+function vStudio(){
+ const photo=selectedStudioPhoto(),p=S.studio;
+ return `<div class="grid2 pet-studio"><section class="card"><div class="row between"><h3>☺ 把肉肉做成一句话</h3><span class="tag">实际生成 PNG</span></div><p class="sub">可选原来的狗狗配图、自己上传的照片原件或旧版照片副本。只在本机排版；不改原图、不调用模型。</p><div class="field mt"><label for="studio-photoId">选择照片</label><select id="studio-photoId" data-studio="photoId">${studioPhotos().map(x=>`<option value="${esc(x.id)}" ${x.id===photo?.id?'selected':''}>${esc((x.example?'原有配图 · ':'我的照片 · ')+(x.c||x.file?.name||'照片'))}</option>`).join('')}</select></div><div class="field mt8"><label for="studio-caption">表情文字（建议24字以内）</label><textarea id="studio-caption" data-studio="caption" maxlength="100" rows="3">${esc(p.caption)}</textarea></div><div class="grid2 mt8"><div class="field"><label for="studio-layout">文字位置</label><select id="studio-layout" data-studio="layout">${[['bottom','文字在下'],['top','文字在上'],['square','叠在照片上']].map(([k,n])=>`<option value="${k}" ${p.layout===k?'selected':''}>${n}</option>`).join('')}</select></div><div class="field"><label for="studio-fontFamily">字体风格</label><select id="studio-fontFamily" data-studio="fontFamily"><option value="sans" ${p.fontFamily==='sans'?'selected':''}>干净粗黑体</option><option value="serif" ${p.fontFamily==='serif'?'selected':''}>温柔宋体</option></select></div><div class="field"><label for="studio-background">画布背景色</label><input type="color" id="studio-background" data-studio="background" value="${p.background}"></div><div class="field"><label for="studio-textColor">文字颜色</label><input type="color" id="studio-textColor" data-studio="textColor" value="${p.textColor}"></div></div><div class="field mt8"><label for="studio-fontSize">起始字号（24–80，过长会自动缩小）</label><input type="range" id="studio-fontSize" data-studio="fontSize" min="24" max="80" step="2" value="${p.fontSize}"></div><div class="row mt"><button class="btn pri" data-a="sticker-export">下载 PNG 表情包</button><button class="btn" data-a="tab" data-v="album">去上传自己的照片</button></div><p class="sub mt8">720 × 720 PNG。原件仍在时光机，可独立下载并随完整备份带走；旧版照片只能保留现存副本。</p></section><section class="card"><h3>导出预览</h3><canvas id="stickerCanvas" width="720" height="720" aria-label="肉肉表情包预览"></canvas><p id="stickerStatus" class="sub">正在排版…</p></section></div>`;
+}
+let drawing=0;
+async function drawSticker(target){
+ const run=++drawing,photo=selectedStudioPhoto(),options={...S.studio};if(!photo)throw Error('先选择一张照片');
+ const source=photo.file?await fileURL(photo.file):photo.src,canvas=target||document.createElement('canvas');await PetSticker.draw(canvas,source,options);
+ if(!target&&run===drawing&&S.tab==='studio'){const visible=$('#stickerCanvas');if(visible){visible.width=720;visible.height=720;visible.getContext('2d').drawImage(canvas,0,0);$('#stickerStatus').textContent='720 × 720 PNG · '+(photo.example?'使用原有狗狗配图':photo.file?'使用已保存照片原件':'使用旧版照片副本');}}
+ return canvas;
+}
+
 /* ---------- 框架 ---------- */
-const TABS = [['today', '🐾 今天'], ['health', '💉 健康档案'], ['breed', '📖 品种档案'], ['beh', '✦ AI 行为解读'], ['care', '🧳 出差托管'], ['album', '📷 时光机']];
-const VIEW = { today: vToday, health: vHealth, breed: vBreed, beh: vBeh, care: vCare, album: vAlbum };
+function vGarden(){return '<section class="card"><h3>🐾 陪伴小院</h3><p class="sub">和'+esc(PROFILE.name||'肉肉')+'玩一会儿。此处为当次互动，不生成健康或照护记录。</p><div id="petGardenHost" class="mt"></div></section>';}
+
+const TABS = [['today', '🐾 今天'], ['garden','♡ 陪伴小院'], ['profile','📋 肉肉档案'], ['health', '💉 健康档案'], ['breed', '📖 品种档案'], ['beh', '✦ AI 行为解读'], ['care', '🧳 出差托管'], ['album', '📷 时光机'], ['studio','☺ 表情工坊']];
+const VIEW = { garden:vGarden, today: vToday, profile:vProfile, health: vHealth, breed: vBreed, beh: vBeh, care: vCare, album: vAlbum, studio:vStudio };
 function render() {
+  window.PetGarden?.destroy();
+  profileValues();const title=(PROFILE.name||'肉肉')+'的小世界';if($('#petTitle').textContent!==title)$('#petTitle').textContent=title;
   const due = S.health.filter(h => daysTo(addDays(new Date(h.last), h.every)) <= 14).length;
-  $('#badges').innerHTML = `<span class="badge">🐶 ${PROFILE.breed}</span><span class="badge">🎂 ${ageY} 岁</span><span class="badge">⚖️ ${PROFILE.weight} 公斤</span><span class="badge">${due ? `⏰ ${due} 项即将到期` : '✓ 健康项目都按时'}</span>`;
+  $('#badges').innerHTML = `<span class="badge">🐶 ${esc(PROFILE.breed||'品种待填写')}</span><span class="badge">🎂 ${ageY?ageY+' 岁':'生日待填写'}</span><span class="badge">⚖️ ${PROFILE.weight??'待填'} 公斤</span><span class="badge">${due ? `⏰ ${due} 项即将到期` : '✓ 健康项目都按时'}</span>`;
   $('#tabs').innerHTML = TABS.map(([k, n]) => `<button data-a="tab" data-v="${k}" aria-current="${S.tab === k ? 'page' : 'false'}" class="${S.tab === k ? 'on' : ''}">${n}</button>`).join('');
   S.notes = S.notes || {};
   const nl = S.notes[S.tab] || [];
@@ -320,6 +346,8 @@ function render() {
     <div class="row between mt8"><label class="btn sm" style="cursor:pointer">📎 导入附件原件<input type="file" id="noteFile" multiple hidden></label><button class="btn pri" data-a="note">保存记录</button></div>
     ${nl.length ? `<ul class="tl mt8">${nl.slice().reverse().map((n, j) => `<li><span class="tm">${esc(n.at)}</span><span style="flex:1">${n.attachment && /^image\/(png|jpeg|webp|gif|avif|bmp)$/.test(n.attachment.type) ? `<img class="file-preview" data-original="${esc(n.attachment.id)}" alt="附件预览">` : n.img ? `<img class="file-preview" src="${n.img}" alt="旧版缩略图">` : ''}${esc(n.text)}${n.attachment ? `<small class="muted"> · 原件 ${n.attachment.size} 字节</small><span class="file-actions"><button class="btn sm" data-a="file-download" data-v="${esc(n.attachment.id)}">下载附件原件</button></span>` : n.file ? '<small class="muted"> · 旧版仅有文件名或缩略图，原件未存入；可重新导入原件。</small>' : ''}</span><button class="btn sm" data-a="notedel" data-v="${nl.length - 1 - j}">移除记录</button></li>`).join('')}</ul>` : ''}</section>`;
   previews();
+  if(S.tab==='garden')window.PetGarden?.mount($('#petGardenHost'),{name:PROFILE.name||'肉肉'});
+  if(S.tab==='studio')drawSticker().catch(error=>{if($('#stickerStatus'))$('#stickerStatus').textContent=error.message;});
 }
 function downloadBlob(blob, name) {
   const url = URL.createObjectURL(blob), a = document.createElement('a');
@@ -327,6 +355,8 @@ function downloadBlob(blob, name) {
 }
 document.addEventListener('input', e => {
   const id = e.target.id;
+  if(e.target.dataset.profile){(draft('profile').profile??={})[e.target.dataset.profile]=e.target.value;saveDraft();return;}
+  if(e.target.dataset.studio){const key=e.target.dataset.studio;S.studio[key]=key==='fontSize'?Number(e.target.value):e.target.value;drawSticker().catch(error=>{if($('#stickerStatus'))$('#stickerStatus').textContent=error.message;});saveDraft();return;}
   if (id === 'noteIn') draft().note = e.target.value;
   else if (id === 'behIn') draft().behavior = e.target.value;
   else if (id === 'hSel') draft().healthId = e.target.value;
@@ -352,7 +382,10 @@ document.addEventListener('click', async e => {
   window.ActorGalleryEffects?.refresh();break;
  }
  case 'tab': { const previous = S.tab; S.tab = v; try { await save(); } catch (error) { S.tab = previous; throw error; } render(); break; }
-    case 'food': L.food.push({ t: now(), g: PROFILE.gram }); await save(); render(); toast('已记录喂食'); break;
+    case 'profile-save': {const p={...S.profile,...(draft('profile').profile||{})};if(!p.name.trim())throw Error('请填写名字');if(p.birth&&p.birth>T0)throw Error('生日不能晚于今天');for(const k of ['weight','targetWeight','meals','gram','water','walk']){const value=p[k];p[k]=value===''||value===null?null:Number(value);}const checked=PetSchema.validate({...S,profile:p});S.profile=checked.profile;delete draft('profile').profile;S.contacts={...S.contacts,...(draft('care').contacts||{})};delete draft('care').contacts;await save();render();toast('档案、照护计划和联系方式已保存');break;}
+    case 'photo-sticker': {if(!studioPhotos().some(p=>p.id===v))throw Error('照片不存在');S.studio.photoId=v;S.tab='studio';await save();render();break;}
+    case 'sticker-export': {await save();importing=true;try{const canvas=await drawSticker(document.createElement('canvas'));if(!canvas)throw Error('请先选择照片');downloadBlob(await PetSticker.png(canvas),(PROFILE.name||'肉肉')+'表情-'+T0+'.png');toast('720×720 PNG 已生成；照片原件保持不变');}finally{importing=false;}break;}
+    case 'food': if(!(PROFILE.gram>0))throw Error('请先在肉肉档案填写每顿计划克数');L.food.push({ t: now(), g: PROFILE.gram }); await save(); render(); toast('已记录喂食'); break;
     case 'water': L.water += 50; (L.waterLog = L.waterLog || []).push({ t: now(), ml: 50 }); await save(); render(); toast('已记录加水'); break;
     case 'walk': L.walk.push({ t: now(), m: 20 }); await save(); render(); toast('已记录遛弯'); break;
     case 'poop': $('#poopPick').hidden = !$('#poopPick').hidden; break;

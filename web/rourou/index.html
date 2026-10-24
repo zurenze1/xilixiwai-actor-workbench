@@ -154,14 +154,15 @@ button:disabled{cursor:wait;opacity:.65}
 :root[data-theme=moss]{--bg:#edf1e8;--panel:#fbfdf8;--panel2:#e0e8d7;--ink:#30452d;--muted:#677b5f;--line:#d3dfc9;--accent:#52784a;--accent2:#b1c79a;--soft:#e3ebd9}
 .embedded .topbar a{display:none}.embedded .wrap{padding-top:16px}.embedded .topbar{margin-bottom:12px}.embedded-heading,.embedded .embedded-heading{display:none}.hero{box-shadow:0 14px 45px #72533a0a}.hero:after{background:linear-gradient(90deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 84%,transparent) 34%,transparent 68%)}.hero img{object-position:66% 20%}.hero-in{max-width:56%}.photo-caption{position:absolute;right:18px;top:16px;z-index:1;color:#5f5149;background:#fffdf9b8;border-radius:99px;padding:3px 9px;font-size:11px;letter-spacing:.05em}
 @media(max-width:700px){.hero{min-height:460px;align-items:flex-end}.hero img{height:72%;object-position:58% 37%}.hero-in{max-width:100%;padding:22px}.hero:after{background:linear-gradient(180deg,transparent 32%,color-mix(in srgb,var(--bg) 70%,transparent) 51%,var(--bg) 72%)}.hero h1{font-size:31px}.hero-in p{font-size:13px}.hero .badges{gap:6px;margin-top:12px}.hero .badge{font-size:12px;padding:4px 9px}}
-</style>
+</style><link rel="stylesheet" href="./additions.css?v=20261024-fullpet8">
+<link rel="stylesheet" href="./garden.css?v=20261024-garden1">
 </head>
 <body data-stardust-cursor>
 <div class="embedded-heading wrap"><h1 data-elastic>肉肉的小世界</h1><span class="tag">独立演示记录 · 本机保存</span></div>
 <div class="wrap">
   <div class="topbar"><a href="../index.html">← 回到戏里戏外</a><span class="sp"></span><span class="privacy">🔒 肉肉的记录保存在当前浏览器，不上传</span></div>
   <section class="hero"><img src="../assets/photos/12_maltese.jpg" alt="沙发上坐着一只白色马尔济斯犬"><span class="photo-caption">陪伴配图</span>
-    <div class="hero-in"><div class="eyebrow">ROUROU'S LITTLE WORLD</div><h1 data-elastic>肉肉的小世界</h1>
+    <div class="hero-in"><div class="eyebrow">ROUROU'S LITTLE WORLD</div><h1 id="petTitle" data-elastic>肉肉的小世界</h1>
       <p>拍戏再忙，肉肉每天吃了多少、喝了多少、有没有不舒服、疫苗什么时候到期，都在这里。</p>
       <div class="badges" id="badges"></div></div></section>
   <p id="storageStatus" class="storage-line" role="status">正在打开本机可靠存储…</p>
@@ -174,8 +175,10 @@ button:disabled{cursor:wait;opacity:.65}
 <div class="toast" id="toast" role="status"></div>
 <script src="../scene-art.js?v=20261024-demo4"></script><script src="../gallery-effects.js?v=20261024-demo4" defer></script>
 <script src="../reliable-store.js?v=20261024-3.1.0"></script>
-<script src="./schema.js?v=20261024-3.1.0"></script>
+<script src="./schema.js?v=20261024-fullpet9"></script>
 <script src="./backup.js?v=20261024-3.1.0"></script>
-<script src="./app.js?v=20261024-3.1.0"></script>
+<script src="./sticker.js?v=20261024-fullpet8"></script>
+<script src="./garden.js?v=20261024-garden1"></script>
+<script src="./app.js?v=20261024-fullpet9"></script>
 </body>
 </html>

@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-10-24T05:35:59.544Z",
+  "generatedAt": "2026-10-24T07:12:00.526Z",
   "purpose": "实战经营及运营模块原样复用；差异仅本机演示桥接、主题、真实边界文案。",
   "sources": [
     {
       "source": "practical/web/business/index.html",
       "output": "web/demo-operations/business/index.html",
       "sourceSha256": "9de5e2d52f4aa63ddfd1522e07f3070b3cfaaf283710ccf37157442ef763c271",
-      "outputSha256": "1fdece12415e632d32e8abb813a47edc6e0a10bbac202834f5ad37a3f934969c"
+      "outputSha256": "79fcd69a347161a91efb8db5867f192aa99d08ac8d3b7e05cfda6804d487e479"
     },
     {
       "source": "practical/web/business/style.css",
@@ -30,7 +30,7 @@
       "source": "practical/web/social/index.html",
       "output": "web/demo-operations/social/index.html",
       "sourceSha256": "a47ea50503521d38e15e7db409e7fed1b1d23152aec2084d4470c8d17363044a",
-      "outputSha256": "2f1293023b24f74037440553d42d7831b7e595e7846b5bd6b5d87217967fa1b9"
+      "outputSha256": "5921db1fbf19d18b9f4543893b2fcdb461b2ebd63178c81d49c7a6c199658a69"
     },
     {
       "source": "practical/web/social/style.css",
