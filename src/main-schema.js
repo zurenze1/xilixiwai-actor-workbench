@@ -1,3 +1,4 @@
+import '../web/radar-goals.js';
 import {z} from 'zod';
 const bools=z.record(z.string(),z.boolean());
 const text=z.string().max(1000000);
@@ -6,6 +7,8 @@ const knownFolders=['take','read','line','role','dance','prev','comic','shoot','
 const file=z.object({name:z.string().max(1000),size:z.union([z.string(),z.number()]),at:z.string(),text:text.optional(),img:z.string().regex(/^data:image\/(jpeg|png|webp|gif);base64,/).optional(),file:z.object({id:z.string(),name:z.string(),type:z.string(),size:z.number().int().nonnegative(),sha256:z.string().regex(/^[a-f0-9]{64}$/)}).optional()}).passthrough();
 const review=z.object({status:z.enum(['adopt','modify','reject','discuss']),who:z.string(),text,at:z.string()});
 export const mainSchema=z.object({
+ demoEdits:z.record(z.string(),z.json()).refine(v=>JSON.stringify(v).length<=2000000,'编辑资料过多').optional(),
+ radarPlan:z.custom(v=>{try{globalThis.ActorRadar.validate(v);return true;}catch{return false;}},'发展目标格式无效').nullable().optional(),
  theme:z.enum(['tide','butter','moss']).optional(),st:z.number().int().min(0).max(7).optional(),
  folder:z.array(z.enum(knownFolders)).max(11).optional(),
  reviews:z.record(z.string(),z.array(review)).optional(),files:z.record(z.string(),z.array(file)).optional(),
@@ -18,7 +21,7 @@ export const mainSchema=z.object({
  bioEdits:texts.optional(),replyEdits:texts.optional(),bKw:z.array(text).optional(),
  hiddenEv:bools.optional(),evDone:bools.optional(),todayDone:bools.optional(),submitted:bools.optional(),pack:bools.optional(),
  packAdd:z.record(z.string(),z.array(text)).optional(),selfAns:texts.optional(),
- meals:z.array(z.object({t:z.string(),n:z.string(),k:z.number().finite().nonnegative()})).optional(),
+ meals:z.array(z.object({date:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),t:z.string(),n:z.string(),k:z.number().finite().nonnegative()})).optional(),
  cycle:z.object({lastStart:z.number().finite(),len:z.number().int().min(1).max(365),dur:z.number().int().min(1).max(60)}).optional(),
  sym:z.record(z.string(),z.array(text)).optional(),inv:z.record(z.string(),z.enum(['yes','no'])).optional(),
  selDay:z.number().int().min(1).max(31).optional(),offer:z.number().int().min(0).max(2).optional(),

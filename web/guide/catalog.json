@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "sourceHash": "52af0846eaeb22c65d9c3f4e4cbcaeccee1b7ff29193c9aa2ec2a8071806b085",
+  "sourceHash": "4d7ee96c28a856a1ac9cef4f7b896cb17ba2710f2313d991b93c952d857f5ee5",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
-      "sha256": "9ed262af62176b6fbcb48743a60e13bbea29995b290fd9ab093bcf78be91f4cd"
+      "sha256": "646d821bea2a1f000091af1bbb410fa32eaa10990b4437b6ca9a8dba93596029"
     },
     {
       "path": "practical/web/auth-reference.css",
@@ -20,7 +20,7 @@
     },
     {
       "path": "practical/web/business/index.html",
-      "sha256": "9ec533bd8c6a4566374ec892c572af58abf346c3bc5e33960ef6cbd4c9d4523a"
+      "sha256": "efee44598f3b901b4fbc2dcf326065bb00fa1ae35f021057cb3bc9ac93722179"
     },
     {
       "path": "practical/web/business/model.js",
@@ -36,7 +36,7 @@
     },
     {
       "path": "practical/web/index.html",
-      "sha256": "141bf4cfc1e337a19b27d31e03286893d1d1e9a49366c6cdd5cf12b0155f4f09"
+      "sha256": "516d48860c2dce58a17d47d7a93d8b1a5fabacc7ff2439b9d045c4c3a19192af"
     },
     {
       "path": "practical/web/pet/app.js",
@@ -52,7 +52,7 @@
     },
     {
       "path": "practical/web/pet/index.html",
-      "sha256": "c99150cf839a87b4c9be4045c66698c75e4424f9b529d17973a33c0b3f53ef4a"
+      "sha256": "3104fdc8a7e83ae0b64a1aedcb720478b101153857edd6a7d48605edca1836f7"
     },
     {
       "path": "practical/web/pet/schema.js",
@@ -72,7 +72,7 @@
     },
     {
       "path": "practical/web/previs/index.html",
-      "sha256": "0cdd36dc302de50b65c251f327fd8c440f9c88bcd369868214adde3a28c3b849"
+      "sha256": "6167b04f38979538401ac3286bcc72b5e5e98fd34645591dde449dee03e8c510"
     },
     {
       "path": "practical/web/previs/player.js",
@@ -100,7 +100,7 @@
     },
     {
       "path": "practical/web/social/index.html",
-      "sha256": "3905cbae46e3751151ed09f88055ed678df105889fe03bf1dd806b0304559f76"
+      "sha256": "a47ea50503521d38e15e7db409e7fed1b1d23152aec2084d4470c8d17363044a"
     },
     {
       "path": "practical/web/social/model.js",
@@ -120,11 +120,19 @@
     },
     {
       "path": "web/app.js",
-      "sha256": "15780819492f955e69e2225a4b8285bb7efaa842c4d1dfdf30ea7105c25db516"
+      "sha256": "1a325c3e966f23c5f2c27db843f927eb38cd3f3439511d4c161c0f3d3dc802b2"
     },
     {
       "path": "web/data.js",
-      "sha256": "0f07245eeeea8439123080a89463af00493d22c70e212bd67be02c1380978c6b"
+      "sha256": "a993306c6dd5b0c792a83170574a38b930e5d3d5d4778dd565b550682d7307d3"
+    },
+    {
+      "path": "web/demo-editor.css",
+      "sha256": "2c65d6a3d45e163653beabe9aa7275034a6461727e534b1ae8bcfac6e6c1cb19"
+    },
+    {
+      "path": "web/demo-editor.js",
+      "sha256": "077f70139b69a2af5d89076db198e0d6d25e620c9c1b13184d5538416f68b52c"
     },
     {
       "path": "web/demo-experience.js",
@@ -148,7 +156,7 @@
     },
     {
       "path": "web/demo-lab/index.html",
-      "sha256": "52e3e6c504c47ef60ecfa6fcb2e23f6ddaba0342f800cc2fa6e4abc90f227e7b"
+      "sha256": "9c0f3285decadce5c6e2ef315c5c6493c5a4375b67d06cacf57251c38384588e"
     },
     {
       "path": "web/demo-lab/style.css",
@@ -176,7 +184,7 @@
     },
     {
       "path": "web/guide/content.mjs",
-      "sha256": "8980d9a98f8d016477809d3cb0051c1f3732febe9935becc990f6ec15f6ce0ca"
+      "sha256": "61eba6e7b302725e8996c5f1a459b52a45c881d02d7865f42554c66de178eed3"
     },
     {
       "path": "web/guide/index.html",
@@ -188,7 +196,7 @@
     },
     {
       "path": "web/index.html",
-      "sha256": "3795a3388381d2d3eff0aa1bcd00eaa2f183f0e5e5bb0ca053826ef1f698a348"
+      "sha256": "53d858fc95622b9737a1dd7c46be0d5a5628ec688578d864052c6d8ab3e8cd90"
     },
     {
       "path": "web/launch.html",
@@ -199,8 +207,16 @@
       "sha256": "4e99026dba69be904bb6d9f7bb8a4cbf32eebd2217109a8941f704cf76e10ba8"
     },
     {
+      "path": "web/radar-goals.css",
+      "sha256": "51d2cbc94401abeaaa1c316e9c481da13a17ae85f5261a582a5257c552d7d662"
+    },
+    {
+      "path": "web/radar-goals.js",
+      "sha256": "f2dc97ff501faf76242db7b4d8ac4b141f3e5749e4e1f98a9660337633c8d12c"
+    },
+    {
       "path": "web/reliable-store.js",
-      "sha256": "410129bde8bccd94e9fce5b10f8b99639e80542c02a6f0f1a1188c6e69770f38"
+      "sha256": "48c58a74b16622159b7a239f64698439bce1fd41141cf46a576bba917c576501"
     },
     {
       "path": "web/reset.html",
@@ -216,7 +232,7 @@
     },
     {
       "path": "web/rourou/index.html",
-      "sha256": "d24315a1575720a4cbad272f70ebfb85f0ecde3b49f4b2a2763497edca6caa53"
+      "sha256": "3d39939265febbca8afa5135c366876c03d91e87d44913b6a227d07def57c968"
     },
     {
       "path": "web/rourou/schema.js",
@@ -224,11 +240,11 @@
     },
     {
       "path": "web/scene-art.css",
-      "sha256": "512d27baf85c98549b8aca3783ea41230249e58d508fbf71cbe00191a80b61cf"
+      "sha256": "bcb00ca1653ad8421bc59eed02dc19aa0ed66c8a0184d19e3a3ce338e6550229"
     },
     {
       "path": "web/scene-art.js",
-      "sha256": "5e2e28402967385c0179f0b37136e5c79d8d9c87cd98047643e6b29ddd37377a"
+      "sha256": "184ec1cf48b088f8198d4f7aa5390e40981236268ad2b568448357355a3a0a91"
     },
     {
       "path": "web/showcase-widgets.css",
@@ -240,7 +256,7 @@
     },
     {
       "path": "web/style.css",
-      "sha256": "aa540e57d47df0446af1666cf9f45a957644604dbdc9e0090a7c3d3fac848f39"
+      "sha256": "a36bb75c9c3c1cdf9694cce7763b09e8bbe1deef04a365b5be00c446bc374201"
     },
     {
       "path": "web/task-extract.js",
@@ -1506,23 +1522,23 @@
       "kinds": [
         "goal"
       ],
-      "lead": "把想走的方向，拆成这一阶段能做的事。",
+      "lead": "由演员与工作室共同设定发展目标。",
       "steps": [
         {
           "title": "点哪里",
-          "body": "「发展规划」→「＋ 阶段规划」。"
+          "body": "「发展规划」→「设置我的目标」；也可新增阶段规划。"
         },
         {
           "title": "怎么填",
-          "body": "填年度 / 季度目标、取舍理由、验收方式和复盘日期。"
+          "body": "填写目标周期、共同设定者、当前与目标评分、依据和行动；未知分数留空。"
         },
         {
           "title": "如何保存",
-          "body": "保存目标，随进展改为执行中、调整或完成。"
+          "body": "保存后雷达即时更新；可设为仅本人或团队可见，编辑会保留历史版本。"
         },
         {
           "title": "保存 / 输出",
-          "body": "导出规划 CSV；行动可继续建为协作任务，由本人和团队决定取舍。"
+          "body": "雷达可导出含依据与行动的Markdown，项目ZIP保留完整数据；评分为团队自评，不是行业客观测评。"
         }
       ],
       "curated": true,
@@ -2514,27 +2530,28 @@
       "name": "作品库与发展规划",
       "icon": "chart",
       "category": "growth",
-      "lead": "维护作品与下一阶段计划，留存实际成果。",
+      "lead": "亲手调整发展方向，看见变化。",
       "curated": true,
       "fields": [],
       "steps": [
         {
           "title": "点哪里",
-          "body": "侧栏打开「作品库与发展规划」。"
+          "body": "「作品库与发展规划」→雷达旁「设置我的目标」；顶部「编辑本页资料」可改画像、路线和年度行动。"
         },
         {
           "title": "怎么填",
-          "body": "维护作品与下一阶段计划，留存实际成果。"
+          "body": "与演员及工作室填写目标周期、当前/目标评分、共同设定者和依据；每个目标配下一步行动。"
         },
         {
           "title": "如何保存",
-          "body": "按页面提供的保存入口确认，留意错误和未保存提示。"
+          "body": "雷达会即时预览，点击保存后生效。未知分数不补零。自行录入作品也能新增、编辑与删除。"
         },
         {
           "title": "保存 / 输出",
-          "body": "使用当前页面的导出入口；完整备份可保留原件，文字导出只包含文字。"
+          "body": "目标可导出Markdown并随主线JSON备份；本页资料可单独导出。模型建议仍标预置示例，不会因手动修改冒充重算。"
         }
-      ]
+      ],
+      "kinds": []
     },
     {
       "id": "demo-page-brief",
@@ -2662,6 +2679,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "128afc26e9510380775e4a18736031058135d94475cfabb6fe10ab49791050b9",
-  "generatedAt": "2026-10-23T19:24:48.226Z"
+  "contentHash": "eb4955a076fb4a7eb2bf5f25a62783f2fa3d4a872f77da0ae58179cad8467053",
+  "generatedAt": "2026-10-24T04:28:50.937Z"
 }

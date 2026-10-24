@@ -5,7 +5,7 @@
   const scriptURL = document.currentScript?.src || new URL('scene-art.js', document.baseURI).href;
   const cssAsset = new URL('scene-art.css', scriptURL); cssAsset.search = new URL(scriptURL).search;
   const cssURL = cssAsset.href;
-  const atlasURL = new URL('assets/illustrations/actor-story-atlas-v1.webp', scriptURL).href;
+  const atlasURL = new URL('assets/illustrations/actor-editorial-photo-atlas-v1.webp', scriptURL).href;
   if (!Array.from(document.querySelectorAll('link[rel="stylesheet"]')).some(link => link.href === cssURL)) {
     const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = cssURL; document.head.append(link);
   }
@@ -239,22 +239,34 @@
     if (h.originalAria === null) h.host.removeAttribute('aria-label'); else h.host.setAttribute('aria-label', h.originalAria);
     h.host.classList.remove('scene-elastic'); headings.delete(h.host);
   }
+  function layoutPhoto(art) {
+    if (!art.isConnected) return;
+    const index = Number(art.dataset.scenePhotoIndex), rect = art.getBoundingClientRect();
+    if (!Number.isInteger(index) || !rect.width || !rect.height) return;
+    const tile = Math.max(rect.width, rect.height);
+    art.style.backgroundSize = `${tile * 3}px ${tile * 3}px`;
+    art.style.backgroundPosition = `${-(index % 3) * tile - (tile - rect.width) / 2}px ${-Math.floor(index / 3) * tile - (tile - rect.height) / 2}px`;
+  }
+  const photoResize = typeof ResizeObserver === 'function' ? new ResizeObserver(entries => entries.forEach(entry => layoutPhoto(entry.target))) : null;
   function addIllustration(host) {
     const index = atlas[host.dataset.illustration]; if (index === undefined) return;
     let art = illustrations.get(host);
     if (!art || !art.isConnected) {
+      if (art) photoResize?.unobserve(art);
       art = document.createElement('span'); art.className = 'scene-illustration'; art.setAttribute('aria-hidden', 'true');
-      host.append(art); illustrations.set(host, art);
+      host.append(art); illustrations.set(host, art); photoResize?.observe(art);
     }
     const slot = host.tagName === 'SPAN' || host.hasAttribute('data-illustration-slot');
     host.classList.toggle('scene-illustration-slot', slot); host.classList.toggle('scene-illustrated', !slot);
+    host.classList.toggle('scene-photo-hero', !slot && host.matches('.hero,.module-head,.ocean-module-banner,[data-illustration-hero]'));
+    art.dataset.scenePhotoIndex = String(index);
     art.style.backgroundImage = `url("${atlasURL}")`;
-    art.style.backgroundPosition = `${(index % 3) * 50}% ${Math.floor(index / 3) * 50}%`;
+    layoutPhoto(art);
   }
   function prune() {
     scenes.forEach(s => { if (!s.host.isConnected || !(s.host.hasAttribute('data-rising-lines') || s.host.hasAttribute('data-blinking-dots'))) removeScene(s); });
     headings.forEach(h => { if (!h.host.isConnected || !h.host.hasAttribute('data-elastic') || h.runs.some(({ run }) => !h.host.contains(run))) removeHeading(h); });
-    illustrations.forEach((art, host) => { if (!host.isConnected || atlas[host.dataset.illustration] === undefined) { art.remove(); host.classList.remove('scene-illustrated', 'scene-illustration-slot'); illustrations.delete(host); } });
+    illustrations.forEach((art, host) => { if (!host.isConnected || atlas[host.dataset.illustration] === undefined) { photoResize?.unobserve(art); art.remove(); host.classList.remove('scene-illustrated', 'scene-illustration-slot', 'scene-photo-hero'); illustrations.delete(host); } });
   }
   function needsFrame() { return motionOK() && (Array.from(scenes.values()).some(s => s.visible && s.host.isConnected) || springs.size > 0 || Boolean(dust?.particles.length)); }
   function schedule() {
@@ -290,7 +302,7 @@
   const observer = new MutationObserver(queueRefresh);
   observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-theme', 'data-illustration', 'data-illustration-slot', 'data-rising-lines', 'data-blinking-dots', 'data-stardust-cursor', 'data-elastic', 'hidden'] });
   function onVisibility() { if (!document.hidden) scenes.forEach(s => { s.visible = insideViewport(s.host); }); else clearDust(); schedule(); }
-  function onViewport() { scenes.forEach(s => { s.visible = insideViewport(s.host); }); resizeDust(); clearDust(); schedule(); }
+  function onViewport() { scenes.forEach(s => { s.visible = insideViewport(s.host); }); illustrations.forEach(layoutPhoto); resizeDust(); clearDust(); schedule(); }
   function onReduced() { if (media.matches) headings.forEach(h => { h.drag = null; h.chars.forEach(resetSpring); }); syncDust(); updateControls(); schedule(); }
   function onFinePointer() { syncDust(); schedule(); }
   function onToggle(event) { if (event.target instanceof Element && event.target.closest('[data-scene-motion-toggle]')) setPaused(!paused); }
@@ -304,9 +316,10 @@
     status: () => ({ paused, reduced: media.matches, animating: Boolean(raf), canvases: scenes.size, visibleCanvases: Array.from(scenes.values()).filter(s => s.visible).length, elasticTitles: headings.size, illustrations: illustrations.size, frames: Array.from(scenes.values()).reduce((n, s) => n + s.frames, 0), dustEnabled: Boolean(dust), dustParticles: dust?.particles.length || 0, dustMaxParticles: 14, dustSpreadPx: 12, dustLifetimeMs: 450 }),
     destroy() {
       destroyed = true; if (raf) cancelAnimationFrame(raf); raf = 0; observer.disconnect(); intersect?.disconnect();
+      photoResize?.disconnect();
       removeDust();
       Array.from(scenes.values()).forEach(removeScene); Array.from(headings.values()).forEach(removeHeading);
-      illustrations.forEach((art, host) => { art.remove(); host.classList.remove('scene-illustrated', 'scene-illustration-slot'); }); illustrations.clear();
+      illustrations.forEach((art, host) => { art.remove(); host.classList.remove('scene-illustrated', 'scene-illustration-slot', 'scene-photo-hero'); }); illustrations.clear();
       document.removeEventListener('visibilitychange', onVisibility); document.removeEventListener('click', onToggle);
       window.removeEventListener('resize', onViewport); window.removeEventListener('scroll', onViewport, true); window.removeEventListener('storage', onStorage); media.removeEventListener?.('change', onReduced);
       finePointer.removeEventListener?.('change', onFinePointer);

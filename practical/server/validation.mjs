@@ -1,3 +1,4 @@
+import '../../web/radar-goals.js';
 import '../web/pet/schema.js';
 import '../web/previs/schema.js';
 import {validate as businessValidate,references as businessReferences} from '../web/business/model.js';
@@ -14,6 +15,7 @@ export function validateRecord(kind,body){
  const walk=(v,depth=0)=>{if(depth>24)fail('记录嵌套过深');if(v&&typeof v==='object')for(const[k,x]of Object.entries(v)){if(['__proto__','constructor','prototype'].includes(k))fail('记录字段名无效');walk(x,depth+1);}};walk(body);
  if(socialKinds.includes(kind)){try{return validateSocialRecord(kind,body);}catch(e){fail(e.message);}}
  try{globalThis.ActorForms.validate(kind,body);}catch(e){fail(e.message);}
+ if(kind==='goal'&&body.radar!==undefined){try{globalThis.ActorRadar.validate(body.radar,{complete:true});}catch(e){fail(e.message);}}
  if(kind==='event'&&body.start&&body.end&&body.end<body.start)fail('结束时间不能早于开始时间');
  if(['message','crisis'].includes(kind)&&['已批准','已人工发布'].includes(body.status)&&!body.reviewer?.trim())fail('批准或发布前需要审核人');
  if(['message','crisis'].includes(kind)&&body.status==='已人工发布'&&!/^https:\/\//.test(body.publishedUrl||''))fail('请填写人工发布后的HTTPS链接');

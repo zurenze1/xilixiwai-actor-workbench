@@ -1,17 +1,30 @@
 (async () => {
 const D = window.DEMO;
+const DEMO_BASE=structuredClone(D);
+const EDIT_LABELS={actor:'演员与团队（虚构档案）',project:'本剧项目简介',scripts:'邀约与剧本对比资料',compareAdvice:'比较建议（可手动修改的示例）',take:'接戏判断与沟通问题',script:'剧本原文与场次',people:'人物与关系',growth:'人物成长线',subtext:'潜台词示例与解释',keyScenes:'重点场次',bio:'人物小传示例',bioNote:'小传补充说明',roleCard:'角色分析卡',lineOpt:'台词修改备选',beats:'表演情绪节拍',handlings:'不同表演处理',dance:'舞蹈与动作拆解',drill:'台词排练安排',looks:'造型参考说明',shots:'分镜与时长',confirm:'预演核对清单',callsheet:'通告单',revision:'剧本改页对照',week:'内容日历',faq:'知识库常见问题',comments:'宣传留言样例',replies:'回复样例',report:'反馈周报（人工示例）',signals:'反馈信号',interview:'采访提纲',wrapup:'宣传收尾安排',offer:'商务合作需求',sources:'授权资料来源',dims:'授权检查维度',scopes:'授权用途与检查等级',lvText:'风险等级说明',laws:'版权知识提示',air:'作品播出反馈（示例数据）',selfQ:'复盘提问',feedback:'团队反馈',takeaway:'下一部戏行动',wins:'有效做法',improve:'待改进事项',goals:'年度目标与行动',lanes:'年度安排',portfolio:'作品、画像与发展路线',trip:'行程与携带清单',body:'身体与状态（示例资料）',deals:'合同、品牌与交付',crisis:'公共沟通与事件资料',fans:'社群与工作室留言',brief2:'行业简报资料',charity:'公益合作与反馈','sched.todayPlan':'示例当天通告','sched.invites':'待决定邀约'};
+const EDIT_PAGE_PATHS={home:['sched.todayPlan','sched.invites'],st0:['actor','project','scripts','compareAdvice','take'],st1:['script','people','growth','subtext','keyScenes','bio','bioNote','roleCard','lineOpt'],st2:['beats','handlings','dance','drill'],st3:['looks','shots','confirm'],st4:['callsheet','revision','week','faq'],st5:['comments','replies','report','signals','interview','wrapup'],st6:['offer','sources','dims','scopes','lvText','laws'],st7:['air','selfQ','feedback','takeaway','wins','improve','goals','lanes'],portfolio:['portfolio','goals','lanes'],trip:['trip'],body:['body'],deals:['deals'],crisis:['crisis'],fans:['fans'],brief:['brief2'],charity:['charity']};
+const getDataPath=(obj,path)=>path.split('.').reduce((o,k)=>o[k],obj);
+const trustedSections=keys=>Object.fromEntries(keys.map(key=>{if(!(key in EDIT_LABELS))throw Error('不支持的编辑板块');return[key,structuredClone(getDataPath(DEMO_BASE,key))];}));
+function mergeData(target,value){if(Array.isArray(value)){if(!Array.isArray(target))return structuredClone(value);value.forEach((v,i)=>target[i]=mergeData(target[i],v));target.length=value.length;return target;}if(value&&typeof value==='object'){if(!target||typeof target!=='object')target={};for(const[k,v]of Object.entries(value))target[k]=mergeData(target[k],v);return target;}return value;}
+function putDataPath(obj,path,value){const keys=path.split('.'),last=keys.pop();let parent=obj;for(const k of keys)parent=parent[k];parent[last]=mergeData(parent[last],value);}
+function validateDemoEdits(edits){if(!edits||typeof edits!=='object'||Array.isArray(edits))throw Error('编辑资料格式不正确');const checked=ActorDemoEditor.validate(edits,trustedSections(Object.keys(edits)));validateEditedGeometry(checked);return checked;}
+function applyDemoEdits(){for(const key of Object.keys(EDIT_LABELS))putDataPath(D,key,getDataPath(DEMO_BASE,key));if(Object.keys(S.demoEdits).length){const safe=ActorDemoEditor.escapeTreeForDisplay(S.demoEdits,trustedSections(Object.keys(S.demoEdits)));for(const[key,value]of Object.entries(safe))putDataPath(D,key,value);}}
+function rawDemoData(){const raw=structuredClone(DEMO_BASE);for(const[key,value]of Object.entries(S.demoEdits))putDataPath(raw,key,value);return raw;}
+
 const KEY = 'xilixiwai-demo-v1';
 const $ = (s, el = document) => el.querySelector(s);
 
 /* ---------------- 状态 ---------------- */
 const fresh = () => ({
   theme: 'tide', nameIdx: 0, st: 0, userEvents: [], hiddenEv: {}, evDone: {}, todayDone: {}, home: true, trip: false, body: false, charity: false, fans: false, deals: false, crisis: false, portfolio: false, rourou: false, meals: [], check: {}, reviews: {}, files: {}, archives: [], cycleOn: false, cycle: { lastStart: -24, len: 28, dur: 5 }, sym: {}, inv: {}, selDay: 12, pack: {}, packAdd: {}, tab: {}, ran: {}, folder: [], provider: 'demo',
-  guide: false, lab:false, labKind:'scene',visionPreferences:{}, experience: {active:false,step:0,checks:{}}, replySubmissions:{}, rel: 'xia', adopt: null, handling: 'probe', tasks: D.tasks.map(t => ({ ...t })),
+  demoEdits:{}, radarPlan:null, guide: false, lab:false, labKind:'scene',visionPreferences:{}, experience: {active:false,step:0,checks:{}}, replySubmissions:{}, rel: 'xia', adopt: null, handling: 'probe', tasks: D.tasks.map(t => ({ ...t })),
   sel: null, tone: 'warm', submitted: {}, scope: 'ad', scopeTried: false, checks: {}, faqQ: '', seen: {}, pick: 'nl'
 });
-const esc = x => String(x ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc = x => String(x ?? '').replace(/&(?!amp;|lt;|gt;|quot;|#39;)|[<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const attrEsc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const validateMain = raw => {
  const state=ActorStore.validateMain(raw,fresh);
+ state.demoEdits=validateDemoEdits(state.demoEdits||{});
  if(!D.people.some(p=>p.id===state.rel)||!['warm','play','formal'].includes(state.tone)||!Object.keys(D.scopes).includes(state.scope)||!D.handlings.some(h=>h.id===state.handling)||!['demo','deepseek','openai','claude','codex','claudecode','compatible'].includes(state.provider))throw Error('状态含有无效选项');
  for(const task of state.tasks)if(typeof task.t!=='string'||typeof task.who!=='string'||typeof task.due!=='string')throw Error('任务字段无效');
  return state;
@@ -102,10 +115,10 @@ function experienceResults() {
 function capabilityPreview(){return `<section class="capability-preview card"><div><div class="eyebrow">THE WHOLE PICTURE</div><h2>一部戏之外，还有整个工作室。</h2><p class="sub">实战业务在这里有对应入口；用虚构资料试操作，也看看下一阶段的产品愿景。</p></div><div class="capability-teasers"><button data-act="capabilities"><span data-illustration="studio"></span><b>20 个能力入口</b><small>工作 · 事业 · 生活</small></button><button data-act="lab-open" data-v="company"><span data-illustration="business"></span><b>自己填，真的存</b><small>25 类业务记录 · 可导入导出</small></button><button data-act="visions"><span data-illustration="previs"></span><b>未来也值得期待</b><small>5 个规划预览 · 明确能力边界</small></button></div></section>`;}
 function modelOrbitPreview(){return `<section class="model-orbit-preview"><div><div class="eyebrow">ONE WORKSPACE · MANY TOOLS</div><h3>不同模型，围绕你的工作。</h3><p class="small muted mt8">旋转光环是协作示意。真实连接状态、权限与模型配置单独显示。</p><div class="row mt8">${['DeepSeek','ChatGPT / OpenAI','Codex','Claude Code'].map(n=>`<span class="tag">${n}</span>`).join('')}</div></div><div class="model-orbit-slot" data-chrome-orbit aria-label="多模型协作的金属环视觉示意"></div></section>`;}
 let lookPreviewMode='reveal',extractionRows=[];
-function lookRevealPreview(){const images=D.looks.map(l=>({src:'assets/photos/'+l.img+'.jpg',alt:l.sc+' · '+l.k+'（虚构氛围配图）',label:l.k}));return `<section class="card look-reveal-preview"><div><div class="eyebrow">FROM A PERSON TO A ROLE</div><h3>从一束光，走进角色。</h3><p class="sub">切换氛围，或拖动对比两种方案。预置配图仅供选方向。</p><div class="row mt"><button class="btn ${lookPreviewMode==='reveal'?'pri':''}" data-act="look-mode" data-v="reveal">光边揭图</button><button class="btn ${lookPreviewMode==='compare'?'pri':''}" data-act="look-mode" data-v="compare">两图对比</button></div></div>${lookPreviewMode==='compare'?`<div data-comparison-slider data-images="${esc(JSON.stringify(images.slice(0,2)))}"></div>`:`<div data-ember-reveal data-images="${esc(JSON.stringify(images))}"></div>`}</section>`;}
-function portfolioItems(){return [...S.userWorks.map(w=>({...w,origin:'自行录入'})),...D.portfolio.works.map(w=>({year:String(w[0]),title:w[1],genre:w[2],role:w[3],note:w[4]?'示例评分 '+w[4]:'拍摄中（示例）',origin:'虚构作品示例'}))];}
-function portfolioCarousel(){const photos=['20_award','09_script','02_window','15_studio'];return `<section class="card"><div data-gradient-carousel data-items="${esc(JSON.stringify(portfolioItems().slice(0,32).map((w,index)=>({src:'assets/photos/'+photos[index%photos.length]+'.jpg',title:'《'+w.title+'》',subtitle:[w.year,w.role].filter(Boolean).join(' · '),index}))))}"></div><p class="small muted">氛围配图，非作品正式海报；点击中央作品查看已登记资料。</p></section>`;}
-function taskTransformPreview(text,rows){return `<div data-magic-transform data-document="${esc(JSON.stringify({title:'当前会议纪要',text}))}" data-results="${esc(JSON.stringify(rows.slice(0,24).map(x=>({title:x.t,subtitle:x.who+' · '+x.due}))))}"></div>`;}
+function lookRevealPreview(){const images=rawDemoData().looks.map(l=>({src:'assets/photos/'+l.img+'.jpg',alt:l.sc+' · '+l.k+'（虚构氛围配图）',label:l.k}));return `<section class="card look-reveal-preview"><div><div class="eyebrow">FROM A PERSON TO A ROLE</div><h3>从一束光，走进角色。</h3><p class="sub">切换氛围，或拖动对比两种方案。预置配图仅供选方向。</p><div class="row mt"><button class="btn ${lookPreviewMode==='reveal'?'pri':''}" data-act="look-mode" data-v="reveal">光边揭图</button><button class="btn ${lookPreviewMode==='compare'?'pri':''}" data-act="look-mode" data-v="compare">两图对比</button></div></div>${lookPreviewMode==='compare'?`<div data-comparison-slider data-images="${attrEsc(JSON.stringify(images.slice(0,2)))}"></div>`:`<div data-ember-reveal data-images="${attrEsc(JSON.stringify(images))}"></div>`}</section>`;}
+function portfolioItems(){return [...S.userWorks.map(w=>({...w,origin:'自行录入'})),...rawDemoData().portfolio.works.map(w=>({year:String(w[0]),title:w[1],genre:w[2],role:w[3],note:w[4]?'示例评分 '+w[4]:'拍摄中（示例）',origin:'虚构作品示例'}))];}
+function portfolioCarousel(){const photos=['20_award','09_script','02_window','15_studio'];return `<section class="card"><div data-gradient-carousel data-items="${attrEsc(JSON.stringify(portfolioItems().slice(0,32).map((w,index)=>({src:'assets/photos/'+photos[index%photos.length]+'.jpg',title:'《'+w.title+'》',subtitle:[w.year,w.role].filter(Boolean).join(' · '),index}))))}"></div><p class="small muted">氛围配图，非作品正式海报；点击中央作品查看已登记资料。</p></section>`;}
+function taskTransformPreview(text,rows){return `<div data-magic-transform data-document="${attrEsc(JSON.stringify({title:'当前会议纪要',text}))}" data-results="${attrEsc(JSON.stringify(rows.slice(0,24).map(x=>({title:x.t,subtitle:x.who+' · '+x.due}))))}"></div>`;}
 function taskExtractionDialog(){
  const text=$('#minutes')?.value||'';try{extractionRows=ActorTaskExtract.extract(text);}catch(e){toast(e.message);return;}
  const dlg=$('#dlg');dlg.innerHTML=`<div class="dlg task-extraction"><h2>先确认，再变成待办<button data-act="close" aria-label="关闭">×</button></h2><p class="small muted mt8">本地按行拆分，不调用模型。每行一件事；只有明确填写的负责人和截止时间会带入，其余由你确认。</p>${taskTransformPreview(text,extractionRows)}<div class="extraction-list">${extractionRows.map((r,i)=>`<article data-extraction-row="${i}"><label class="row"><input type="checkbox" data-extraction-select checked> 事项 ${i+1}</label><div class="field"><label>要做什么<input data-extraction-title maxlength="500" value="${esc(r.t)}"></label></div><div class="grid2"><div class="field"><label>负责人<input data-extraction-owner maxlength="100" value="${esc(r.who)}"></label></div><div class="field"><label>截止时间<input data-extraction-due maxlength="100" value="${esc(r.due)}"></label></div></div><details><summary class="small">查看原话${r.timeHint?' · 时间线索 '+esc(r.timeHint):''}</summary><p class="small">${esc(r.sourceText)}</p></details></article>`).join('')}</div><p id="extractError" role="alert" class="bad-t"></p><div class="row mt"><button class="btn pri" data-act="task-extract-save">确认，加入任务看板</button><button class="btn" data-act="close">取消</button></div></div>`;if(!dlg.open)dlg.showModal();
@@ -152,7 +165,7 @@ const STEPS = {
   dance:    ['识别舞段主题与人物情绪', '分析音乐节奏（BPM 72 → 96）', '按 8 拍划分动作段落', '整理训练观察问题'],
   looks:    ['提取各场次人物状态与环境', '生成造型方向与色彩参考'],
   shots:    ['读取已选演法：', '拆分镜头与时长', '生成轻量分镜画面'],
-  tasks:    ['读取会议纪要（6条）', '识别负责人与截止时间', '拆解为任务并排进日历'],
+  tasks:    ['读取会议纪要（6条）', '识别负责人与截止时间', '拆解为待人工确认的任务'],
   classify: ['读取最新 12 条留言', '按话题与情绪分类', '标记需要人工关注的内容', '为每类准备回复草稿'],
   itv:      ['读取采访邀约与资料夹', '预测可能的问题', '整理要点与不展开的话题'],
   report:   ['统计话题热度', '分析情绪分布', '提炼可执行的运营建议'],
@@ -283,7 +296,7 @@ async function archiveProject() {
 async function archiveAction(i,action) {
   await flushPet();
   const archive=S.archives[i];if(!archive?.snap)throw Error('此归档没有可恢复的快照');const raw=JSON.parse(archive.snap);
-  if(action==='view'){const dlg=$('#dlg');dlg.innerHTML='<div class="dlg"><h2>'+esc(archive.title)+'<button data-act="close">×</button></h2><pre style="white-space:pre-wrap">'+esc(JSON.stringify(raw,null,2))+'</pre></div>';return;}
+  if(action==='view'){const dlg=$('#dlg');dlg.innerHTML='<div class="dlg"><h2>'+esc(archive.title)+'<button data-act="close">×</button></h2><pre style="white-space:pre-wrap">'+attrEsc(JSON.stringify(raw,null,2))+'</pre></div>';return;}
   if(!raw.st&&raw.st!==0)throw Error('旧版归档只保存了部分资料，无法完整恢复；可查看或导出旧快照');
   const state=validateMain(raw);
   if(action==='export'){const bundle=await ActorStore.exportBundle({state});download('项目归档备份.json',JSON.stringify(bundle));return;}
@@ -538,7 +551,7 @@ function vRead() {
       <ul class="list">${D.keyScenes.map((k, i) => `<li><div class="row" style="justify-content:space-between"><b>${i + 1}. 第${k.sc}场 · ${k.w}</b>${cite(k.sc)}</div><p class="small mt8">${k.why}</p><p class="small muted">提示：${k.tip}</p></li>`).join('')}</ul></div>`);
   if (t === 'bio') body = aiBlock('bio', 'AI 起草人物小传', '演员进组前通常要写人物小传。AI 汇总剧本里关于许知夏的全部交代，起草一版第一人称小传，你再改成自己的。', () => `
     <div class="card"><div class="result-head"><h3>许知夏 · 人物小传（草稿）</h3>${demoTag()}</div>
-      ${(S.bioEdits.main ? S.bioEdits.main.split('\n') : D.bio).map(p => `<p class="serif" style="font-size:15.5px;line-height:1.95;margin-bottom:10px">${esc(p)}</p>`).join('')}
+      ${(S.bioEdits.main !== undefined ? S.bioEdits.main.split('\n') : D.bio).map(p => `<p class="serif" style="font-size:15.5px;line-height:1.95;margin-bottom:10px">${esc(p)}</p>`).join('')}
       <p class="note">${D.bioNote}</p><div class="row mt8">${cite(21)}<button class="btn sm" data-act="editbio">✎ 改成我自己的版本</button></div></div>`);
   if (t === 'card') { const RC = D.roleCard; body = aiBlock('rcard', 'AI 生成角色分析卡', '把人物关系、成长线、潜台词和小传汇总成一张卡：背景、经历、性格、动机、外在细节、关系与弧线，一眼看懂她是谁。', () => `
     <div class="rcard" id="rcard"><div class="rc-side"><div class="rc-photo" style="background-image:url('assets/photos/06_xia.jpg')"></div>
@@ -696,14 +709,14 @@ function vShoot() {
       <div class="row mt8">${has('role') ? tag('ok', `已关联：第12场「${handlingName()}」版表演方案`) : tag('warn', '第12场还没有表演方案，可回到「入角」补上')}${has('line') ? tag('ok', '已关联：台词建议稿') : ''}</div></div>`)}</div></div>`;
   else if (t === 'tasks') body = `<div class="split"><div class="card"><h3>会议纪要</h3><p class="sub">把碰头会的记录粘进来（可直接修改）</p>
       <div class="field"><textarea id="minutes" style="min-height:230px">${esc(D.minutes)}</textarea></div><button class="btn pri" data-act="task-extract">把当前稿子拆成待办 →</button><p class="small muted mt8">每行一件事，先预览再确认。可写：事项｜负责人｜截止时间。</p></div>
-    <div>${aiBlock('tasks', 'AI 拆解成任务', 'AI 从纪要里找出“谁、做什么、什么时候”，拆成任务卡，同时排进内容日历。', () => `
+    <div>${aiBlock('tasks', 'AI 拆解成任务', 'AI 从纪要里找出“谁、做什么、什么时候”，拆成任务卡，确认后加入下方任务看板；内容日历可单独编辑。', () => `
       <div class="result-head"><h3>任务看板</h3><div class="row"><span class="tag">预置与自行录入任务</span><button class="btn sm" data-act="task-new">＋ 新增自己的任务</button></div></div>
       <div class="kanban">${['待办', '进行中', '已完成'].map((c, ci) => `<div class="col"><h4>${c}<span>${S.tasks.filter(x => x.col === ci).length}</span></h4>
         ${S.tasks.map((x, i) => x.col === ci ? `<div class="task">${esc(x.t)}<small><span>${esc(x.who)} · ${esc(x.due)}</span><span><button data-act="task-edit" data-i="${i}">编辑</button> ${ci < 2 ? `<button data-act="move" data-i="${i}">推进 →</button>` : '✓'}</span></small></div>` : '').join('')}</div>`).join('')}</div>
-      <div class="row mt">${has('shoot') ? tag('ok', '✓ 已存入资料夹') : `<button class="btn pri" data-act="save" data-k="shoot">存入资料夹</button>`}<button class="btn" data-act="tab" data-st="4" data-v="cal">查看内容日历 →</button></div>`)}</div></div>`;
+      <p class="note">任务看板与内容日历分别维护；任务不会自动排进日历。顶部“编辑本页资料”可以修改内容日历。</p><div class="row mt">${has('shoot') ? tag('ok', '✓ 已存入资料夹') : `<button class="btn pri" data-act="save" data-k="shoot">存入资料夹</button>`}<button class="btn" data-act="tab" data-st="4" data-v="cal">查看内容日历 →</button></div>`)}</div></div>`;
   else if (t === 'cal') body = `<div class="card"><div class="result-head"><h3>内容日历 · 开机周</h3><div class="row small"><span class="ev shoot">拍摄</span><span class="ev post">物料发布</span><span class="ev fan">粉丝 / 社群</span></div></div>
     <div class="cal">${D.week.map(d => `<div class="day"><b>${d.d}</b>${d.ev.map(([c, n]) => `<span class="ev ${c}">${n}</span>`).join('')}</div>`).join('')}</div>
-    <p class="note">物料发布前都需要经过“宣传起草 → 经纪人审核 → 本人确认”，日历只负责提醒，不会自动发布。</p></div>`;
+    <p class="note">本日历与任务看板分别维护，任务不会自动排入；可以从顶部“编辑本页资料”修改。物料发布仍需宣传、经纪人及本人确认，不会自动发布。</p></div>`;
   else {
     const q = (S.faqQ || '').trim();
     const list = D.faq.filter(f => !q || (f.q + f.a + f.tag).includes(q));
@@ -814,7 +827,7 @@ function vReview() {
     <div><div class="card"><h3>杀青后续 · 别断了跟踪</h3><ul class="list mt8">${D.wrapup.map(([k, t, w, lv]) => `<li class="small row" style="justify-content:space-between"><span>${tag(lv, k)} ${t}</span><span class="muted">${w}</span></li>`).join('')}</ul></div>
     <div class="card"><h3>做得好的</h3><ul class="list mt8">${D.wins.map(w => `<li class="small">✓ ${w}</li>`).join('')}</ul></div>
     <div class="card"><h3>下次可以更好的</h3><ul class="list mt8">${D.improve.map(w => `<li class="small">→ ${w}</li>`).join('')}</ul></div></div></div>`;
-  else if (t === 'data') body = aiBlock('airdata', 'AI 汇总播出数据与口碑', '汇总这部戏的播出热度、口碑评分、观众热议和你的粉丝增长，看清观众记住了什么。', () => { const A = D.air, mx = Math.max(...A.heat); return `
+  else if (t === 'data') body = aiBlock('airdata', 'AI 汇总播出数据与口碑', '汇总这部戏的播出热度、口碑评分、观众热议和你的粉丝增长，看清观众记住了什么。', () => { const A = D.air, mx = Math.max(1,...A.heat); return `
     <div class="grid4 kpis">${A.kpi.map(k => `<div class="kpi"><small>${k[0]}</small><b>${k[1]}<em>${k[2]}</em></b><span class="small muted">${k[3]}</span></div>`).join('')}</div>
     <div class="grid2 mt"><div class="card"><div class="result-head"><h3>32 集热度曲线</h3>${demoTag()}</div>
       <svg viewBox="0 0 640 190" class="wxchart"><path class="curve" d="${A.heat.map((v, i) => `${i ? 'L' : 'M'}${30 + i * 18.5},${160 - v / mx * 130}`).join(' ')}"/>${A.marks.map(([e, t]) => `<line x1="${30 + (e - 1) * 18.5}" x2="${30 + (e - 1) * 18.5}" y1="20" y2="160" stroke="var(--line)" stroke-dasharray="4 4"/><text x="${30 + (e - 1) * 18.5}" y="14" text-anchor="middle" font-size="11" class="rel-label">第${e}集 ${t}</text>`).join('')}<text x="30" y="182" font-size="11" class="rel-label">第1集</text><text x="604" y="182" font-size="11" class="rel-label" text-anchor="end">第32集</text></svg></div>
@@ -839,18 +852,29 @@ function radar2(rows) {
     <polygon points="${poly(2)}" class="rt"/><polygon points="${poly(1)}" class="rv"/>
     ${rows.map((r, i) => { const [x, y] = pt(i, R + 22); return `<text x="${x}" y="${y + 4}" text-anchor="middle" font-size="11.5" class="rel-label">${r[0]}</text>`; }).join('')}</svg>`;
 }
+function editablePageToolbar(){const key=onPage()||'st'+S.st;if(!EDIT_PAGE_PATHS[key])return '';return `<div class="page-edit-toolbar"><div><b>这页可以亲手改</b><small>保存后更新本页与导出；分析文字为人工可改的示例</small></div><div class="row"><button class="btn sm" data-act="demo-page-edit">编辑本页资料</button><button class="btn sm" data-act="demo-page-export">导出本页资料</button><button class="btn sm" data-act="effect-map">试试交互效果</button></div></div>`;}
+async function editCurrentDemoPage(){const key=onPage()||'st'+S.st,paths=EDIT_PAGE_PATHS[key]||[],original=trustedSections(paths),values=paths.map(path=>({key:path,label:EDIT_LABELS[path],value:structuredClone(S.demoEdits[path]??original[path])}));await ActorDemoEditor.open({title:'编辑本页资料',sections:values,trustedBase:original,onSave:async edits=>{const checked=ActorDemoEditor.validate(edits,original);validateEditedGeometry(checked);const old=S.demoEdits;S.demoEdits={...old,...checked};try{await save();}catch(e){S.demoEdits=old;throw e;}render(true);toast('修改已保存，页面与导出使用新资料；示例分析不会冒充自动重算');}});}
+function validateEditedGeometry(edits){const nonNegative=v=>{if(typeof v==='number'&&v<0)throw Error('时长、数量与图表数值不能为负数');if(v&&typeof v==='object')Object.values(v).forEach(nonNegative);};Object.values(edits).forEach(nonNegative);if(edits.shots?.some(r=>!Number.isFinite(r.dur)||r.dur<=0||r.dur>300))throw Error('单镜头时长须大于0且不超过300秒');if(edits.portfolio?.radar?.some(r=>r.slice(1).some(v=>v<0||v>100)))throw Error('雷达评分须为0–100；推荐使用“设置我的目标”填写');if(edits.body&&edits.body.target[0]>edits.body.target[1])throw Error('体重目标区间顺序不正确');}
+function exportCurrentDemoPage(){const key=onPage()||'st'+S.st,paths=EDIT_PAGE_PATHS[key]||[],raw=rawDemoData(),lines=['# 本页资料与人工修改','','> 虚构演示资料；手动编辑的示例不代表AI已重新分析。',''];function walk(value,depth=0){if(Array.isArray(value)){value.forEach((v,i)=>{lines.push('  '.repeat(depth)+'- 第'+(i+1)+'项');walk(v,depth+1);});}else if(value&&typeof value==='object'){Object.entries(value).forEach(([k,v])=>{lines.push('  '.repeat(depth)+'- '+k+'：');walk(v,depth+1);});}else lines.push('  '.repeat(depth)+String(value??'未填写'));}for(const path of paths){lines.push('## '+EDIT_LABELS[path]);walk(getDataPath(raw,path));lines.push('');}if(S.radarPlan&&key==='portfolio')lines.push(ActorRadar.markdown(S.radarPlan));download('本页资料与人工修改.md',lines.join('\n'),'text/markdown');}
+function effectMap(){const dlg=$('#dlg');dlg.innerHTML=`<div class="dlg"><h2>亲手试试这些交互<button data-act="close" aria-label="关闭">×</button></h2><p class="small muted mt8">每个入口会带你到实际操作区。已有原生交互，非第三方付费组件原样安装。</p><div class="row mt8"><button class="btn sm" data-act="effect-motion">${ActorSceneArt.status().paused?'开启页面动态':'暂停页面动态'}</button><span class="small muted">${ActorSceneArt.status().reduced?'系统已开启减少动态，部分效果会静止':ActorSceneArt.status().paused?'页面动态当前已暂停':'页面动态已开启'}</span></div><div class="effect-map">${[['造型光边揭图',3,'look','切换角色氛围配图'],['两图滑杆对比',3,'compare','左右拖动比较两种方案'],['精选作品轮播',-8,'carousel','切换作品，点击中央卡打开资料'],['稿件变成任务',4,'tasks','填会议纪要，拆分并确认待办'],['肉肉照片环绕',-10,'orbit','保留原相册，可选环绕浏览'],['多模型协作光环',-20,'chrome','点击金属环，查看协作示意']].map(([name,page,kind,note])=>`<button class="btn" data-act="effect-open" data-i="${page}" data-v="${kind}"><b>${name} →</b><small>${note}</small></button>`).join('')}</div><p class="small muted mt">标题轻弹、页头光线、信息点阵与窄幅星尘在合适位置启用。页头可暂停动态，系统减少动态会自动收敛。</p></div>`;if(!dlg.open)dlg.showModal();}
+function mealEditor(index){const m=S.meals[index];if(!m)return;const dlg=$('#dlg');dlg.innerHTML=`<div class="dlg"><h2>更正饮食记录<button data-act="close" aria-label="关闭">×</button></h2><div class="field"><label>日期<input id="mealDate" type="date" value="${esc(m.date||new Date().toLocaleDateString('en-CA'))}"></label></div><div class="field"><label>时间<input id="mealTime" type="time" value="${esc(m.t)}"></label></div><div class="field"><label>内容<input id="mealName" maxlength="1000" value="${esc(m.n)}"></label></div><div class="field"><label>热量估算（千卡，可自行核对更正）<input id="mealKcal" type="number" min="0" max="10000" value="${m.k}"></label></div><p id="mealError" class="bad-t" role="alert"></p><button class="btn pri" data-act="meal-save" data-i="${index}">保存更正</button></div>`;if(!dlg.open)dlg.showModal();}
+function eventEditor(id){const x=schedEvents().find(e=>e.id===id);if(!x){toast('这条日程暂不存在');return;}const dlg=$('#dlg');dlg.innerHTML=`<div class="dlg"><h2>编辑日程<button data-act="close" aria-label="关闭">×</button></h2><p class="small muted mt8">示例条目修改后作为你的日程保存，原始示例保留在备份基线中。</p><div class="field"><label>内容<input id="editEvName" maxlength="500" value="${esc(x.n)}"></label></div><div class="grid2"><div class="field"><label>开始日<input id="editEvA" type="number" min="1" max="${D.sched.days}" value="${x.a}"></label></div><div class="field"><label>结束日<input id="editEvB" type="number" min="1" max="${D.sched.days}" value="${x.b}"></label></div></div><div class="field"><label>类型<select id="editEvType">${Object.entries(D.sched.types).map(([k,t])=>`<option value="${k}" ${k===x.t?'selected':''}>${esc(t.n)}</option>`).join('')}</select></label></div><div class="field"><label>时间（可选，如09:00–11:00）<input id="editEvTime" value="${esc(x.time||'')}"></label></div><div class="field"><label>备注<textarea id="editEvNote" maxlength="5000">${esc(x.note||'')}</textarea></label></div><p id="eventEditError" class="bad-t" role="alert"></p><button class="btn pri" data-act="event-edit-save" data-v="${esc(id)}">保存日程</button></div>`;if(!dlg.open)dlg.showModal();}
+function workEditor(index=-1){const w=S.userWorks[index]||{title:'',year:'',role:'',genre:'',note:''},dlg=$('#dlg');dlg.innerHTML=`<div class="dlg"><h2>${index<0?'新增作品':'编辑我的作品'}<button data-act="close" aria-label="关闭">×</button></h2>${[['title','作品名（必填）'],['year','年份'],['role','角色与职责'],['genre','题材'],['note','备注与依据']].map(([k,t])=>`<div class="field"><label>${t}<input id="work-${k}" maxlength="2000" value="${esc(w[k])}"></label></div>`).join('')}<p id="workEditError" class="bad-t" role="alert"></p><button class="btn pri" data-act="work-save" data-i="${index}">保存作品</button></div>`;if(!dlg.open)dlg.showModal();}
+function currentRadarPlan(){return S.radarPlan||ActorRadar.sample(D.portfolio.radar);}
+function radarPlanCard(){const p=currentRadarPlan();return `<section class="card" id="myRadarCard"><div class="result-head"><h3>多维能力与发展雷达</h3><button class="btn pri sm" data-act="radar-edit">${S.radarPlan?'编辑我的目标':'设置我的目标'}</button></div><div class="radar-legend"><span>现在</span><span>${esc(p.period||'目标')}</span></div>${ActorRadar.svg(p)}<p class="small muted">${S.radarPlan?'本人 / 工作室手动设定 · 非客观测评':'当前为预置示例；点击“设置我的目标”，可从空白开始或修改示例。'}</p>${S.radarPlan?`<div class="radar-plan-summary"><span>共同设定：${esc(p.owner)}</span><span>复盘日：${esc(p.reviewDate||'待约定')}</span></div><details class="radar-saved-actions"><summary>评分依据与下一步行动</summary>${p.axes.map(r=>`<p><b>${esc(r.label)}</b> ${r.current??'未评'} → ${r.target??'待定'}<br>依据：${esc(r.evidence||'待补充')}<br>行动：${esc(r.action||'待约定')}</p>`).join('')}<p>口径：${esc(p.rubric||'待讨论')}</p></details><button class="btn sm mt8" data-act="radar-export">导出我的目标</button>`:''}</section>`;}
+function radarEditor(profile=currentRadarPlan()){const dlg=$('#dlg');dlg.classList.add('radar-dialog');dlg.innerHTML=`<div class="dlg"><h2>演员与工作室，一起设目标<button data-act="close" aria-label="关闭">×</button></h2>${ActorRadar.form(profile)}<div class="row mt"><button class="btn pri" data-act="radar-save">保存我的目标</button><button class="btn" data-act="radar-blank">从空白开始填写</button><button class="btn" data-act="close">取消</button></div></div>`;if(!dlg.open)dlg.showModal();}
 function vPortfolio() {
   const P = D.portfolio, H = P.heat;
-  const genres = {}; P.works.forEach(w => { const g = w[2].split(' · ')[0]; genres[g] = (genres[g] || 0) + 1; });
+  const genres = {}; [...P.works.map(w=>w[2]),...S.userWorks.map(w=>w.genre)].forEach(genre => { const g = genre.split(' · ')[0]||'未分类'; genres[g] = (genres[g] || 0) + 1; });
   const hc = v => `color-mix(in srgb,var(--accent) ${Math.round((v - 40) / 60 * 85)}%,var(--panel2))`;
   return `<section class="hero has-img" style="--img:url('assets/photos/20_award.jpg')"><div class="eyebrow">MY WORKS & DIRECTION</div><h1>作品库与发展规划</h1>
     <p>把演过的每一部戏导进来，和你的年龄、气质、体态、声线放在一起，AI 帮你看清：最适合什么题材、什么角色，下一步往哪走。</p>
     <div class="needs"><span class="need">个人作品库</span><span class="need">自我画像</span><span class="need">多维能力雷达</span><span class="need">题材 × 角色适配</span><span class="need">发展路线</span></div></section>
-  ${portfolioCarousel()}<div class="card"><div class="result-head"><div><h3>我的作品时间轴</h3><p class="sub">${P.works.length} 部预置示例 + ${S.userWorks.length} 部自行录入 · CSV表头：作品名,年份,角色,题材,备注</p></div><label class="btn sm" style="cursor:pointer">📥 导入CSV作品<input type="file" id="worksFile" accept=".csv" hidden></label></div>
-    <div class="works">${S.userWorks.map(w=>`<div class="wk"><span class="wy">${esc(w.year)}</span><b>《${esc(w.title)}》</b><small>${esc(w.genre)} · ${esc(w.role)}</small><small>${esc(w.note)}</small><span class="tag">自行录入</span></div>`).join('')}${P.works.map(w => `<div class="wk"><span class="wy">${w[0]}</span><b>《${w[1]}》</b><small>${w[2]}</small><small>${w[3]}</small>${w[4] ? `<span class="ws ${w[4] >= 8 ? 'hi' : w[4] < 7 ? 'lo' : ''}">${w[4]}</span>` : '<span class="ws now">拍摄中</span>'}</div>`).join('')}</div>
-    <div class="row mt8">${Object.entries(genres).map(([g, c]) => `<span class="tag">${g} × ${c}</span>`).join('')}<span class="small muted">口碑为示例评分</span></div></div>
+  ${portfolioCarousel()}<div class="card"><div class="result-head"><div><h3>我的作品时间轴</h3><p class="sub">${P.works.length} 部预置示例 + ${S.userWorks.length} 部自行录入 · CSV表头：作品名,年份,角色,题材,备注</p></div><button class="btn sm" data-act="work-new">＋ 新增作品</button><label class="btn sm" style="cursor:pointer">📥 导入CSV作品<input type="file" id="worksFile" accept=".csv" hidden></label></div>
+    <div class="works">${S.userWorks.map((w,i)=>`<div class="wk"><span class="wy">${esc(w.year)}</span><b>《${esc(w.title)}》</b><small>${esc(w.genre)} · ${esc(w.role)}</small><small>${esc(w.note)}</small><span class="tag">自行录入</span><div class="row"><button class="btn sm" data-act="work-edit" data-i="${i}">编辑</button><button class="btn sm" data-act="work-delete" data-i="${i}">删除</button></div></div>`).join('')}${P.works.map(w => `<div class="wk"><span class="wy">${w[0]}</span><b>《${w[1]}》</b><small>${w[2]}</small><small>${w[3]}</small>${w[4] ? `<span class="ws ${w[4] >= 8 ? 'hi' : w[4] < 7 ? 'lo' : ''}">${w[4]}</span>` : '<span class="ws now">拍摄中</span>'}</div>`).join('')}</div>
+    <div class="row mt8">${Object.entries(genres).map(([g, c]) => `<span class="tag">${esc(g)} × ${c}</span>`).join('')}<span class="small muted">口碑为示例评分</span></div></div>
   <div class="grid2 mt">
-    <div class="card"><div class="result-head"><h3>多维能力与市场雷达 · 预置示例</h3><div class="legend"><span><i style="background:var(--accent)"></i>现在</span><span><i style="background:var(--hi)"></i>3 年目标</span></div></div>${radar2(P.radar)}</div>
+    ${radarPlanCard()}
     <div class="card"><h3>自我画像</h3><p class="sub">由本人和团队填写，AI 只做参考</p>
       <dl class="kv mt8" style="grid-template-columns:76px 1fr">${P.self.map(s => `<dt>${s[0]}</dt><dd>${s[1]}</dd>`).join('')}</dl>
       <h3 class="mt">题材 × 角色 适配度</h3>
@@ -868,7 +892,7 @@ function vPortfolio() {
 
 /* ---------------- 危机公关与舆情 ---------------- */
 function vCrisis() {
-  const C = D.crisis, E = C.event, mx = Math.max(...C.volume);
+  const C = D.crisis, E = C.event, mx = Math.max(1,...C.volume);
   const W = 600, H = 170, xs = i => 30 + i * (W - 60) / (C.volume.length - 1), ys = v => 140 - v / mx * 115;
   return `<section class="hero has-img" style="--img:url('assets/photos/27_comments.jpg')"><div class="eyebrow">CRISIS & REPUTATION</div><h1>危机公关与舆情</h1>
     <p>风吹草动，第一时间知道。AI 帮你监测声量、判断性质、比较回应方案、起草声明；先核实，再回应，发不发、怎么发，由人决定。</p>
@@ -877,7 +901,7 @@ function vCrisis() {
     <div class="kpi"><small>当前预警</small><b class="warn-t">${C.level[0]}</b><span class="small muted">1 个事件在扩散</span></div>
     <div class="kpi"><small>今日声量指数</small><b>${C.volume[6]}</b><span class="small warn-t">约为平时的 9 倍</span></div>
     <div class="kpi"><small>负面占比</small><b>${C.mood.neg}<em>%</em></b><div class="bar"><i style="width:${C.mood.neg}%;background:var(--bad)"></i></div></div>
-    <div class="kpi"><small>响应团队</small><b>${C.team.length}<em>人在线</em></b><span class="small muted">经纪 · 公关 · 律师 · 安保</span></div>
+    <div class="kpi"><small>响应团队</small><b>${C.team.length}<em>位登记成员</em></b><span class="small muted">经纪 · 公关 · 律师 · 安保</span></div>
   </div>
   <div class="grid2 mt">
     <div class="card"><div class="result-head"><h3>全网声量 · 近 7 天</h3>${tag('demo', '示例数据')}</div>
@@ -972,7 +996,7 @@ function briefView() {
 }
 
 /* ---------------- 粉丝与社群 ---------------- */
-function spark(v, c) { const m = Math.max(...v); return `<svg viewBox="0 0 120 36" class="spark"><path d="${v.map((x, i) => `${i ? 'L' : 'M'}${i * 20},${34 - x / m * 30}`).join(' ')}" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/></svg>`; }
+function spark(v, c) { const m = Math.max(1,...v); return `<svg viewBox="0 0 120 36" class="spark"><path d="${v.map((x, i) => `${i ? 'L' : 'M'}${i * 20},${34 - x / m * 30}`).join(' ')}" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/></svg>`; }
 function vFans() {
   const F = D.fans, P = Object.fromEntries(F.platforms.map(p => [p.k, p]));
   const pf = S.fanPf || 'all', inbox = F.inbox.filter(m => pf === 'all' || m.p === pf);
@@ -1012,7 +1036,7 @@ function vFans() {
 /* ---------------- 公益与影响力 ---------------- */
 function vCharity() {
   const C = D.charity, P = C.projects;
-  const maxM = Math.max(...C.months.map(m => m[1]));
+  const maxM = Math.max(1,...C.months.map(m => m[1]));
   return `<section class="hero has-img" style="--img:url('assets/photos/22_charity.jpg')"><div class="eyebrow">CHARITY & IMPACT</div><h1>公益与影响力</h1>
     <p>把热爱变成看得见的善意。参与过哪些公益、下一步做什么、机构靠不靠谱、粉丝怎么一起参与，都在这里，透明、可追溯。</p>
     <div class="needs"><span class="need">公益项目</span><span class="need">机构核验</span><span class="need">粉丝公益联动</span><span class="need">公益日历</span><span class="need">年度公益报告</span></div></section>
@@ -1053,14 +1077,15 @@ function guessKcal(t) {
 }
 function vBody() {
   const B = D.body, today = new Date();
-  const meals = [...B.meals, ...(S.meals || [])], intake = meals.reduce((a, m) => a + m.k, 0);
+  const mealDay=new Date().toLocaleDateString('en-CA');
+  const meals = [...B.meals, ...(S.meals || []).filter(m=>m.date===mealDay)], intake = meals.reduce((a, m) => a + m.k, 0);
   const burn = B.bmr + B.workouts.reduce((a, w) => a + w.k, 0) + (S.extraBurn || 0);
   const w = B.weights, n = w.length, wNow = w[n - 1], wWeek = w[n - 8];
   const W = 640, H = 210, xs = i => 40 + i * (W - 60) / (n - 1), lo = Math.min(...w, B.target[0]) - .4, hi = Math.max(...w, B.target[1]) + .4, ys = v => 170 - (v - lo) / (hi - lo) * 150;
   const dd = i => { const x = new Date(today); x.setDate(x.getDate() - (n - 1 - i)); return `${x.getMonth() + 1}/${x.getDate()}`; };
-  const wk = B.week, maxK = Math.max(...wk.map(d => Math.max(d[1], d[2])));
+  const wk = B.week.map((r,i)=>i===B.week.length-1?[r[0],intake,burn]:r), maxK = Math.max(1,...wk.map(d => Math.max(d[1], d[2])));
   const ck = S.check || {};
-  return `<section class="hero has-img body-portrait" style="--img:url('assets/login-reference/actor-login-poster-v1.webp')"><div class="eyebrow">BODY & CONDITION</div><h1>身体与状态</h1>
+  return `<section class="hero has-img body-portrait" style="--img:url('assets/illustrations/blue-gold-underwater-editorial-v1.webp')"><div class="eyebrow">BODY & CONDITION</div><h1>身体与状态</h1>
     <p>身材、精力、嗓音、睡眠，都会出现在镜头里。按角色的要求，把每天的体重、饮食、运动和状态记下来，AI 帮你看趋势、给建议。</p>
     <div class="needs"><span class="need">体重趋势</span><span class="need">摄入与消耗</span><span class="need">运动记录</span><span class="need">角色体态</span><span class="need">睡眠与嗓音</span></div></section>
   <div class="gate" style="margin-top:0;margin-bottom:14px">🔒 身体数据保存在当前浏览器；本演示没有账号隔离，使用此浏览器的人可查看。完整备份会包含这些记录。体重和饮食管理请在营养师 / 医生指导下进行，不建议极端节食。</div>
@@ -1081,10 +1106,10 @@ function vBody() {
       <svg viewBox="0 0 ${W} ${H}" class="wxchart">${wk.map(([d, a, b], i) => { const x = 50 + i * 82, ha = a / maxK * 150, hb = b / maxK * 150; return `<rect x="${x}" y="${175 - ha}" width="26" height="${ha}" rx="4" fill="var(--hi)" class="grow"/><rect x="${x + 30}" y="${175 - hb}" width="26" height="${hb}" rx="4" fill="var(--accent)" class="grow"/><text x="${x + 28}" y="196" text-anchor="middle" font-size="11" class="rel-label">${d}</text>`; }).join('')}</svg></div>
   </div>
   <div class="grid2 mt">
-    <div class="card"><div class="result-head"><h3>今天吃了什么</h3><span class="small muted">输入食物，AI 估算热量</span></div>
-      <ul class="list small">${meals.map(m => `<li class="row" style="justify-content:space-between"><span><span class="tag">${esc(m.t)}</span> ${esc(m.n)}</span><b>${m.k} 千卡</b></li>`).join('')}</ul>
+    <div class="card"><div class="result-head"><h3>今天吃了什么</h3><span class="small muted">本地规则估算，可手动更正</span></div>
+      <ul class="list small">${meals.map(m => `<li class="row" style="justify-content:space-between"><span><span class="tag">${esc(m.t)}</span> ${esc(m.n)}</span><b>${m.k} 千卡</b>${S.meals.includes(m)?`<button class="btn sm" data-act="meal-edit" data-i="${S.meals.indexOf(m)}">编辑</button><button class="btn sm" data-act="meal-delete" data-i="${S.meals.indexOf(m)}">删除</button>`:''}</li>`).join('')}</ul>
       <div class="row mt8" style="flex-wrap:nowrap"><input class="add-item" id="foodIn" placeholder="例如：一杯拿铁、200 克鸡胸、一个苹果" style="margin:0;flex:1"><button class="btn sm pri" data-act="food">记录</button></div>
-      ${S.lastFood ? `<p class="small muted mt8">✦ ${esc(S.lastFood)}</p>` : ''}</div>
+      ${S.meals.some(m=>!m.date)?`<details class="small muted mt8"><summary>旧饮食记录未标日期，不计入今日</summary>${S.meals.map((m,i)=>!m.date?`<p>${esc(m.n)} <button class="btn sm" data-act="meal-edit" data-i="${i}">补日期 / 更正</button></p>`:'').join('')}</details>`:''}${S.lastFood ? `<p class="small muted mt8">✦ ${esc(S.lastFood)}</p>` : ''}</div>
     <div class="card"><div class="result-head"><h3>运动记录</h3><span class="small muted">可连接 Apple 健康 / 华为运动健康 / Keep（正式版）</span></div>
       <ul class="list small">${B.workouts.map(x => `<li class="row" style="justify-content:space-between"><span>${x.ic} ${x.n} · ${x.m} 分钟</span><b>${x.k} 千卡</b></li>`).join('')}</ul>
       <h3 class="mt">今天的状态</h3><div class="checks">${[['energy', '精力'], ['mood', '情绪'], ['voice', '嗓音'], ['sleep', '睡眠质量']].map(([k, t]) => `<div class="ckrow"><span>${t}</span><div class="dots5">${[1, 2, 3, 4, 5].map(v => `<button data-act="ck" data-v="${k}" data-i="${v}" class="${(ck[k] || 0) >= v ? 'on' : ''}"></button>`).join('')}</div></div>`).join('')}
@@ -1179,6 +1204,13 @@ function wearFor(w, ev) {
   if (/户外/.test(ev) && w.rain >= 40) t.push('户外环节：提前和品牌确认雨天方案');
   return t.join('；');
 }
+function tripPacking(T=D.trip){const days=T.days.map(x=>({...x,w:wxAt(x.city,x.d)})),ws=days.map(x=>x.w).filter(Boolean),rainy=ws.filter(w=>w.rain>=60).length,tmin=ws.length?Math.min(...ws.map(w=>w.min)):0;
+  const extra = {};
+  if (rainy) { extra['艺人助理'] = ['折叠伞 ×6 + 一次性雨衣']; extra['造型'] = ['礼服防水罩、鞋套']; extra['安保'] = ['雨天路线多留 20 分钟']; }
+  if (ws.length && tmin <= 10) (extra['艺人助理'] = extra['艺人助理'] || []).push('暖宝宝、薄羽绒（候场用）');
+  if (days.some(x => x.city === '北京')) (extra['化妆'] = extra['化妆'] || []).push('保湿喷雾（北京干燥）');
+  return T.team.map(r => ({ ...r, ai: extra[r.role] || [], add: S.packAdd[r.role] || [] }));;
+}
 function vTrip() {
   const T = D.trip;
   if (WX.status === 'idle') loadWX();
@@ -1193,11 +1225,7 @@ function vTrip() {
     <path class="curve" d="${days.map((x, i) => x.w ? `${i ? 'L' : 'M'}${xs(i)},${ty(x.w.min)}` : '').join(' ')}" style="stroke:var(--accent)"/>
     ${days.map((x, i) => x.w ? `<text x="${xs(i)}" y="${ty(x.w.max) - 10}" text-anchor="middle" font-size="12" font-weight="600">${x.w.max}°</text><text x="${xs(i)}" y="${ty(x.w.min) + 18}" text-anchor="middle" font-size="11" class="rel-label">${x.w.min}°</text><text x="${xs(i)}" y="207" text-anchor="middle" font-size="11" class="rel-label">${x.city} ☂${x.w.rain}%</text>` : '').join('')}
   </svg>` : '<p class="muted small">暂无天气数据</p>';
-  const extra = {};
-  if (rainy) { extra['艺人助理'] = ['折叠伞 ×6 + 一次性雨衣']; extra['造型'] = ['礼服防水罩、鞋套']; extra['安保'] = ['雨天路线多留 20 分钟']; }
-  if (ws.length && tmin <= 10) (extra['艺人助理'] = extra['艺人助理'] || []).push('暖宝宝、薄羽绒（候场用）');
-  if (days.some(x => x.city === '北京')) (extra['化妆'] = extra['化妆'] || []).push('保湿喷雾（北京干燥）');
-  const team = T.team.map(r => ({ ...r, ai: extra[r.role] || [], add: S.packAdd[r.role] || [] }));
+  const team = tripPacking(T);
   const all = team.flatMap(r => [...r.items, ...r.ai, ...r.add].map(i => r.role + '|' + i));
   const doneN = all.filter(k => S.pack[k]).length;
   return `<section class="hero has-img" style="--img:url('assets/photos/08_station.jpg')"><div class="eyebrow">TRAVEL & WEATHER</div><h1>出行与天气</h1>
@@ -1238,13 +1266,13 @@ function vTrip() {
 function schedEvents() {
   const C = D.sched, ev = C.events.map((e, i) => ({ ...e, id: 's' + i })).filter(e => !S.hiddenEv[e.id]);
   (S.userEvents || []).forEach(e => ev.push({ ...e, mine: true }));
-  C.invites.forEach(i => { if (S.inv[i.id] === 'yes' && i.day) ev.push({ t: i.t, a: i.day, b: i.day, n: i.n + '（新接）', added: true, id: 'inv-' + i.id }); });
+  C.invites.forEach(i => { if (S.inv[i.id] === 'yes' && i.day && !S.hiddenEv['inv-'+i.id]) ev.push({ t: i.t, a: i.day, b: i.day, n: i.n + '（新接）', added: true, id: 'inv-' + i.id }); });
   return ev;
 }
 function dayInfo() { return ActorStore.scheduleDays(schedEvents(),D.sched.days); }
 function donut(parts, total) {
   let off = 0; const R = 54, L = 2 * Math.PI * R;
-  return `<svg viewBox="0 0 140 140" class="donut-svg">${parts.map(([c, v]) => { const len = v / total * L; const seg = `<circle cx="70" cy="70" r="${R}" fill="none" stroke="${c}" stroke-width="18" stroke-dasharray="${len} ${L - len}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"/>`; off += len; return seg; }).join('')}
+  return `<svg viewBox="0 0 140 140" class="donut-svg">${parts.map(([c, v]) => { const len = total ? v / total * L : 0; const seg = `<circle cx="70" cy="70" r="${R}" fill="none" stroke="${c}" stroke-width="18" stroke-dasharray="${len} ${L - len}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"/>`; off += len; return seg; }).join('')}
     <text x="70" y="66" text-anchor="middle" font-size="22" font-weight="700">${total}</text><text x="70" y="86" text-anchor="middle" font-size="11" class="rel-label">项·天</text></svg>`;
 }
 function vHome() {
@@ -1257,7 +1285,7 @@ function vHome() {
   const sel = days[(S.selDay || C.today) - 1];
   const wk = ['一', '二', '三', '四', '五', '六', '日'];
   const yearDays = C.yearDays.slice(); yearDays[C.month - 1] = work;
-  const maxY = Math.max(...yearDays);
+  const maxY = Math.max(1,...yearDays);
   return `${experienceWelcome()}${capabilityPreview()}<section class="experience-calendar-heading"><div><div class="eyebrow">OVERVIEW · ${C.year}年${C.month}月 · 示例拍摄期</div><h2>日程总览</h2><p class="small muted">拍摄、宣发、训练放在同一张表。点日期可新增安排，冲突与统计会同步变化。</p></div><button class="btn sm" data-act="exp-calendar">试着新增一条日程 ↘</button></section>
   <div class="grid4 kpis">
     <div class="kpi"><small>本月工作日</small><b>${work}<em>/${C.days}天</em></b><div class="bar"><i style="width:${work / C.days * 100}%"></i></div></div>
@@ -1276,9 +1304,9 @@ function vHome() {
         ${d.clash ? '<b class="cl">冲突</b>' : ''}</button>`).join('')}</div></div>
     <div>
       <div class="card"><div class="result-head"><h3>${C.month}月${sel.d}日${sel.d === C.today ? ' · 当天' : ''}</h3>${sel.clash ? tag('bad', '有冲突') : ''}</div>
-        ${sel.d === C.today ? `<ol class="tl tl-check">${C.todayPlan.map(([h, n, t], i) => `<li class="${S.todayDone[i] ? 'done' : ''}"><label><input type="checkbox" data-act="tdone" data-i="${i}" ${S.todayDone[i] ? 'checked' : ''}><span class="tm">${h}</span><i style="background:${T[t].c}"></i><span>${n}</span></label></li>`).join('')}</ol>` : ''}
+        ${sel.d === C.today && sel.list.some(e=>e.long&&!e.mine&&!e.added) ? `<ol class="tl tl-check">${C.todayPlan.map(([h, n, t], i) => `<li class="${S.todayDone[i] ? 'done' : ''}"><label><input type="checkbox" data-act="tdone" data-i="${i}" ${S.todayDone[i] ? 'checked' : ''}><span class="tm">${h}</span><i style="background:${T[t].c}"></i><span>${n}</span></label></li>`).join('')}</ol>` : ''}
         <ul class="list evl">${sel.list.filter(e => !(sel.d === C.today && !e.mine && !e.added && e.long)).map(e => `<li class="${S.evDone[e.id] ? 'done' : ''}"><label class="row" style="flex-wrap:nowrap;align-items:flex-start"><input type="checkbox" data-act="evdone" data-v="${e.id}" ${S.evDone[e.id] ? 'checked' : ''}><i class="dot" style="background:${T[e.t].c};margin-top:6px"></i><span style="flex:1"><b>${esc(e.n)}</b>${e.mine ? ' <span class="tag">我添加的</span>' : ''}<br><span class="small muted">${T[e.t].n}${e.a !== e.b ? ` · ${C.month}/${e.a}–${C.month}/${e.b}` : ''}${e.time ? ' · ' + esc(e.time) : ''}${e.note ? ' · ' + e.note.replace(/</g, '&lt;') : ''}</span></span></label>
-          <button class="btn sm" data-act="evdel" data-v="${e.id}">${e.mine ? '删除' : '移除'}</button></li>`).join('') || '<li class="muted small">这一天还没有安排。</li>'}</ul>
+          <button class="btn sm" data-act="event-edit" data-v="${e.id}">编辑</button><button class="btn sm" data-act="evdel" data-v="${e.id}">${e.mine ? '删除' : '移除'}</button></li>`).join('') || '<li class="muted small">这一天还没有安排。</li>'}</ul>
         <details class="evform" ${sel.list.length ? '' : 'open'}><summary>＋ 在 ${C.month}月${sel.d}日 添加日程</summary>
           <div class="grid2 mt8"><div class="field" style="margin-top:0"><label>内容</label><input id="evN" placeholder="例如：杂志拍摄 · 上海"></div>
             <div class="field" style="margin-top:0"><label>类型</label><select id="evT">${Object.entries(T).map(([k, v]) => `<option value="${k}">${v.n}</option>`).join('')}</select></div>
@@ -1302,7 +1330,7 @@ function vHome() {
     ${aiBlock('sched', 'AI 检查新邀约', `本周收到 ${C.invites.length} 个新邀约。AI 对照本月拍摄、宣发、训练和休息，逐一检查有没有冲突、行程是否过紧。`, () => `
       <div class="grid3">${C.invites.map(i => `<div class="inv"><div class="row" style="justify-content:space-between"><span class="tag" style="background:${T[i.t].c};color:#fff">${T[i.t].n}</span>${tag(i.lv, { ok: '可以接', warn: '需协调', bad: '建议婉拒' }[i.lv])}</div>
         <b class="mt8" style="display:block">${i.n}</b><p class="small muted">${i.d} · ${i.r}</p><p class="small mt8">💡 ${i.s}</p>
-        <div class="row mt8">${S.inv[i.id] ? tag(S.inv[i.id] === 'yes' ? 'ok' : '', S.inv[i.id] === 'yes' ? '✓ 已接受，已加入日程' : '已婉拒') + `<button class="btn sm" data-act="inv" data-v="${i.id}" data-i="0">撤回</button>` : `<button class="btn sm pri" data-act="inv" data-v="${i.id}" data-i="1">接受</button><button class="btn sm" data-act="inv" data-v="${i.id}" data-i="2">婉拒</button>`}</div></div>`).join('')}</div>
+        <div class="row mt8">${S.inv[i.id] ? tag(S.inv[i.id] === 'yes' ? 'ok' : '', S.inv[i.id] === 'yes' ? (i.day?'✓ 已接受，已加入本月':'✓ 已接受下月邀约，未计入本月') : '已婉拒') + `<button class="btn sm" data-act="inv" data-v="${i.id}" data-i="0">撤回</button>` : `<button class="btn sm pri" data-act="inv" data-v="${i.id}" data-i="1">接受</button><button class="btn sm" data-act="inv" data-v="${i.id}" data-i="2">婉拒</button>`}</div></div>`).join('')}</div>
       <p class="note">${demoTag()}　AI 只给建议。接不接、怎么调，由本人、经纪人和剧组沟通后决定。</p>`)}
   </div>`;
 }
@@ -1311,6 +1339,7 @@ const VIEWS = [vTake, vRead, vRole, vPrev, vShoot, vPromo, vDeal, vReview];
 
 /* ---------------- 渲染 ---------------- */
 function render(keepScroll) {
+  applyDemoEdits();
   captureDraft();
   document.documentElement.dataset.theme = S.theme;
   document.title = `${name().name} · 演员AI工作台`;
@@ -1322,11 +1351,11 @@ function render(keepScroll) {
     renderedPage = null;
     return;
   }
-  if (onPage()) { m.innerHTML = (S.home?'':experiencePanel()) + VIEWP[onPage()]() + reviewBlock(); const hero=m.querySelector('.hero');if(hero){hero.dataset.illustration=({trip:'life',body:'life',charity:'fans',fans:'fans',deals:'rights',crisis:'fans',portfolio:'script',brief:'script'})[onPage()]||'studio';if(!S.body)hero.setAttribute(S.brief?'data-blinking-dots':'data-rising-lines','');} renderedPage=pageKey();restoreDraft(); if (keepScroll) m.scrollTop = y; return; }
+  if (onPage()) { m.innerHTML = (S.home?'':experiencePanel()) + editablePageToolbar() + VIEWP[onPage()]() + reviewBlock(); const hero=m.querySelector('.hero');if(hero&&!S.body){hero.dataset.illustration=({trip:'life',body:'life',charity:'fans',fans:'fans',deals:'rights',crisis:'fans',portfolio:'script',brief:'script'})[onPage()]||'studio';if(!S.body)hero.setAttribute(S.brief?'data-blinking-dots':'data-rising-lines','');} renderedPage=pageKey();restoreDraft(); if (keepScroll) m.scrollTop = y; return; }
   const tdef = GUIDE[S.st].find(g => g[1]);
   if (tdef) S.seen[S.st + ':' + (S.tab[S.st] || tdef[1])] = true;
   const html = VIEWS[S.st](), cut = html.lastIndexOf('<div class="next">');
-  m.innerHTML = experiencePanel() + (cut > 0 ? html.slice(0, cut) + reviewBlock() + html.slice(cut) : html + reviewBlock());
+  m.innerHTML = experiencePanel() + editablePageToolbar() + (cut > 0 ? html.slice(0, cut) + reviewBlock() + html.slice(cut) : html + reviewBlock());
   renderedPage=pageKey();restoreDraft();
   if (keepScroll) m.scrollTop = y;
 }
@@ -1359,10 +1388,11 @@ function settings() {
 
 /* ---------------- 导出 ---------------- */
 function exportMd() {
+  const D=rawDemoData();
   const P = D.project, L = [];
   L.push(`# 《${P.title}》资料包`, '', `${name().name} · 演员AI工作台 演示导出 · ${new Date().toLocaleString('zh-CN')}`, '', '> 演示版：AI 结果为预置示例，项目与人物均为虚构。', '');
   if (has('take')) L.push('## 01 接戏评估卡', D.take.summary, '', ...D.take.fit.map(f => `- ${f.k}：${f.v}（${f.t}）`), '');
-  if (has('read')) L.push('## 02 角色分析卡', '### 人物关系', ...D.people.slice(1).map(p => `- ${p.name}：${p.edge}`), '### 成长线', ...D.growth.map(g => `- 第${g.sc}场 ${g.label}：${g.note}`), '### 第12场潜台词', ...D.subtext.map(s => `- ${s.who}：「${s.line}」→ ${s.sub}（推断）`), '### 重点场次', ...D.keyScenes.map(k => `- 第${k.sc}场 ${k.w}：${k.why}`), '### 人物小传（草稿）', ...(S.bioEdits.main ? S.bioEdits.main.split('\n') : D.bio), '### 角色分析卡', D.roleCard.oneLine, ...D.roleCard.basic.map(b => `- ${b[0]}：${b[1]}`), ...D.roleCard.timeline.map(x => `- ${x[0]}：${x[1]}`), ...D.roleCard.core.map(c => `- ${c[0]}：${c[1]}`), ...D.roleCard.surface.map(c => `- ${c[0]}：${c[1]}`), '');
+  if (has('read')) L.push('## 02 角色分析卡', '### 人物关系', ...D.people.slice(1).map(p => `- ${p.name}：${p.edge}`), '### 成长线', ...D.growth.map(g => `- 第${g.sc}场 ${g.label}：${g.note}`), '### 第12场潜台词', ...D.subtext.map(s => `- ${s.who}：「${s.line}」→ ${s.sub}（推断）`), '### 重点场次', ...D.keyScenes.map(k => `- 第${k.sc}场 ${k.w}：${k.why}`), '### 人物小传（草稿）', ...(S.bioEdits.main !== undefined ? S.bioEdits.main.split('\n') : D.bio), '### 角色分析卡', D.roleCard.oneLine, ...D.roleCard.basic.map(b => `- ${b[0]}：${b[1]}`), ...D.roleCard.timeline.map(x => `- ${x[0]}：${x[1]}`), ...D.roleCard.core.map(c => `- ${c[0]}：${c[1]}`), ...D.roleCard.surface.map(c => `- ${c[0]}：${c[1]}`), '');
   if (has('line')) L.push('## 02 台词建议稿', `- 原句（保留）：${D.lineOpt.original}`, `- 建议：${S.adopt !== null ? D.lineOpt.options[S.adopt].t : '未采用'}（待导演确认）`, '');
   if (has('role')) {const h=D.handlings.find(h=>h.id===S.handling);L.push(`## 03 第12场表演方案 · ${handlingName()}`,`- 选定演法节奏：${h.rhythm}`,`- 视线：${h.eye}`,`- 身体：${h.body}`,`- 处理风险：${h.risk}`, ...D.beats.map((b, i) => `- 节拍${i + 1} ${b.t}｜目标：${b.goal}｜阻碍：${b.obs}｜动作：${b.act}`), '');}
   if (has('dance')) L.push('## 03 第21场舞蹈拆解', `主题：${D.dance.theme}`, `音乐：${D.dance.music}`, ...D.dance.segs.map(s => `- ${s.n}（${s.beats}×8拍）情绪：${s.emo}；动作：${s.move}`), ...D.dance.log.map(l => `- ${l.d}：${l.t}｜观察问题：${l.q}`), '');
@@ -1376,6 +1406,7 @@ function exportMd() {
   const rv = Object.entries(S.reviews).filter(([, l]) => l.length);
   if (rv.length) { L.push('## 人工复核 · 最终决定'); rv.forEach(([k, l]) => { L.push(`### ${PAGE_NAME(k)}`); l.forEach(r => L.push(`- ${r.at} ${r.who}（${(STATUS.find(x => x[0] === r.status) || STATUS[3])[1]}）：${r.text.replace(/\n/g, ' ')}`)); }); L.push(''); }
   L.push('## 项目主创资料',...Object.entries(S.projectInfo).map(([k,v])=>k+'：'+v),'## 回复修改草稿',...Object.entries(S.replyEdits).map(([k,v])=>k+'：'+v),'## 自行录入作品',...S.userWorks.map(w=>w.year+' 《'+w.title+'》 '+w.role+' '+w.genre));
+  if(S.radarPlan)L.push('',ActorRadar.markdown(S.radarPlan));
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([L.join('\n')], { type: 'text/markdown' }));
   a.download = `《${P.title}》资料包.md`; a.click();
@@ -1461,6 +1492,24 @@ document.addEventListener('click', handleAction(async e => {
   if (!el) return;
   const a = el.dataset.act, v = el.dataset.v, i = +el.dataset.i;
   switch (a) {
+    case 'meal-edit': mealEditor(i);break;
+    case 'meal-delete': if(S.meals[i]&&confirm('删除这条饮食记录？')){S.meals.splice(i,1);await save();render(true);}break;
+    case 'meal-save': {try{const m={date:$('#mealDate').value,t:$('#mealTime').value,n:$('#mealName').value.trim(),k:Number($('#mealKcal').value)};if(!m.date||!m.t||!m.n||!Number.isFinite(m.k)||m.k<0||m.k>10000)throw Error('请填写日期、时间、内容和0–10000的热量值');const d=new Date(m.date+'T00:00:00Z');if(!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==m.date)throw Error('日期无效');const old=S.meals[i];S.meals[i]=m;try{await save();}catch(e){S.meals[i]=old;throw e;}$('#dlg').close();render(true);toast('饮食记录已更正，今日摄入和近7天图已更新');}catch(e){$('#mealError').textContent=e.message;}break;}
+    case 'event-edit': eventEditor(v);break;
+    case 'event-edit-save': {const old=S.userEvents,hidden={...S.hiddenEv};try{const previous=schedEvents().find(e=>e.id===v),a=Number($('#editEvA').value),b=Number($('#editEvB').value),n=$('#editEvName').value.trim();if(!n||![a,b].every(x=>Number.isInteger(x)&&x>=1&&x<=D.sched.days)||a>b)throw Error('请填写内容，并确保起止日在本月且顺序正确');const next={id:previous?.mine?v:'u'+Date.now(),n,a,b,t:$('#editEvType').value,time:$('#editEvTime').value.trim(),note:$('#editEvNote').value.trim()};ActorStore.timeRange(next);S.userEvents=previous?.mine?old.map(x=>x.id===v?next:x):[...old,next];if(!previous?.mine)S.hiddenEv[v]=true;await save();$('#dlg').close();render(true);toast('日程已更新，冲突与统计已重算');}catch(e){S.userEvents=old;S.hiddenEv=hidden;$('#eventEditError').textContent=e.message;}break;}
+    case 'work-new': workEditor();break;
+    case 'work-edit': workEditor(i);break;
+    case 'work-delete': if(S.userWorks[i]&&confirm('删除这条自行录入作品？导入文件原件会保留。')){const old=S.userWorks;S.userWorks=old.filter((_,n)=>n!==i);try{await save();render(true);}catch(e){S.userWorks=old;throw e;}}break;
+    case 'work-save': {const w=Object.fromEntries(['title','year','role','genre','note'].map(k=>[k,$('#work-'+k).value.trim()]));if(!w.title){$('#workEditError').textContent='请填写作品名';break;}const old=S.userWorks;S.userWorks=i<0?[...old,w]:old.map((x,n)=>n===i?w:x);try{await save();$('#dlg').close();render(true);toast('作品已保存，时间轴、轮播和题材统计已更新');}catch(e){S.userWorks=old;$('#workEditError').textContent=e.message;}break;}
+    case 'demo-page-edit': await editCurrentDemoPage();break;
+    case 'demo-page-export': exportCurrentDemoPage();break;
+    case 'effect-map': effectMap();break;
+    case 'effect-motion': ActorSceneArt.toggle();effectMap();break;
+    case 'effect-open': {$('#dlg').close();if(v==='chrome'){settings();break;}if(i===3){S.tab[3]='look';lookPreviewMode=v==='compare'?'compare':'reveal';}if(i===4)S.tab[4]='tasks';await go(i);render();const target=v==='carousel'?'[data-gradient-carousel]':i===3?'.look-reveal-preview':i===4?'#minutes':null;if(target)setTimeout(()=>$(target)?.scrollIntoView({block:'center',behavior:'smooth'}),80);if(v==='orbit'){const frame=$('#rourouFrame');const show=async()=>{const waitFor=async selector=>{for(let n=0;n<60;n++){if(!frame.isConnected)return null;const el=frame.contentDocument?.querySelector(selector);if(el)return el;await new Promise(resolve=>setTimeout(resolve,100));}return null;};const tab=await waitFor('[data-a=tab][data-v=album]');tab?.click();const button=await waitFor('[data-a=album-view][data-v=orbit]');button?.click();};show().catch(showError);}break;}
+    case 'radar-edit': radarEditor();break;
+    case 'radar-blank': if(confirm('清空当前表单评分，重新填写？尚未点击保存的内容会被替换，已保存目标保持不变。'))radarEditor(ActorRadar.blank());break;
+    case 'radar-save': {try{const next=ActorRadar.validate(ActorRadar.read($('#radarGoalsForm')),{complete:true});next.updatedAt=new Date().toISOString();const old=S.radarPlan;S.radarPlan=next;try{await save();}catch(e){S.radarPlan=old;throw e;}$('#dlg').close();render(true);toast('目标已保存，雷达已按本人/团队输入更新');}catch(e){$('#radarFormError').textContent=e.message;}break;}
+    case 'radar-export': if(S.radarPlan)download('我的发展目标.md',ActorRadar.markdown(S.radarPlan),'text/markdown');break;
     case 'capabilities': capabilityDialog();break;
     case 'cap-open': {const cap=DemoExperience.capabilities[i];if(cap?.page!==null&&cap){$('#dlg').close();if(cap.name==='舞蹈训练')S.tab[2]='dance';await go(cap.page);render();}break;}
     case 'lab-open': await openLab(v);break;
@@ -1499,7 +1548,7 @@ document.addEventListener('click', handleAction(async e => {
     case 'exp-next': if(experienceStatus()[S.experience.step].done){if(S.experience.step===7)experienceResults();else await positionExperience(S.experience.step+1);}break;
     case 'exp-pause': S.experience.active=false;await save();render(true);toast('已收起引导，操作进度保留；顶部可继续体验');break;
     case 'exp-results': experienceResults();break;
-    case 'exp-export': await flushPet();await save();download('逆光来信-我的体验成果单.md',DemoExperience.report(S,D),'text/markdown');toast('已导出你实际保存的选择与批注');break;
+    case 'exp-export': await flushPet();await save();download('逆光来信-我的体验成果单.md',DemoExperience.report(S,rawDemoData()),'text/markdown');toast('已导出你实际保存的选择与批注');break;
     case 'exp-example': {
       const step=S.experience.step;await positionExperience(step);
       const field=$('#rvText');if(field&&!field.value.trim()){field.value=step===1?'体验示例，可改：第12场许知夏还不知道寄信人是谁。我倾向把这句理解为守住自己的表达节奏，现场再与导演确认。':'体验示例，可改：先核对用途、期限和声音使用范围；尚未确认前不授权，交团队与律师继续审核。';captureDraft();await save();}
@@ -1513,11 +1562,11 @@ document.addEventListener('click', handleAction(async e => {
     case 'save': await addFolder(el.dataset.k); break;
     case 'toast': toast(el.dataset.msg); break;
     case 'saveproject': for(const k of Object.keys(S.projectInfo))S.projectInfo[k]=$('#project-'+k).value.trim();await save();toast('项目资料已保存');break;
-    case 'editbio': editor('bio','main',S.bioEdits.main||D.bio.join('\n\n'));break;
+    case 'editbio': editor('bio','main',S.bioEdits.main??D.bio.join('\n\n'));break;
     case 'editreply': {const m=D.fans.inbox.find(m=>m.u===v);editor('reply',v,S.replyEdits[v]??m?.r??'');break;}
     case 'saveedit': if(el.dataset.kind==='bio')S.bioEdits[v]=$('#editText').value;else S.replyEdits[v]=$('#editText').value;await save();$('#dlg').close();render(true);toast('修改已保存');break;
     case 'exportedit': download('编辑草稿.txt',$('#editText').value,'text/plain');break;
-    case 'teamlist': {const team=D.trip.team||[];const lines=['# 团队携带清单（待人工发送）',...team.flatMap(r=>['## '+r.role,...[...(r.items||[]),...(r.ai||[]),...(S.packAdd[r.role]||[])].map(item=>'- ['+(S.pack[r.role+'|'+item]?'x':' ')+'] '+item)])];download('团队携带清单.md',lines.join('\n'),'text/markdown');toast('已下载清单，可自行审核后发送');break;}
+    case 'teamlist': {const team=tripPacking(rawDemoData().trip);const lines=['# 团队携带清单（待人工发送）',...team.flatMap(r=>['## '+r.role,...[...(r.items||[]),...(r.ai||[]),...(r.add||[])].map(item=>'- ['+(S.pack[r.role+'|'+item]?'x':' ')+'] '+item)])];download('团队携带清单.md',lines.join('\n'),'text/markdown');toast('已下载清单，可自行审核后发送');break;}
     case 'directorquestions': download('给导演的问题清单.md','# 围读沟通问题\n\n'+D.take.questions.map(x=>'- '+x).join('\n'),'text/markdown');break;
     case 'theme': await flushPet();S.theme = v; localStorage.setItem('xilixiwai.theme.v2',v); await save(); render(true); if ($('#dlg').open) settings(); break;
     case 'deployment-info': deploymentDialog(); break;
@@ -1565,7 +1614,7 @@ document.addEventListener('click', handleAction(async e => {
     case 'drill': S.drillShow = i < 0 ? {} : { ...(S.drillShow || {}), [i]: !(S.drillShow || {})[i] }; await save(); render(true); break;
     case 'wx': loadWX(true); render(true); toast('正在获取实时天气…'); break;
     case 'pack': S.pack[v] = el.checked; if (!el.checked) delete S.pack[v]; await save(); render(true); break;
-    case 'food': { const t = ($('#foodIn').value || '').trim(); if (!t) { toast('先输入吃了什么'); break; } const g = guessKcal(t); S.meals.push({ t: new Date().toTimeString().slice(0, 5), n: t, k: g.k }); S.lastFood = `AI 估算：${t} ≈ ${g.k} 千卡（${g.how}）`; await save(); render(true); break; }
+    case 'food': { const t = ($('#foodIn').value || '').trim(); if (!t) { toast('先输入吃了什么'); break; } const g = guessKcal(t); S.meals.push({ date:new Date().toLocaleDateString('en-CA'),t: new Date().toTimeString().slice(0, 5), n: t, k: g.k }); S.lastFood = `本地参考估算：${t} ≈ ${g.k} 千卡（${g.how}）`; await save(); render(true); break; }
     case 'ck': S.check[v] = i; await save(); render(true); break;
     case 'cycle': if (v === 'off' && !confirm('关闭并清除经期记录？')) break; S.cycleOn = v === 'on'; if (!S.cycleOn) { S.sym = {}; S.cycle = { lastStart: -24, len: 28, dur: 5 }; } await save(); render(true); toast(S.cycleOn ? '已开启（保存在当前浏览器）' : '已关闭并清除'); break;
     case 'sym': { const k = new Date().toDateString(), l = S.sym[k] = S.sym[k] || []; const j = l.indexOf(v); j < 0 ? l.push(v) : l.splice(j, 1); await save(); render(true); break; }
@@ -1586,7 +1635,7 @@ document.addEventListener('click', handleAction(async e => {
     case 'evclear': if (confirm('清空全部示例日程？你添加的日程会保留。')) { D.sched.events.forEach((_, k) => S.hiddenEv['s' + k] = true); await save(); render(true); toast('已清空示例，可以从零开始录入'); } break;
     case 'evrestore': S.hiddenEv = {}; await save(); render(true); toast('已恢复示例日程'); break;
     case 'day': S.selDay = i; await save(); render(true); break;
-    case 'inv': S.inv[v] = i === 1 ? 'yes' : i === 2 ? 'no' : undefined; if (!S.inv[v]) delete S.inv[v]; await save(); render(true); toast(i === 1 ? '已接受，日程已更新' : i === 2 ? '已婉拒（演示，不会发送任何消息）' : '已撤回'); break;
+    case 'inv': S.inv[v] = i === 1 ? 'yes' : i === 2 ? 'no' : undefined; if (!S.inv[v]) delete S.inv[v]; await save(); render(true); toast(i === 1 ? (D.sched.invites.find(x=>x.id===v)?.day?'已接受，已加入本月日程':'已接受下月邀约；未计入本月日程') : i === 2 ? '已婉拒（演示，不会发送任何消息）' : '已撤回'); break;
     case 'rvst': draftStatus = v; document.querySelectorAll('[data-act="rvst"]').forEach(b => b.classList.toggle('on', b.dataset.v === v)); break;
     case 'rvsave': await saveReview(); break;
     case 'rvdel': if (confirm('删除这条决定？')) { S.reviews[pageKey()].splice(i, 1); await save(); render(true); } break;
@@ -1606,6 +1655,7 @@ document.addEventListener('change', handle(async e => {
   if (e.target.id === 'bkFile' && e.target.files[0]) await importBackup(e.target.files[0]);
 }));
 document.addEventListener('input', handle(async e => {
+  if(e.target.closest('#radarGoalsForm')){try{const p=ActorRadar.read($('#radarGoalsForm'));$('#radarLivePreview').innerHTML=ActorRadar.svg(p)+'<p class="small muted">即时预览 · 保存后才写入。未知维度不补零。</p>';$('#radarFormError').textContent='';}catch(err){$('#radarFormError').textContent=err.message;}return;}
   captureDraft();clearTimeout(draftTimer);draftTimer=setTimeout(()=>save().catch(showError),300);
   if (e.target.dataset && e.target.dataset.wt) { S.wts = { ...(S.wts || D.scoreRule.weights), [e.target.dataset.wt]: +e.target.value };S.experience.checks.weights=true; await save(); render(true); return; }
   if (e.target.dataset && e.target.dataset.self !== undefined) { S.selfAns = S.selfAns || {}; S.selfAns[e.target.dataset.self] = e.target.value; await save();updateExperiencePanel(); }
@@ -1616,17 +1666,19 @@ document.addEventListener('input', handle(async e => {
   }
 }));
 document.addEventListener('keydown', handle(async e => {
-  if (e.key === 'Enter' && e.target.id === 'kwIn' && e.target.value.trim()) { (S.bKw = S.bKw || []).push(e.target.value.trim()); await save(); render(true); toast('已订阅关键词'); return; }
+  if (e.key === 'Enter' && e.target.id === 'kwIn' && e.target.value.trim()) { (S.bKw = S.bKw || []).push(e.target.value.trim()); await save(); render(true); toast('已记录本地关键词；未自动联网采集'); return; }
   if (e.key === 'Enter' && e.target.id === 'foodIn') { document.querySelector('[data-act="food"]').click(); return; }
   if (e.key === 'Enter' && e.target.classList?.contains('add-item') && e.target.value.trim()) {
     const r = e.target.dataset.role; (S.packAdd[r] = S.packAdd[r] || []).push(e.target.value.trim()); await save(); render(true); toast('已添加到「' + r + '」'); return;
   }
-  if ((e.target.closest && e.target.closest('input,textarea,select')) || $('#dlg').open || e.metaKey || e.ctrlKey || e.altKey) return;
+  if ((e.target.closest && e.target.closest('input,textarea,select')) || document.querySelector('dialog[open]') || e.metaKey || e.ctrlKey || e.altKey) return;
   const SEQ = [-1, 0, 1, 2, 3, 4, 5, 6, 7, -8, -6, -5, -7, -4, -9, -2, -3, -10, -11], cur = onPage() ? PAGES[onPage()] : S.st, k = SEQ.indexOf(cur);
   if (e.key === 'ArrowRight' && k < SEQ.length - 1) await go(SEQ[k + 1]);
   if (e.key === 'ArrowLeft' && k > 0) await go(SEQ[k - 1]);
 }));
 document.addEventListener('actor:work-open',e=>{if(!e.target.closest('[data-gradient-carousel]'))return;const index=e.detail?.index;if(!Number.isSafeInteger(index))return;const w=portfolioItems()[index];if(!w)return;const dlg=$('#dlg');dlg.innerHTML=`<div class="dlg"><h2>《${esc(w.title)}》<button data-act="close" aria-label="关闭">×</button></h2><span class="tag mt8">${esc(w.origin)}</span><dl class="kv mt"><dt>年份</dt><dd>${esc(w.year||'待填写')}</dd><dt>题材</dt><dd>${esc(w.genre||'待填写')}</dd><dt>角色</dt><dd>${esc(w.role||'待填写')}</dd><dt>备注</dt><dd>${esc(w.note||'暂无备注')}</dd></dl></div>`;if(!dlg.open)dlg.showModal();});
+$('#dlg').addEventListener('close',()=>$('#dlg').classList.remove('radar-dialog'));
+$('#dlg').addEventListener('submit',e=>{if(e.target.id==='radarGoalsForm'){e.preventDefault();$('#dlg [data-act=radar-save]').click();}});
 $('#dlg').addEventListener('click', e => { if (e.target === $('#dlg')) $('#dlg').close(); });
 
 const fromHash = async () => { const h = location.hash.slice(1), hm = h.match(/st=(\d)/); if (hm) { Object.keys(PAGES).forEach(k => S[k] = false); S.st = Math.min(7, +hm[1]); } else if (PAGES[h]) Object.keys(PAGES).forEach(k => S[k] = k === h); else return; await save(); history.replaceState(null, '', location.pathname); };
