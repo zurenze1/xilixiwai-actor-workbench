@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "reference": "body photo retained unchanged",
+  "placements": {
+    "take": "project",
+    "read": "script",
+    "role": "performance",
+    "prev": "previs",
+    "shoot": "studio",
+    "business": "business",
+    "social": "social",
+    "dance": "dance",
+    "review": "review",
+    "fans": "fans",
+    "deal": "rights",
+    "plan": "plan",
+    "charity": "charity",
+    "brief": "brief"
+  },
+  "unmatched": [
+    "crisis",
+    "settings",
+    "guide",
+    "lab"
+  ],
+  "rule": "No unrelated image is substituted; unsupported topics use existing text/motion layout."
+}

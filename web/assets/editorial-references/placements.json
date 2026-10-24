@@ -1,5 +1,5 @@
 {
-  "note": "同一业务的演示与实战共享一张；不同业务不复用。本轮仅本机验收，未公开上传新增素材。",
+  "note": "旧官网照片和原件保留作历史参考；2026-10-24新反馈要求场景自然并对应业务，当前页头按scenes-v2映射。仅出行继续采用相关的Contiki旅途照片。",
   "placements": {
     "trip": "contiki-014",
     "shoot": "contiki-036",
@@ -17,5 +17,7 @@
     "prev": "rachel-gilbert-027",
     "dance": "rachel-gilbert-061",
     "business": "rachel-gilbert-089"
-  }
+  },
+  "status": "historical-placement-superseded",
+  "currentPlacements": "../scenes-v2/placements.json"
 }

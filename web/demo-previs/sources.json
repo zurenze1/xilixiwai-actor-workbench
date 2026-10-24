@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-10-24T07:12:00.416Z",
+  "generatedAt": "2026-10-24T08:00:58.423Z",
   "purpose": "完整复用实战预演界面、校验器、播放器与导出；差异仅独立本机演示桥、首次虚构资料、提示和父页面等待接口。",
   "sources": [
     {
       "source": "practical/web/previs/index.html",
       "output": "web/demo-previs/index.html",
       "sourceSha256": "6167b04f38979538401ac3286bcc72b5e5e98fd34645591dde449dee03e8c510",
-      "outputSha256": "a55f788bc5b5ba31ddad4ee61f843b14719cb8e4b52edaf55e918e4c4f58d382"
+      "outputSha256": "0f314b633cc095566e4904be5f4b76b37ff7d480c9e4413999a9d9bf86c0b92f"
     },
     {
       "source": "practical/web/previs/style.css",

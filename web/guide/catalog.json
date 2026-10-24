@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "ce4fb3f59ad4902d3a15079fb5ab2ec8474baeb29a8b226d55f6ec496c45688d",
+  "sourceHash": "cc11ba6bf55055648908ef4bbc58d2e35958e5d4b38f68317315d701fd722bfe",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -36,7 +36,7 @@
     },
     {
       "path": "practical/web/index.html",
-      "sha256": "7d11fcce5576150f25cde2fc07d57e643436ab84bdfd45dce1f7d73e7635a877"
+      "sha256": "6aa877501757af5d9899070c22e7d929764aaecf348ddb2d7fc966595a15bad8"
     },
     {
       "path": "practical/web/pet/app.js",
@@ -180,7 +180,7 @@
     },
     {
       "path": "web/demo-operations/business/index.html",
-      "sha256": "79fcd69a347161a91efb8db5867f192aa99d08ac8d3b7e05cfda6804d487e479"
+      "sha256": "e114b4e262e6f12158f2c02f23dda38ad5ad31f2e39190f196f9b79f12e4cd58"
     },
     {
       "path": "web/demo-operations/business/model.js",
@@ -216,7 +216,7 @@
     },
     {
       "path": "web/demo-operations/social/index.html",
-      "sha256": "5921db1fbf19d18b9f4543893b2fcdb461b2ebd63178c81d49c7a6c199658a69"
+      "sha256": "a9d8f398094f8809c95d29558066154c414bc48db637a9a853a4750a92693f23"
     },
     {
       "path": "web/demo-operations/social/model.js",
@@ -244,7 +244,7 @@
     },
     {
       "path": "web/demo-previs/index.html",
-      "sha256": "a55f788bc5b5ba31ddad4ee61f843b14719cb8e4b52edaf55e918e4c4f58d382"
+      "sha256": "0f314b633cc095566e4904be5f4b76b37ff7d480c9e4413999a9d9bf86c0b92f"
     },
     {
       "path": "web/demo-previs/player.js",
@@ -264,7 +264,7 @@
     },
     {
       "path": "web/demo-settings/index.html",
-      "sha256": "a9893aa98010a91a42f5966e32afea5f782c29bf91e4460c9837f9bf8607a2de"
+      "sha256": "2f7ca1f881ad588eba2d5632e7480d6a6a3f9dc7af616519d53565bbce207911"
     },
     {
       "path": "web/demo-settings/schema.js",
@@ -280,7 +280,7 @@
     },
     {
       "path": "web/demo-tools/index.html",
-      "sha256": "d3a17fa9c67db2f18d8148bde2ee799aa75aa282cc92e3bfd10a0f2c4f2f1037"
+      "sha256": "b4b90cad635987aba9285df23b219031d71d380fff595790efc88c1195b5e454"
     },
     {
       "path": "web/demo-tools/pdf/pdf.min.js",
@@ -300,7 +300,7 @@
     },
     {
       "path": "web/demo-workspace/index.html",
-      "sha256": "8c74b7c06a75e8ef7b708869dbb2a2ee7bdd23726e8fb2147b3020a361ceccca"
+      "sha256": "6576dab67dbb93677758a0b2c296c4190cdb86cfa42b46726d42e79904112b36"
     },
     {
       "path": "web/demo-workspace/style.css",
@@ -348,7 +348,7 @@
     },
     {
       "path": "web/index.html",
-      "sha256": "2b188ef0b15f56d69546c79bc67278aa87083ee2b0401e0fc56cf3d8d2ad132c"
+      "sha256": "d089cee5ff082be554d1b824e747eabec67ba4b9293f7f0dff67205ee66556df"
     },
     {
       "path": "web/launch.html",
@@ -416,11 +416,11 @@
     },
     {
       "path": "web/scene-art.css",
-      "sha256": "04c5abeb24544a2c326ec2ee120045868ec3523eb7c0ae48fa316f173a669b24"
+      "sha256": "47dfd0e9c1403da79aa0421ac518dcb29c8d329e386050a8c6ba462d3058e001"
     },
     {
       "path": "web/scene-art.js",
-      "sha256": "05a644b1d0b038612a98991ca15e503ca333a6da2abcd07700dd2c7c6a61cbb2"
+      "sha256": "72cb1397d4f94e91cf86aad104f36f1500ece081039afa0ecf9b12d0fece7d13"
     },
     {
       "path": "web/showcase-widgets.css",
@@ -432,7 +432,7 @@
     },
     {
       "path": "web/style.css",
-      "sha256": "8b5a25a00e3f54c01e7b1377a6dd274934a73832f8b91cd8f17d22ed68de7408"
+      "sha256": "17bda1f673d92991f0a6b0fe6d5c0ccf77bc3e041ce5ca7504af7dfdea0f52d1"
     },
     {
       "path": "web/task-extract.js",
@@ -2981,6 +2981,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "764713a7af98cf3fb77c5d4f20aa4aea4a4f72be1fa4969894777a66fe83a562",
-  "generatedAt": "2026-10-24T07:22:51.107Z"
+  "contentHash": "c613493eaad3fd04dcf9130117733ce4feb85fecf400487a3f9472399905267a",
+  "generatedAt": "2026-10-24T08:00:58.547Z"
 }

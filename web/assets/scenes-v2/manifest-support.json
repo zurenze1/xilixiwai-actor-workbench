@@ -1,0 +1,142 @@
+{
+  "version": 2,
+  "status": "all-six-generated-and-visually-reviewed",
+  "generator": "Codex built-in imagegen",
+  "reference": "web/assets/illustrations/blue-gold-underwater-editorial-v1.webp",
+  "referenceRole": "color, natural gold sidelight, cinematic texture only; no identity reference",
+  "provenance": "AI-generated fictional adults and fictional business scenes, not any real actor or company",
+  "conversion": "same-size WebP quality90 method6; no crop, retouch, overlays or compositing",
+  "assets": [
+    {
+      "key": "project",
+      "prompt": "Use case: photorealistic-natural. Create ONE standalone approximately 16:9 wide cinematic editorial photograph for the PROJECT / accepting-an-acting-role page of an actor workbench. The supplied underwater photograph is ONLY a COLOR, lighting and film-texture reference: cool cyan-blue surroundings, elegant warm gold sidelight, natural skin, a soft blurred foreground. This scene is a REAL DRY STUDIO MEETING, absolutely not underwater, no fish. Entirely fictional adult East Asian woman actress around 30 and one adult woman assistant, neither resembles a celebrity nor the reference model. Observational, unposed candid side-angle view: they are seated on the RIGHT HALF of a modest attractive blue-painted rehearsal studio, leaning naturally toward an open paper screenplay and a physical appointment diary on the table; the actress is gently turning one screenplay page while the assistant points to a date block in the planner. Realistic relaxed working posture, focused collaboration, not a fashion model posing. Hands plausible and activities clear. Simple elegant teal/navy everyday blouse, natural fabric, no brands. Camera at seated eye level, cinematic depth, foreground on extreme bottom edge softly out of focus. Warm late-afternoon sunlight touches their faces and paper edges from upper right, cyan studio shadows, subtle film grain and true skin texture. Main people, faces, hands and business props safely within right 60% of image. The entire LEFT 35% is naturally quiet dark navy studio wall and soft shadow with minimal detail, genuinely part of the photographed room, sufficient for later HTML text; NO fake gradient panel, no cards, no collage, no split-screen. Photographic magazine sophistication, tasteful, intimate real work. Papers may show faint blurred ruling and unreadable marks ONLY. NO readable text, letters, numerals, captions, logos, watermarks, interface, screens with legible text, luxury product advertisement, shopping props, white background, standing frontal portrait, stiff symmetrical pose, exaggerated acting, illustration or 3D render. Do not replicate reference identity or composition. Output a single beautiful landscape photograph, not a contact sheet.",
+      "source": "Codex built-in imagegen / exec-992eb2bb-95fd-42a7-8f04-888ee06b3477.png",
+      "width": 1672,
+      "height": 941,
+      "original": "qa/editorial-v2/originals/project-v2.png",
+      "asset": "web/assets/scenes-v2/project-v2.webp",
+      "bytes": 122734,
+      "sha256": "462aa0384361b5ebc17e0b054eb7311c88c18a4e33ff33bff9e7cd84ba4e678a",
+      "visualReview": {
+        "reviewed": true,
+        "observed": "右侧两位成年人自然翻阅剧本并指向档期本；左侧暗蓝墙面留白。",
+        "constraints": "虚构成年人物；无可辨商标水印；纸页仅生成的模糊排版/笔迹；非真实资料、授权合同或信息来源",
+        "leftTextSpace": "左侧低细节蓝色/阴影约35%，保留画面自然景深",
+        "userAestheticApproval": "pending"
+      },
+      "originalSha256": "81c16ef6cf45e9c3607836c3190d4312a1736dd279fa3653f025460082608811",
+      "originalBytes": 1901937
+    },
+    {
+      "key": "fans",
+      "prompt": "Use case: photorealistic-natural. Make ONE 16:9 wide cinematic editorial photograph for FAN COMMUNICATION in an actor studio. Supplied underwater photo is style-only reference for deep cyan-blue color, warm golden sidelight, subtly grainy photographic richness and soft foreground; NOT underwater, NO fish, do not reproduce reference identity. NEW fictional adult East Asian female studio coordinator about 35 with tied-back dark hair, relaxed slate-blue shirt, seated naturally on RIGHT HALF at a working desk in a quiet intimate studio. Side/back three-quarter viewpoint, she is actually sorting a few open handwritten fan letters with one hand while using a laptop trackpad with the other to prepare thoughtful replies. A second adult teammate in the far right softly out of focus reads one letter; this is calm working communication, no staged smiling toward camera, no packaging model pose. Desk has a SMALL plausible stack of envelopes and a pencil, not a huge mailbox spectacle. Laptop viewed obliquely, showing indistinct neutral lines of a draft document ONLY, no readable text or brands, not an app screenshot. Two hands anatomically natural, warm daylight catching fingers and paper edges. Real skin, dark teal interior, beautifully soft gold sunlight through a side window, shallow depth of field, foreground desk edge and one envelope blurred at extreme bottom, observational movie still with magazine quality. Main working person and all significant props in right 60%; left 35% naturally quiet dark navy wall and empty soft shadow, no pasted gradient/card/panel. Different composition from a meeting: one principal subject in profile with computer, letters and modest room depth. No legible text, letters, numbers, captions, logos, watermarks, white background, collage, cartoon, 3D-render aesthetic, shopping/luxury-product advertisement, standing frontal fashion model, or celebrity likeness. No readouts claiming actual fan sentiment. Single standalone landscape photograph.",
+      "source": "Codex built-in imagegen / exec-57daf884-80c7-44bb-98eb-d58550c4a8c8.png",
+      "width": 1672,
+      "height": 941,
+      "original": "qa/editorial-v2/originals/fans-v2.png",
+      "asset": "web/assets/scenes-v2/fans-v2.webp",
+      "bytes": 153798,
+      "sha256": "f404eebf269c3cd4827de8bb0bb434e117b64d2f0ca318046c200cdc93080197",
+      "visualReview": {
+        "reviewed": true,
+        "observed": "工作室成年人在笔记本电脑前持来信并准备回复；右后方同事阅读另一封信。",
+        "constraints": "虚构成年人物；无可辨商标水印；纸页仅生成的模糊排版/笔迹；非真实资料、授权合同或信息来源",
+        "leftTextSpace": "左侧低细节蓝色/阴影约35%，保留画面自然景深",
+        "userAestheticApproval": "pending"
+      },
+      "originalSha256": "b247377f17b4f8f5ced84e37f0baad86f09d43c922fa64e4d4ad0ac2a1a9022a",
+      "originalBytes": 1993381
+    },
+    {
+      "key": "rights",
+      "prompt": "Use case: photorealistic-natural. Produce ONE approximately 16:9 wide cinematic natural editorial photograph representing RIGHTS / careful licensing review for an actor studio, a fictional scene not actual legal advice. Use supplied photograph ONLY for the premium cyan-blue environment, warm gold sidelight, real skin texture and quiet cinematic grain. This is a DRY contemporary small studio meeting, NOT underwater, no fish, no imitation of reference person. Fictional adult East Asian woman actor around 32 with long dark hair loosely tied, seated in right half in a simple elegant soft blue blouse, naturally leaning toward a licensing document spread on a table beside a fictional adult male producer around 40 in a dark casual shirt. They are comparing the paper contract to two small printed portrait contact photos and a plain set of over-ear studio headphones resting on the tabletop, indicating image/voice usage review. Actress holds a pencil just above one clause while producer casually points to a portrait sample, calm thoughtful collaboration, genuine working posture and plausible hand anatomy, no formal signing handshake, no courtroom, no gavels, no lawyer costume. Contact portraits are the same fictional woman in neutral headshot poses, tiny and slightly blurred, not large glamour billboards. All writing on papers is out of focus and unreadable, no readable legal text or brands. People and contract props grouped right 60%; left 35% naturally dark navy negative space from a softly lit studio wall with minimal details and no graphic overlay. Warm natural golden window light edge-lights hair and paper, teal shadows, shallow focus, subtle out-of-focus foreground from a table edge. Seated side-angle candid still, high-end movie photography, natural skin and fabric, no person faces camera. NO text, lettering, numerals, watermarks, logo, UI, split screen, white background, cards, collage, product catalogue styling, stiff standing model, AI legal conclusion or celebrity resemblance. One complete landscape photograph.",
+      "source": "Codex built-in imagegen / exec-c5501f10-fdb8-4043-be9b-56a3d6b35595.png",
+      "width": 1672,
+      "height": 941,
+      "original": "qa/editorial-v2/originals/rights-v2.png",
+      "asset": "web/assets/scenes-v2/rights-v2.webp",
+      "bytes": 126746,
+      "sha256": "a88dcfcc3494c11f52fee7d97868489a622131d19b43b96fbf771645262a6a74",
+      "visualReview": {
+        "reviewed": true,
+        "observed": "成年人核对合同、肖像样片，前景耳机对应声音授权；不代表真实法务判断。",
+        "constraints": "虚构成年人物；无可辨商标水印；纸页仅生成的模糊排版/笔迹；非真实资料、授权合同或信息来源",
+        "leftTextSpace": "左侧低细节蓝色/阴影约35%，保留画面自然景深",
+        "userAestheticApproval": "pending"
+      },
+      "originalSha256": "50060f70482156d68e4af1dc3217abfc5ba01e9931f8595e4408c17be7ccf416",
+      "originalBytes": 1887546
+    },
+    {
+      "key": "plan",
+      "prompt": "Use case: photorealistic-natural. One approximately 16:9 wide cinematic candid photograph for PERSONAL CAREER PLANNING in an actor workbench. The provided underwater photograph is ONLY a reference for sophisticated blue/cyan and warm golden side light, natural photographic grain and skin, NEVER its underwater setting or identity. Invent a fictional adult East Asian woman actress around 33, shoulder-length dark hair tucked behind one ear, wearing a relaxed ivory cotton blouse and navy trousers, seated SIDEWAYS at a quiet creative studio desk in the RIGHT HALF. Genuine work moment: she is looking back through a small open album of her own past theatre and screen production stills, with one hand gently holding an album page and the other writing a future goal in a plain notebook. A modest PAPER YEAR PLANNER with a grid of twelve small months lies flat nearby, no screen, no dashboards, no readable lettering or dates. The little album photos show indistinct tiny stage/scenery images, not recognizable famous films or celebrities. Her posture relaxed and reflective, eyes on the notebook and album, not posing at camera. Blue-painted studio walls and a soft thin curtain, bright but gentle golden window edge light from upper right, cool teal shadows, cinematic shallow depth, natural skin/fabric and small imperfections, tasteful editorial photography not an aspirational product ad. Concentrate woman, pen, album and calendar in the right 60%; entire left 35% quiet naturally dark navy studio shadow, low detail and coherent photographic room space without gradient panels. Soft blurred foreground table corner at bottom edge. Different camera position than a two-person meeting: medium-wide intimate profile, one person with visible albums and handwritten planning. NO legible text, letters, numerals, logos, watermarks, brands, UI, cards, split panels, collage, white background, shopping bags, stiff standing fashion model, frontal portrait, 3D illustration, or underwater elements. Single standalone landscape image.",
+      "source": "Codex built-in imagegen / exec-0b28753d-82c9-4fbe-91b4-4ef7721d93c4.png",
+      "width": 1672,
+      "height": 941,
+      "original": "qa/editorial-v2/originals/plan-v2.png",
+      "asset": "web/assets/scenes-v2/plan-v2.webp",
+      "bytes": 150446,
+      "sha256": "c5f2ca74fab37b7955650c9fab1f8af104a875f31a30989b1a014dccb0d69bae",
+      "visualReview": {
+        "reviewed": true,
+        "observed": "成年演员回顾舞台作品相册并在笔记本手写，桌面有年度格历。",
+        "constraints": "虚构成年人物；无可辨商标水印；纸页仅生成的模糊排版/笔迹；非真实资料、授权合同或信息来源",
+        "leftTextSpace": "左侧低细节蓝色/阴影约35%，保留画面自然景深",
+        "userAestheticApproval": "pending"
+      },
+      "originalSha256": "0e54afa8839f626396cdb54747a77fce76aa1aea0fdbb2acc51eeb04b0025fff",
+      "originalBytes": 1951050
+    },
+    {
+      "key": "charity",
+      "prompt": "Use case: photorealistic-natural. Create ONE approximately 16:9 wide cinematic documentary editorial photograph for ACTUAL CHARITABLE VOLUNTEERING / beach-cleanup page, not tourism, not a glamorous pose. The supplied underwater fashion photograph is ONLY a palette and lighting reference: rich blue/cyan surroundings, warm gold sun, subtle film grain and real skin. Entirely new DRY OUTDOOR scene with no fish and no reference model identity. Two fictional adult East Asian volunteers, principal woman about 30 wearing practical indigo cotton shirt with sleeves rolled up, jeans, reusable work gloves; second adult farther right softly in depth. Both on RIGHT HALF of a real rocky beach at early golden hour. The principal woman is CROUCHING close to the sand, intent on picking a discarded small plastic bottle or rope debris with her gloved hand and placing it into a reusable plain dark blue collection sack held open beside her. Second adult kneels farther back sorting a small amount of litter into a plain collection bag. Concrete useful action, realistic modest debris, hands naturally doing work, candid side angle, no one faces camera, no pristine beach fashion walk, no waving, no smiling volunteer publicity pose. Blue ocean and cool sea haze in background, warm gold sidelight touches hair and gloves, believable skin and cloth texture, cinematic shallow depth. LEFT 35% is naturally low-detail dark navy shade of an out-of-focus coastal rock close to camera, with blue coastal atmosphere beyond, framing the active right side, NOT a black overlay or pasted panel. Foreground sand and rock soft focus at bottom, photographic depth. Images must feel a genuine quiet contribution rather than luxury travel advertising. NO readable writing, letters, numerals, organization logos, brand labels, captions, watermarks, UI, collage, white background, evening gown, heels, stiff standing model, celebrity likeness, cartoon/3D look, endangered animals or underwater setting. One complete landscape photograph.",
+      "source": "Codex built-in imagegen / exec-c6bca7ea-1ed4-4a6d-9818-581d1783d019.png",
+      "width": 1672,
+      "height": 941,
+      "original": "qa/editorial-v2/originals/charity-v2.png",
+      "asset": "web/assets/scenes-v2/charity-v2.webp",
+      "bytes": 179330,
+      "sha256": "4ac5d8d0d88b332ebccc4ea397fb961499486a0e16979a7a17c1e643608c78af",
+      "visualReview": {
+        "reviewed": true,
+        "observed": "两位成年志愿者蹲在海滩，戴手套捡拾塑料瓶并装入回收袋；左侧自然岩石虚焦。",
+        "constraints": "虚构成年人物；无可辨商标水印；纸页仅生成的模糊排版/笔迹；非真实资料、授权合同或信息来源",
+        "leftTextSpace": "左侧低细节蓝色/阴影约35%，保留画面自然景深",
+        "userAestheticApproval": "pending"
+      },
+      "originalSha256": "9ba700c60fe204548e4e704781eee5c5a919b20829cf09f24cd7cd0cc7b5fcaf",
+      "originalBytes": 2121352
+    },
+    {
+      "key": "brief",
+      "prompt": "Use case: photorealistic-natural. ONE approximately 16:9 wide cinematic editorial photograph for a FILM INDUSTRY INFORMATION BRIEF / source-checking page. Supplied photograph is a STYLE-ONLY reference for blue/cyan atmosphere, warm natural gold side lighting, photographic film grain and real skin; no water, fish, or person identity replication. Invent a fictional adult East Asian creative professional woman about 36 with a short layered dark haircut, wearing a modest dark teal soft-knit top, naturally seated in the RIGHT HALF at a small blue-toned studio-cafe desk. Candid unposed side three-quarter view: she is actively cross-reading an open unbranded FILM INDUSTRY JOURNAL with small cinema production photographs against one printed industry clipping, writing a short source reference in a notebook with a pencil. One thin plain laptop sits CLOSED at the far side, no software UI. The journal looks like a real modest professional publication, no glossy shopping catalogue, no beauty products, jewelry displays or bags. Tiny printed columns and all notes are deliberately shallow-focus and unreadable, no readable headlines, numbers or brand names. Her attention is on the source page she points to with her left hand while right hand annotates, real working hands and relaxed posture, not posing. Warm afternoon golden window light grazes her hair and journal edge, calm cyan/navy studio walls, believable skin, sophisticated photographic storytelling with gentle analog grain, foreground extreme bottom edge slightly blurred by a plain cup and desk edge. Main human, journal, clipping and notebook grouped in right 60%; LEFT 35% quiet deep navy wall and natural shadow with minimal detail, integrated into scene, not graphic gradient or panel. Distinct editorial information-research action; feels like a film professional learning before a decision. NO readable text, logos, watermarks, captions, interface screenshot, white background, collage, cards, split screen, product catalogue, frontal standing fashion model, celebrity identity, underwater scene, cartoon or rendered look. Single standalone wide photograph.",
+      "source": "Codex built-in imagegen / exec-c9d6d689-c444-4217-ac86-46a33555403a.png",
+      "width": 1672,
+      "height": 941,
+      "original": "qa/editorial-v2/originals/brief-v2.png",
+      "asset": "web/assets/scenes-v2/brief-v2.webp",
+      "bytes": 146526,
+      "sha256": "75e09e3c661a76c99f0e54aa2aa6c015b5115459f16dc94cd81a9dabd8e5ea1e",
+      "visualReview": {
+        "reviewed": true,
+        "observed": "创作者在电影制作刊物和剪报之间核对信息并用笔记录；没有购物商品主体。",
+        "constraints": "虚构成年人物；无可辨商标水印；纸页仅生成的模糊排版/笔迹；非真实资料、授权合同或信息来源",
+        "leftTextSpace": "左侧低细节蓝色/阴影约35%，保留画面自然景深",
+        "userAestheticApproval": "pending"
+      },
+      "originalSha256": "b575d355d40ea4dc93e80614da736ccef7e93ba57958741ace02b83dcd33c3b3",
+      "originalBytes": 1992629
+    }
+  ],
+  "checks": [
+    "Each standalone generated image visually inspected in the built-in imagegen display",
+    "All six are separate 1672x941 images with distinct source and asset hashes",
+    "Action and props correspond to the named business use",
+    "Adults are fictional; no actual actor/studio identity or real company documentation",
+    "No user media or credentials were uploaded; only existing synthetic style reference",
+    "No cropping, retouching, text overlay or composite; same-size format conversion only"
+  ],
+  "assetCount": 6,
+  "totalWebpBytes": 879580,
+  "localEvidence": "Original PNG files and full manifest retained in the project QA directory; original PNG not embedded in published pages."
+}
