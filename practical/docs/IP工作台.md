@@ -59,7 +59,7 @@ CSV使用运营板块提供的表头模板。`稿件标题`必须唯一匹配当
 
 ## 复用取舍
 
-界面采用原“日光水蓝”主题的深蓝渐变页头、浅蓝背景与蓝色按钮。
+界面按祖老大确认的原“深蓝潮汐”演示版截图，复用原仓库 `web/style.css` 的靛蓝侧栏（#2e3a6b）、炭灰底色（#242424）、深灰面板（#2c2c2c）、白色文字和蓝色按钮（#303d6c），标题采用粗体无衬线。表单、下拉框、弹窗和日历统一为深色；不再采用此前误用的“日光水蓝”浅色主题。
 
 已确认GitHub插件可读取原仓库代码。对照[PLANKA](https://github.com/plankanban/planka)、[Twenty](https://github.com/twentyhq/twenty)、[Vikunja](https://github.com/go-vikunja/vikunja)的公开功能与部署方向后，本轮选择复用自己的实战工程，避免引入独立看板/CRM服务及其部署依赖。没有复制这些第三方项目实现；本工程依赖许可继续位于 `docs/licenses/`。
 
