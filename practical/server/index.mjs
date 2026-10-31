@@ -20,8 +20,11 @@ const HERE=dirname(fileURLToPath(import.meta.url)),WEB=resolve(HERE,'../web');
 const MAX_BODY=240*1024*1024;
 const KINDS=new Set([...IP_KINDS,'module','evaluation','scene','task','event','message','reply','right','health','dance','work','meeting','knowledge','crisis','brief','travel','charity','review','report','decision','contract','goal','social-content','social-account','social-release','social-metric','social-followers','social-plan']);
 export async function createApp({dataDir=resolve(HERE,'../../../runtime-practical'),baseURL='http://127.0.0.1:4930',modelRunner=runModel,sourceFetcher=fetchSource,enableLocalTools=false,cliRunner=runCLI,profile='actor'}={}){
+ if(profile==='ip'&&!['127.0.0.1','localhost'].includes(new URL(baseURL).hostname))throw Error('免登录IP版只能在本机地址运行');
  const identity=await createAuth({dataDir,baseURL}),store=createDatabase(dataDir,identity.masterSecret),files=fileService(store,dataDir),running=new Map(),pendingJobs=new Set();if(enableLocalTools&&(process.env.PRACTICAL_MODE==='online'||!['localhost','127.0.0.1'].includes(new URL(baseURL).hostname)))throw Error('本机工具只能在127.0.0.1/localhost本机模式启用');
  const social=socialService(store,files);
+ const localIPUser=profile==='ip'?{id:store.get("SELECT value FROM settings WHERE key='local_owner'")?.value||'ip-local-owner',name:'本机工作空间',email:''}:null;
+ if(localIPUser){const studio=store.ensureStudio(localIPUser)[0].id;if(!store.get("SELECT id FROM projects WHERE studio_id=? AND json_extract(data,'$.internal') IS NULL",studio)){const stamp=now();store.run('INSERT INTO projects VALUES(?,?,?,?,?,?,?,?,?,?,?)',id(),studio,'我的IP','',0,1,JSON.stringify({director:'',production:'',notes:''}),0,localIPUser.id,stamp,stamp);}}
  store.run("UPDATE jobs SET status='error',error='服务重启，中断任务未自动重发；请确认后重试',updated_at=? WHERE status IN ('queued','running')",now());
  const json=(res,status,body)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(body));};
  const body=async req=>{let size=0,chunks=[];for await(const chunk of req){size+=chunk.length;if(size>MAX_BODY)fail('请求过大，请分开上传',413);chunks.push(chunk);}try{return JSON.parse(Buffer.concat(chunks).toString('utf8')||'{}');}catch{fail('请求不是有效JSON');}};
@@ -50,8 +53,9 @@ export async function createApp({dataDir=resolve(HERE,'../../../runtime-practica
   try{
    const url=new URL(req.url,baseURL),path=url.pathname,method=req.method;
    res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','same-origin');
-   if(path.startsWith('/api/auth/')){await toNodeHandler(identity.auth)(req,res);return;}
-   if(path==='/api/health'){json(res,200,{ok:true,mode:baseURL.startsWith('https:')?'online':'local',version:'3.1-practical',profile,...(profile==='ip'?{ipVersion:'1.0.0'}:{})});return;}
+   if(profile==='ip'&&req.headers.host!==new URL(baseURL).host)fail('请使用本机工作台地址访问',403);
+   if(path.startsWith('/api/auth/')){if(profile==='ip')fail('本机IP版无需账号登录',404);await toNodeHandler(identity.auth)(req,res);return;}
+   if(path==='/api/health'){json(res,200,{ok:true,mode:baseURL.startsWith('https:')?'online':'local',version:'3.1-practical',profile,...(profile==='ip'?{ipVersion:'1.1.0'}:{})});return;}
    if(!path.startsWith('/api/p/')){
     if(method!=='GET'&&method!=='HEAD')fail('不支持的方法',405);
     if(path==='/'||path==='/practical'){res.writeHead(302,{Location:profile==='ip'?'/practical/ip/':'/practical/'});res.end();return;}
@@ -61,7 +65,7 @@ export async function createApp({dataDir=resolve(HERE,'../../../runtime-practica
     res.writeHead(200,{'Content-Type':types[extname(target)]||'application/octet-stream','Cache-Control':'no-cache','Content-Security-Policy':"default-src 'self'; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob: data:; frame-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'"});res.end(method==='HEAD'?undefined:bytes);return;
    }
    if(!['GET','HEAD'].includes(method)&&req.headers.origin!==new URL(baseURL).origin)fail('请求来源不匹配，请从工作台页面提交',403);
-   const session=await identity.auth.api.getSession({headers:fromNodeHeaders(req.headers)});if(!session)fail('请先登录',401);const user=session.user,studios=store.ensureStudio(user),studio=req.headers['x-studio-id']||studios[0].id,membership=store.member(studio,user.id),owner=()=>{if(membership.role!=='owner')fail('仅工作室管理员可操作',403);};
+   const session=localIPUser?{user:localIPUser}:await identity.auth.api.getSession({headers:fromNodeHeaders(req.headers)});if(!session)fail('请先登录',401);const user=session.user,studios=store.ensureStudio(user),studio=req.headers['x-studio-id']||studios[0].id,membership=store.member(studio,user.id),owner=()=>{if(membership.role!=='owner')fail('仅工作室管理员可操作',403);};
    let b;if(!['GET','HEAD'].includes(method))b=await body(req);
    if(path==='/api/p/context'&&method==='GET'){json(res,200,{user:{id:user.id,name:user.name,email:user.email},studios,studioId:studio,role:membership.role,personalProjectId:store.personalProject(studio,user),businessProjectId:store.businessProject(studio,user),socialProjectId:store.socialProject(studio,user),tasks:TASKS,deployment:{mode:baseURL.startsWith('https:')?'online':'local',baseURL},capabilities:{apiModels:true,localTools:enableLocalTools&&store.get("SELECT value FROM settings WHERE key='local_owner'")?.value===user.id,automaticTaxFiling:false}});return;}
    if(path==='/api/p/members'&&method==='GET'){json(res,200,store.all('SELECT user_id,name,email,role FROM members WHERE studio_id=?',studio));return;}

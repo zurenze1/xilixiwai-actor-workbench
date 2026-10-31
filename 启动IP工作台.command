@@ -9,7 +9,7 @@ fi
 if [[ ! -d node_modules/better-auth || ! -d node_modules/zod ]]; then
   npm ci --ignore-scripts
 fi
-if curl -fsS http://127.0.0.1:4936/api/health 2>/dev/null | node -e 'let s="";process.stdin.on("data",x=>s+=x);process.stdin.on("end",()=>{try{const r=JSON.parse(s);process.exit(r.profile==="ip"&&r.ipVersion==="1.0.0"?0:1)}catch{process.exit(1)}})'; then
+if curl -fsS http://127.0.0.1:4936/api/health 2>/dev/null | node -e 'let s="";process.stdin.on("data",x=>s+=x);process.stdin.on("end",()=>{try{const r=JSON.parse(s);process.exit(r.profile==="ip"&&r.ipVersion==="1.1.0"?0:1)}catch{process.exit(1)}})'; then
   open http://127.0.0.1:4936/practical/ip/
   exit 0
 fi

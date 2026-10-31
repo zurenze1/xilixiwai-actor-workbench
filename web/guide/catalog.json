@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "bdc8bf66975a5883196fc6457d6e775322c150d6fd7c00901b40b1bdb3048df3",
+  "sourceHash": "b2609dc2bf7c2bbc5ff1bc7a52798f441268f754860532fe5de617887c2dd851",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -40,11 +40,11 @@
     },
     {
       "path": "practical/web/ip/app.js",
-      "sha256": "5ba5bde5c8c540887224a641a7756861cd9ec3033b225d167786327c75155389"
+      "sha256": "84e884a5283efc0d4ee89b713e53a0ecdc7fd415ce4b4dc7032f371f8d6f1c22"
     },
     {
       "path": "practical/web/ip/index.html",
-      "sha256": "21250b16503245c308d66b34de11ed3f463f6c3faf28dbc8bc6bec2926f55ab3"
+      "sha256": "2f6ec152249607bc6098d8abf56822df9dce274c984fbd03a296dfafb6565d53"
     },
     {
       "path": "practical/web/ip/resources.js",
@@ -56,7 +56,7 @@
     },
     {
       "path": "practical/web/ip/style.css",
-      "sha256": "493eaf31e3192aad95176c93ef63885afea6e2d0ff611b258c6ebca26d8cb7fa"
+      "sha256": "92bf59d47dc02df35b27d6565d9c600edc96812b50da4c51ebb61b2c51db0913"
     },
     {
       "path": "practical/web/pet/app.js",
@@ -3001,6 +3001,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "707b23e13e73545d5ef7d23745cc01991849bd7dcc0d2e873de5df13cb55587e",
-  "generatedAt": "2026-10-31T07:54:43.554Z"
+  "contentHash": "2bf03f1d6051f0adff8f51d85ba6d1978a56e057a1c03b40d3414b89b33074f2",
+  "generatedAt": "2026-10-31T08:04:37.823Z"
 }

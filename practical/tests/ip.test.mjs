@@ -4,6 +4,7 @@ import {mkdir,mkdtemp,rm} from 'node:fs/promises';
 import {resolve,join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createServer} from 'node:net';
+import {request as httpRequest} from 'node:http';
 import {unzipSync,strFromU8} from 'fflate';
 import {createApp} from '../server/index.mjs';
 import '../web/ip/schema.js';
@@ -25,17 +26,20 @@ test('IP date, amount, audit and analytics boundaries reject ambiguous or imposs
  assert.doesNotThrow(()=>validate('ip-release',{...release,views:'0',likes:'',measuredAt:'2026-10-31T12:00',dataSource:'隔离测试手工记录'}));
  assert.equal(globalThis.IPSchema.cents('10.01'),1001);
 });
-test('IP workflow survives restart, enforces approval and ownership, and restores linked records with original bytes',async()=>{
+test('Password-free local IP workflow survives restart, enforces approval and project references, and restores original bytes',async()=>{
  const qa=resolve(dirname(fileURLToPath(import.meta.url)),'../../qa-ip');await mkdir(qa,{recursive:true});const dir=await mkdtemp(join(qa,'http-'));
  const reserve=createServer();await new Promise(r=>reserve.listen(0,'127.0.0.1',r));const port=reserve.address().port;await new Promise(r=>reserve.close(r));const origin=`http://127.0.0.1:${port}`;
  let app=await createApp({dataDir:dir,baseURL:origin,profile:'ip'});await app.listen(port);
  const client=()=>({cookie:'',studio:'',async request(path,method='GET',body){const response=await fetch(origin+path,{method,headers:{Origin:origin,cookie:this.cookie,'x-studio-id':this.studio,'Content-Type':'application/json'},...(body!==undefined?{body:JSON.stringify(body)}:{})});const cookie=response.headers.get('set-cookie');if(cookie)this.cookie=cookie.split(';')[0];return {status:response.status,data:(response.headers.get('content-type')||'').includes('json')?await response.json():new Uint8Array(await response.arrayBuffer())};},async ok(path,method,body){const r=await this.request(path,method,body);assert.ok(r.status<300,JSON.stringify(r));return r.data;}});
  try{
-  const a=client(),b=client();for(const [i,c]of [a,b].entries()){await c.ok('/api/auth/sign-up/email','POST',{name:'隔离IP验收'+i,email:`ip-fixture-${i}@example.test`,password:'IP-fixture-password-2026!'});const ctx=await c.ok('/api/p/context');c.studio=ctx.studioId;}
+  const a=client(),ctx=await a.ok('/api/p/context');a.studio=ctx.studioId;assert.equal(ctx.user.id,'ip-local-owner');assert.equal(a.cookie,'');assert.equal(ctx.role,'owner');assert.equal((await a.ok('/api/p/projects'))[0].title,'我的IP');
+  assert.equal((await a.request('/api/auth/sign-up/email','POST',{})).status,404);
+  assert.equal(await new Promise((resolve,reject)=>{const request=httpRequest(origin+'/api/p/context',{headers:{Host:'rebind.example'}},response=>{response.resume();resolve(response.statusCode);});request.on('error',reject);request.end();}),403);
+  assert.equal((await fetch(origin+'/api/p/projects',{method:'POST',headers:{Origin:'https://external.example','Content-Type':'application/json'},body:JSON.stringify({title:'不应写入'})})).status,403);
+  await assert.rejects(createApp({dataDir:dir,baseURL:'https://remote.example',profile:'ip'}),/本机/);
   const p=await a.ok('/api/p/projects','POST',{title:'虚构IP · 隔离验收'}),p2=await a.ok('/api/p/projects','POST',{title:'第二虚构IP'}),base='/api/p/projects/'+p.id;
   assert.equal((await a.ok('/api/health')).profile,'ip');
   const page=await fetch(origin+'/practical/ip/');assert.equal(page.status,200);assert.match(await page.text(),/IP资料库|schema.js/);
-  assert.equal((await b.request(base+'/records')).status,404);b.studio=a.studio;assert.equal((await b.request(base+'/records')).status,403);
   const t=await a.ok(base+'/records','POST',{kind:'ip-topic',title:'第一条选题',body:topic});
   let c=await a.ok(base+'/records','POST',{kind:'ip-content',title:'第一条稿件',body:{...draft,topicId:t.id}});
   assert.equal((await a.request('/api/p/projects/'+p2.id+'/records','POST',{kind:'ip-content',title:'非法跨IP关联',body:{...draft,topicId:t.id}})).status,404);
@@ -57,7 +61,7 @@ test('IP workflow survives restart, enforces approval and ownership, and restore
   await a.ok(base+'/records-batch','POST',{records:[{kind:'ip-task',title:'测试任务',body:{owner:'测试负责人',due:'2026-11-01',status:'待办',notes:'核对完成标准',contentId:c.id}},{kind:'ip-event',title:'测试会议',body:{start:'2026-11-01T10:00',end:'2026-11-01T11:00',status:'已确认'}},{kind:'ip-review',title:'测试复盘',body:{date:'2026-10-31',goal:'测试目标',evidence:'测试证据',next:'测试下一步',status:'待行动'}},{kind:'ip-deal',title:'测试合作',body:{counterparty:'虚构合作方',scope:'测试交付',currency:'CNY',amount:'100.01',received:'0',status:'待回款'}}]});
   const raw=Buffer.from('IP资料原件 · 隔离验收'),file=await a.ok(base+'/files','POST',{name:'验收原件.txt',type:'text/plain',data:raw.toString('base64')});
   await a.ok(base+'/records','POST',{kind:'ip-profile',title:'测试经历',body:{category:'个人经历',summary:'明确标记为虚构验收',status:'待确认',fileId:file.id}});
-  const zip=await a.ok(base+'/export'),manifest=JSON.parse(strFromU8(unzipSync(zip)['manifest.json']));assert.equal(manifest.records.length,9);assert.ok(!JSON.stringify(manifest).includes('IP-fixture-password'));
+  const zip=await a.ok(base+'/export'),manifest=JSON.parse(strFromU8(unzipSync(zip)['manifest.json']));assert.equal(manifest.records.length,9);assert.equal(manifest.files.length,1);
   const imported=await a.ok('/api/p/ip-import','POST',{data:Buffer.from(zip).toString('base64')});
   const restored=await a.ok('/api/p/projects/'+imported.id+'/records'),rc=restored.find(r=>r.kind==='ip-content'),rs=restored.find(r=>r.kind==='ip-shoot'),rp=restored.find(r=>r.kind==='ip-profile');
   assert.notEqual(rc.id,c.id);assert.equal(rs.body.contentId,rc.id);assert.equal(rc.body.topicId,restored.find(r=>r.kind==='ip-topic').id);assert.notEqual(rp.body.fileId,file.id);assert.deepEqual(Buffer.from(await a.ok('/api/p/files/'+rp.body.fileId)),raw);
