@@ -1,0 +1,23 @@
+/* Original AI photography with live, selectable text over the image. */
+.page-head.illustrated{position:relative;isolation:isolate;display:block;min-height:286px;padding:32px;border-color:#596586;border-radius:8px 8px 24px 8px;background:#17213b;overflow:hidden}
+.head-photo{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;object-position:67% 10%;pointer-events:none}
+.page-head.illustrated:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#101a35f5 0%,#101a35dc 30%,#101a3594 49%,#101a3524 76%,#101a3510 100%);pointer-events:none}
+.head-copy{position:relative;max-width:55%}.page-head.illustrated .eyebrow{color:#d6def5;margin-bottom:13px;font-size:11px;letter-spacing:2px}
+.page-head.illustrated h1{font-size:clamp(30px,2.8vw,42px);line-height:1.3;letter-spacing:.04em;color:#fff;text-shadow:0 2px 18px #07102066;overflow-wrap:break-word}
+.page-head.illustrated p{color:#edf1ff;max-width:430px;line-height:1.85;font-size:14px;margin-top:13px;text-wrap:pretty}
+.page-head.illustrated .actions{padding-top:0;gap:9px;margin-top:25px;align-items:center}.page-head.illustrated .date-label{color:#e0e6fa;font-size:12px}
+.page-head.illustrated button{background:#303d6cf0;border-color:#a2afd3;color:#fff;box-shadow:0 2px 8px #0b143b33}.page-head.illustrated button:hover{background:#45578b}
+.page-head.illustrated button.primary{background:#f1f3ff;color:#263762;border-color:#f1f3ff}.page-head.illustrated button.primary:hover{background:#dce4ff}
+.visual-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:0 0 24px}
+.visual-shortcut{position:relative;isolation:isolate;display:flex;align-items:flex-end;min-width:0;min-height:135px;padding:16px;color:#fff;text-decoration:none;background:#1b2745;border:1px solid #556183;border-radius:7px 7px 17px 7px;overflow:hidden}
+.visual-shortcut img{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;object-position:68% 45%;transition:transform .3s;pointer-events:none}
+.visual-shortcut:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#0e1837f7,#0e183766 68%,#0e183726);pointer-events:none}
+.visual-shortcut>span{min-width:0;padding-right:20px}.visual-shortcut small{display:block;color:#dde4fb;font-size:10px;letter-spacing:1px;margin-bottom:4px}.visual-shortcut b{display:block;font-size:17px;line-height:1.45;font-weight:650;text-wrap:pretty}.visual-shortcut i{position:absolute;bottom:17px;right:14px;font-size:20px;font-style:normal}
+.visual-shortcut:hover{border-color:#b5c4f0;color:#fff}.visual-shortcut:hover img{transform:scale(1.035)}.visual-shortcut:focus-visible{outline-color:#d3dcff;outline-offset:4px}
+@media(min-width:1600px){.page-head.illustrated{min-height:315px;padding:38px}.visual-shortcut{min-height:155px}}
+@media(max-width:1100px) and (min-width:761px){.page-head.illustrated{padding:28px;min-height:290px}.head-copy{max-width:63%}.page-head.illustrated h1{font-size:30px}.visual-shortcuts{gap:10px}.visual-shortcut{padding:13px;min-height:130px}.visual-shortcut b{font-size:15px}.visual-shortcut i{right:10px;bottom:12px}}
+@media(max-width:760px){.page-head.illustrated{min-height:350px;padding:155px 23px 24px;background:#17213b}.head-photo{object-position:76% 35%}.page-head.illustrated:after{background:linear-gradient(0deg,#101a35fa 0%,#101a35ed 30%,#101a359c 58%,#101a3514 100%)}.head-copy{max-width:100%}.page-head.illustrated .eyebrow{font-size:10px;margin-bottom:10px}.page-head.illustrated h1{font-size:29px}.page-head.illustrated p{font-size:13px;max-width:100%;margin-top:9px}.page-head.illustrated .actions{margin-top:19px;gap:8px}.visual-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-bottom:20px}.visual-shortcut{min-height:135px;padding:14px}.visual-shortcut b{font-size:16px}.visual-shortcut small{font-size:9px}.visual-shortcut i{right:11px;bottom:13px}}
+@media(max-width:360px){.page-head.illustrated{padding:150px 20px 22px}.page-head.illustrated h1{font-size:27px}.visual-shortcut{min-height:126px;padding:12px}.visual-shortcut b{font-size:14px}.visual-shortcut i{font-size:17px;right:8px}.visual-shortcut>span{padding-right:13px}}
+@media(prefers-reduced-motion:reduce){.visual-shortcut img{transition:none}.visual-shortcut:hover img{transform:none}}
+
+@media(min-width:761px){.illustrated[data-scene=today] .head-photo{object-position:67% 0%}.illustrated[data-scene=schedule] .head-photo{object-position:67% 65%}}

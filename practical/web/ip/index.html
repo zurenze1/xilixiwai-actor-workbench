@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="围绕选题、写稿、拍摄、发布复盘与商务合作的个人IP工作台。">
-  <title>IP工作台</title><link rel="stylesheet" href="style.css?v=20261031-deep-blue">
+  <title>IP工作台</title><link rel="stylesheet" href="style.css?v=20261031-deep-blue"><link rel="stylesheet" href="illustrations.css?v=20261031-scenes-v1">
 </head>
 <body>
   <div id="shell" hidden>
     <button id="backdrop" class="backdrop" aria-label="收起导航" type="button"></button>
     <aside class="sidebar"><a class="wordmark" href="#today"><i>IP</i>工作台<span>让每一步，都接得上。</span></a><div class="ip-switch"><label for="ip-select">当前 IP</label><select id="ip-select" aria-label="当前IP"></select><button class="subtle" data-action="new-ip">＋ 新建 IP</button></div><nav id="nav" aria-label="工作台板块"></nav><div class="side-bottom"><button data-action="help" class="subtle">使用说明与数据备份 ↗</button><p><b class="connection-dot"></b> 本机服务 · 资料保存在电脑</p><small id="identity"></small></div></aside>
-    <div class="workspace"><header class="topbar"><button id="menu-toggle" aria-label="展开导航" aria-expanded="false" type="button">☰</button><div class="breadcrumb">工作空间 <span>/</span> <b id="crumb">今日工作台</b></div><div class="top-actions"><span id="sync" role="status">连接中</span><button class="subtle" data-action="refresh">刷新</button></div></header><main id="main"><div class="loading">正在连接工作台…</div></main><footer>IP工作台 <span>·</span> 把真实经历、观点和作品，慢慢积累起来。</footer></div>
+    <div class="workspace"><header class="topbar"><button id="menu-toggle" aria-label="展开导航" aria-expanded="false" type="button">☰</button><div class="breadcrumb">工作空间 <span>/</span> <b id="crumb">今日工作台</b></div><div class="top-actions"><span id="sync" role="status">连接中</span><button class="subtle" data-action="refresh">刷新</button></div></header><main id="main"><div class="loading">正在连接工作台…</div></main><footer>IP工作台 <span>·</span> 把真实经历、观点和作品，慢慢积累起来。 <span>·</span> AI 创作场景图</footer></div>
   </div>
   <div id="startup-error" class="startup-error" hidden role="alert"></div>
   <dialog id="dialog"><div class="dialog-top"><span id="dialog-label">编辑</span><button id="close-dialog" type="button" aria-label="关闭弹窗">×</button></div><div id="dialog-body"></div></dialog>
   <div id="toast" role="status"></div>
-  <script src="../vendor/papaparse.min.js"></script><script src="schema.js"></script><script src="resources.js"></script><script src="app.js" type="module"></script>
+  <script src="../vendor/papaparse.min.js"></script><script src="schema.js"></script><script src="resources.js"></script><script src="app.js?v=20261031-scenes-v1" type="module"></script>
 </body></html>
