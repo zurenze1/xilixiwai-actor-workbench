@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "b2609dc2bf7c2bbc5ff1bc7a52798f441268f754860532fe5de617887c2dd851",
+  "sourceHash": "cdc36a511c06c8c4fb50daa0cda4b13af2212d80e10e6f58650a2b08f8eafd21",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -40,11 +40,15 @@
     },
     {
       "path": "practical/web/ip/app.js",
-      "sha256": "84e884a5283efc0d4ee89b713e53a0ecdc7fd415ce4b4dc7032f371f8d6f1c22"
+      "sha256": "76bb3ccad17a7f43618b0b3e98d9d0f8600de4263fd196ee0ae80d5efcb1417c"
+    },
+    {
+      "path": "practical/web/ip/illustrations.css",
+      "sha256": "55257ebff044e1fff762089d54b487ed34c04707193b76e6573a13cd7e9be933"
     },
     {
       "path": "practical/web/ip/index.html",
-      "sha256": "2f6ec152249607bc6098d8abf56822df9dce274c984fbd03a296dfafb6565d53"
+      "sha256": "d0adfe6b4f74fd8b1535bc0f2a7afa9b41b7320d26cd83e98436485e19e12d9b"
     },
     {
       "path": "practical/web/ip/resources.js",
@@ -56,7 +60,7 @@
     },
     {
       "path": "practical/web/ip/style.css",
-      "sha256": "92bf59d47dc02df35b27d6565d9c600edc96812b50da4c51ebb61b2c51db0913"
+      "sha256": "c09c507a2847ee25fa04c5ccba34218353a797adff1a3bb855dcad96d4be97f0"
     },
     {
       "path": "practical/web/pet/app.js",
@@ -3001,6 +3005,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "2bf03f1d6051f0adff8f51d85ba6d1978a56e057a1c03b40d3414b89b33074f2",
-  "generatedAt": "2026-10-31T08:04:37.823Z"
+  "contentHash": "d88c5f4bf22b50be10e5113cb43503c77502addf178136e108261e0c9f63fdcc",
+  "generatedAt": "2026-10-31T12:19:56.648Z"
 }
