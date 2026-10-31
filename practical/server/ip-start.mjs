@@ -1,0 +1,11 @@
+import {resolve,dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createApp} from './index.mjs';
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
+const port=Number(process.env.PORT||4936);
+if(!Number.isInteger(port)||port<1024||port>65535)throw Error('端口无效');
+const baseURL=`http://127.0.0.1:${port}`;
+const app=await createApp({dataDir:process.env.DATA_DIR||resolve(root,'runtime-ip'),baseURL,profile:'ip'});
+await app.listen(port,'127.0.0.1');
+console.log('IP工作台 '+baseURL+'/practical/ip/');
+for(const sig of ['SIGINT','SIGTERM'])process.once(sig,()=>app.close().then(()=>process.exit(0)));

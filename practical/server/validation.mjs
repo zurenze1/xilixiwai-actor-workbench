@@ -5,6 +5,7 @@ import {validate as businessValidate,references as businessReferences} from '../
 import {fail} from './database.mjs';
 import {KINDS as socialKinds,validateRecord as validateSocialRecord} from '../web/social/model.js';
 import '../web/forms.js';
+import '../web/ip/schema.js';
 const pet=globalThis.PetSchema,previs=globalThis.PrevisSchema;
 export function validateModule(key,input,allowedFiles=[]){
  let state,refs;try{if(key==='rourou-world-v1'){state=pet.validate(input);refs=pet.references(state);}else if(key==='previs-v1'){state=previs.validate(input);refs=state.files;}else if(key==='business-v1'){state=businessValidate(input);refs=businessReferences(state);}else if(key==='social-v1'){validateRecord('module',{state:input});if(JSON.stringify(input).length>100000)fail('运营草稿过长，请将历史保存为独立记录');state=structuredClone(input);refs=[];}else fail('模块类型无效');}catch(e){fail(e.message);}
@@ -13,6 +14,7 @@ export function validateModule(key,input,allowedFiles=[]){
 export function validateRecord(kind,body){
  if(!body||typeof body!=='object'||Array.isArray(body)||JSON.stringify(body).length>2_000_000)fail('记录内容无效或过长');
  const walk=(v,depth=0)=>{if(depth>24)fail('记录嵌套过深');if(v&&typeof v==='object')for(const[k,x]of Object.entries(v)){if(['__proto__','constructor','prototype'].includes(k))fail('记录字段名无效');walk(x,depth+1);}};walk(body);
+ if(globalThis.IPSchema.kinds.includes(kind)){try{return globalThis.IPSchema.validate(kind,body);}catch(e){fail(e.message);}}
  if(socialKinds.includes(kind)){try{return validateSocialRecord(kind,body);}catch(e){fail(e.message);}}
  try{globalThis.ActorForms.validate(kind,body);}catch(e){fail(e.message);}
  if(kind==='goal'&&body.radar!==undefined){try{globalThis.ActorRadar.validate(body.radar,{complete:true});}catch(e){fail(e.message);}}

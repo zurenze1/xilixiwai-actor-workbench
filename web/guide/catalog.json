@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "cc11ba6bf55055648908ef4bbc58d2e35958e5d4b38f68317315d701fd722bfe",
+  "sourceHash": "bdc8bf66975a5883196fc6457d6e775322c150d6fd7c00901b40b1bdb3048df3",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -37,6 +37,26 @@
     {
       "path": "practical/web/index.html",
       "sha256": "6aa877501757af5d9899070c22e7d929764aaecf348ddb2d7fc966595a15bad8"
+    },
+    {
+      "path": "practical/web/ip/app.js",
+      "sha256": "5ba5bde5c8c540887224a641a7756861cd9ec3033b225d167786327c75155389"
+    },
+    {
+      "path": "practical/web/ip/index.html",
+      "sha256": "21250b16503245c308d66b34de11ed3f463f6c3faf28dbc8bc6bec2926f55ab3"
+    },
+    {
+      "path": "practical/web/ip/resources.js",
+      "sha256": "733a789cc21fcdb5e8b940501ba821b7d13930ddc3e5a031d3118ff50d1cb298"
+    },
+    {
+      "path": "practical/web/ip/schema.js",
+      "sha256": "93807be22cd8dd3135d22235aa015678e9f7a0324cf3d6afda8fc950ae51df03"
+    },
+    {
+      "path": "practical/web/ip/style.css",
+      "sha256": "493eaf31e3192aad95176c93ef63885afea6e2d0ff611b258c6ebca26d8cb7fa"
     },
     {
       "path": "practical/web/pet/app.js",
@@ -276,7 +296,7 @@
     },
     {
       "path": "web/demo-tools/contract.js",
-      "sha256": "fc54f0ead8127671725d90ff2598cb1e8003d7fbf0566e2ced9fd805eea53009"
+      "sha256": "ce46abeec574e0939340f4bef9fae8317f1997b63959de1447432c87e143e8e2"
     },
     {
       "path": "web/demo-tools/index.html",
@@ -376,7 +396,7 @@
     },
     {
       "path": "web/reliable-store.js",
-      "sha256": "523ddaede96cb2ad75c22cbe4a1623d551f8925bad09f71af0cdbf85cb296a55"
+      "sha256": "8c3e39f52b699cb31be7b6def16faac5343433143cce2c435ab6dae59edb275d"
     },
     {
       "path": "web/reset.html",
@@ -2981,6 +3001,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "c613493eaad3fd04dcf9130117733ce4feb85fecf400487a3f9472399905267a",
-  "generatedAt": "2026-10-24T08:00:58.547Z"
+  "contentHash": "707b23e13e73545d5ef7d23745cc01991849bd7dcc0d2e873de5df13cb55587e",
+  "generatedAt": "2026-10-31T07:54:43.554Z"
 }

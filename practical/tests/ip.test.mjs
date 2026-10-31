@@ -1,0 +1,68 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdir,mkdtemp,rm} from 'node:fs/promises';
+import {resolve,join,dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createServer} from 'node:net';
+import {unzipSync,strFromU8} from 'fflate';
+import {createApp} from '../server/index.mjs';
+import '../web/ip/schema.js';
+const {validate}=globalThis.IPSchema;
+const topic={audience:'虚构测试受众',question:'如何记录一次真实工作经历',status:'已确认'};
+const draft={format:'口播',platform:'视频号',script:'这是隔离验收用的虚构稿件，不是IP真实经历。',status:'写作中'};
+const approved={...draft,status:'已确认',reviewer:'虚构确认人',reviewedAt:'2026-10-31'};
+const release={contentId:'placeholder',platform:'视频号',account:'虚构测试账号',status:'已发布',publishedAt:'2026-10-31T10:00',url:'https://example.test/fixture/1'};
+test('IP date, amount, audit and analytics boundaries reject ambiguous or impossible values',()=>{
+ assert.throws(()=>validate('ip-content',{...draft,status:'已确认'}),/确认人/);
+ assert.throws(()=>validate('ip-event',{start:'2026-02-30T10:00',end:'2026-03-01T11:00',status:'待确认'}),/真实日期/);
+ assert.throws(()=>validate('ip-event',{start:'2026-10-31T10:00',end:'2026-10-31T10:00',status:'待确认'}),/晚于/);
+ assert.throws(()=>validate('ip-release',{...release,views:'-1',measuredAt:'2026-10-31T12:00',dataSource:'虚构后台'}),/非负整数/);
+ assert.throws(()=>validate('ip-release',{...release,views:'0'}),/采集时间/);
+ assert.throws(()=>validate('ip-release',{...release,completion:'101',measuredAt:'2026-10-31T12:00',dataSource:'虚构后台'}),/100/);
+ assert.throws(()=>validate('ip-deal',{counterparty:'测试',scope:'测试交付',currency:'CNY',amount:'100.01',received:'100.02',status:'执行中'}),/超过/);
+ assert.throws(()=>validate('ip-deal',{counterparty:'测试',scope:'测试交付',currency:'CNY',amount:'10.001',status:'执行中'}),/两位小数/);
+ assert.throws(()=>validate('ip-profile',{category:'IP定位',summary:'测试',status:'待确认',sourceUrl:'javascript:alert(1)'}),/HTTP/);
+ assert.doesNotThrow(()=>validate('ip-release',{...release,views:'0',likes:'',measuredAt:'2026-10-31T12:00',dataSource:'隔离测试手工记录'}));
+ assert.equal(globalThis.IPSchema.cents('10.01'),1001);
+});
+test('IP workflow survives restart, enforces approval and ownership, and restores linked records with original bytes',async()=>{
+ const qa=resolve(dirname(fileURLToPath(import.meta.url)),'../../qa-ip');await mkdir(qa,{recursive:true});const dir=await mkdtemp(join(qa,'http-'));
+ const reserve=createServer();await new Promise(r=>reserve.listen(0,'127.0.0.1',r));const port=reserve.address().port;await new Promise(r=>reserve.close(r));const origin=`http://127.0.0.1:${port}`;
+ let app=await createApp({dataDir:dir,baseURL:origin,profile:'ip'});await app.listen(port);
+ const client=()=>({cookie:'',studio:'',async request(path,method='GET',body){const response=await fetch(origin+path,{method,headers:{Origin:origin,cookie:this.cookie,'x-studio-id':this.studio,'Content-Type':'application/json'},...(body!==undefined?{body:JSON.stringify(body)}:{})});const cookie=response.headers.get('set-cookie');if(cookie)this.cookie=cookie.split(';')[0];return {status:response.status,data:(response.headers.get('content-type')||'').includes('json')?await response.json():new Uint8Array(await response.arrayBuffer())};},async ok(path,method,body){const r=await this.request(path,method,body);assert.ok(r.status<300,JSON.stringify(r));return r.data;}});
+ try{
+  const a=client(),b=client();for(const [i,c]of [a,b].entries()){await c.ok('/api/auth/sign-up/email','POST',{name:'隔离IP验收'+i,email:`ip-fixture-${i}@example.test`,password:'IP-fixture-password-2026!'});const ctx=await c.ok('/api/p/context');c.studio=ctx.studioId;}
+  const p=await a.ok('/api/p/projects','POST',{title:'虚构IP · 隔离验收'}),p2=await a.ok('/api/p/projects','POST',{title:'第二虚构IP'}),base='/api/p/projects/'+p.id;
+  assert.equal((await a.ok('/api/health')).profile,'ip');
+  const page=await fetch(origin+'/practical/ip/');assert.equal(page.status,200);assert.match(await page.text(),/IP资料库|schema.js/);
+  assert.equal((await b.request(base+'/records')).status,404);b.studio=a.studio;assert.equal((await b.request(base+'/records')).status,403);
+  const t=await a.ok(base+'/records','POST',{kind:'ip-topic',title:'第一条选题',body:topic});
+  let c=await a.ok(base+'/records','POST',{kind:'ip-content',title:'第一条稿件',body:{...draft,topicId:t.id}});
+  assert.equal((await a.request('/api/p/projects/'+p2.id+'/records','POST',{kind:'ip-content',title:'非法跨IP关联',body:{...draft,topicId:t.id}})).status,404);
+  const shoot={contentId:c.id,start:'2026-10-31T14:00',end:'2026-10-31T15:00',location:'虚构场地',owner:'虚构负责人',status:'拍摄完成'};
+  assert.equal((await a.request(base+'/records','POST',{kind:'ip-shoot',title:'未审核不应完成拍摄',body:shoot})).status,400);
+  c=await a.ok(base+'/records/'+c.id,'PATCH',{revision:c.revision,body:{...approved,topicId:t.id}});
+  assert.equal((await a.request(base+'/records/'+c.id,'PATCH',{revision:c.revision,body:{...c.body,script:'已确认后直接更改正文'}})).status,400);
+  assert.equal((await a.request(base+'/records/'+c.id,'PATCH',{revision:1,body:{...c.body,status:'待IP审核'}})).status,409);
+  c=await a.ok(base+'/records/'+c.id,'PATCH',{revision:c.revision,body:{...c.body,script:'已保存的新稿内容。',status:'待IP审核',reviewer:'',reviewedAt:''}});
+  c=await a.ok(base+'/records/'+c.id,'PATCH',{revision:c.revision,body:{...c.body,status:'已确认',reviewer:'虚构确认人',reviewedAt:'2026-10-31'}});
+  const s=await a.ok(base+'/records','POST',{kind:'ip-shoot',title:'正式测试拍摄计划',body:{...shoot,checklist:'[ ] 回看样片\n[x] 检查电量'}});
+  const pub=await a.ok(base+'/records','POST',{kind:'ip-release',title:'测试发布',body:{...release,contentId:c.id,views:'0',measuredAt:'2026-10-31T16:00',dataSource:'虚构测试后台'}});
+  assert.equal(pub.body.views,'0');assert.equal(pub.body.likes,undefined);
+  assert.equal((await a.request(base+'/records','POST',{kind:'ip-release',title:'重复链接',body:{...release,contentId:c.id}})).status,400);
+  const before=(await a.ok(base+'/records')).length;
+  const repeated={kind:'ip-release',title:'批次重复链接',body:{...release,contentId:c.id,url:'https://example.test/batch-duplicate'}};assert.equal((await a.request(base+'/records-batch','POST',{records:[repeated,repeated]})).status,400);
+  assert.equal((await a.request(base+'/records-batch','POST',{records:[{kind:'ip-task',title:'不应部分导入',body:{owner:'测试',due:'2026-11-01',status:'待办',notes:'测试完成标准'}},{kind:'ip-event',title:'无效时间',body:{start:'2026-02-30T10:00',end:'2026-02-30T11:00',status:'待确认'}}]})).status,400);
+  assert.equal((await a.ok(base+'/records')).length,before);
+  await a.ok(base+'/records-batch','POST',{records:[{kind:'ip-task',title:'测试任务',body:{owner:'测试负责人',due:'2026-11-01',status:'待办',notes:'核对完成标准',contentId:c.id}},{kind:'ip-event',title:'测试会议',body:{start:'2026-11-01T10:00',end:'2026-11-01T11:00',status:'已确认'}},{kind:'ip-review',title:'测试复盘',body:{date:'2026-10-31',goal:'测试目标',evidence:'测试证据',next:'测试下一步',status:'待行动'}},{kind:'ip-deal',title:'测试合作',body:{counterparty:'虚构合作方',scope:'测试交付',currency:'CNY',amount:'100.01',received:'0',status:'待回款'}}]});
+  const raw=Buffer.from('IP资料原件 · 隔离验收'),file=await a.ok(base+'/files','POST',{name:'验收原件.txt',type:'text/plain',data:raw.toString('base64')});
+  await a.ok(base+'/records','POST',{kind:'ip-profile',title:'测试经历',body:{category:'个人经历',summary:'明确标记为虚构验收',status:'待确认',fileId:file.id}});
+  const zip=await a.ok(base+'/export'),manifest=JSON.parse(strFromU8(unzipSync(zip)['manifest.json']));assert.equal(manifest.records.length,9);assert.ok(!JSON.stringify(manifest).includes('IP-fixture-password'));
+  const imported=await a.ok('/api/p/ip-import','POST',{data:Buffer.from(zip).toString('base64')});
+  const restored=await a.ok('/api/p/projects/'+imported.id+'/records'),rc=restored.find(r=>r.kind==='ip-content'),rs=restored.find(r=>r.kind==='ip-shoot'),rp=restored.find(r=>r.kind==='ip-profile');
+  assert.notEqual(rc.id,c.id);assert.equal(rs.body.contentId,rc.id);assert.equal(rc.body.topicId,restored.find(r=>r.kind==='ip-topic').id);assert.notEqual(rp.body.fileId,file.id);assert.deepEqual(Buffer.from(await a.ok('/api/p/files/'+rp.body.fileId)),raw);
+  assert.ok((await a.ok(base+'/records/'+c.id+'/versions')).length>=3);
+  await a.ok('/api/p/projects/'+p2.id+'/records','POST',{kind:'task',title:'原演员格式记录',body:{status:'待办'}});const actorZip=await a.ok('/api/p/projects/'+p2.id+'/export');assert.equal((await a.request('/api/p/ip-import','POST',{data:Buffer.from(actorZip).toString('base64')})).status,400);
+  const count=(await a.ok(base+'/records')).length;await app.close();app=await createApp({dataDir:dir,baseURL:origin,profile:'ip'});await app.listen(port);assert.equal((await a.ok(base+'/records')).length,count);assert.equal((await a.ok(base+'/records')).find(r=>r.id===s.id).body.checklist,'[ ] 回看样片\n[x] 检查电量');
+ }finally{await app.close();await rm(dir,{recursive:true,force:true});}
+});

@@ -17,7 +17,9 @@
     "test:social:browser": "node --test --test-concurrency=1 practical/tests/social-browser.test.mjs practical/tests/social-coordination.test.mjs",
     "build:demo-operations": "node scripts/build-demo-operations.mjs",
     "build:demo-previs": "node scripts/build-demo-previs.mjs",
-    "build:demo-tools": "node scripts/build-demo-tools.mjs"
+    "build:demo-tools": "node scripts/build-demo-tools.mjs",
+    "start:ip": "node practical/server/ip-start.mjs",
+    "test:ip": "node --test practical/tests/ip.test.mjs"
   },
   "dependencies": {
     "@mozilla/readability": "0.6.0",
@@ -28,7 +30,7 @@
     "mammoth": "^1.11.0",
     "papaparse": "^5.5.3",
     "pdfjs-dist": "6.4.299",
-    "zod": "4.1.12"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "esbuild": "0.25.11",

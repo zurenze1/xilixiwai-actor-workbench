@@ -17,3 +17,7 @@ __pycache__/
 web/rourou/qa/
 
 practical/tests/social-qa/
+
+# IP workspace: never publish user records, credentials or QA artifacts
+runtime-ip/
+qa-ip/
