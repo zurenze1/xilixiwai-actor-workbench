@@ -55,7 +55,7 @@ export async function createApp({dataDir=resolve(HERE,'../../../runtime-practica
    res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','same-origin');
    if(profile==='ip'&&req.headers.host!==new URL(baseURL).host)fail('请使用本机工作台地址访问',403);
    if(path.startsWith('/api/auth/')){if(profile==='ip')fail('本机IP版无需账号登录',404);await toNodeHandler(identity.auth)(req,res);return;}
-   if(path==='/api/health'){json(res,200,{ok:true,mode:baseURL.startsWith('https:')?'online':'local',version:'3.1-practical',profile,...(profile==='ip'?{ipVersion:'1.1.0'}:{})});return;}
+   if(path==='/api/health'){json(res,200,{ok:true,mode:baseURL.startsWith('https:')?'online':'local',version:'3.1-practical',profile,...(profile==='ip'?{ipVersion:'1.2.0'}:{})});return;}
    if(!path.startsWith('/api/p/')){
     if(method!=='GET'&&method!=='HEAD')fail('不支持的方法',405);
     if(path==='/'||path==='/practical'){res.writeHead(302,{Location:profile==='ip'?'/practical/ip/':'/practical/'});res.end();return;}
@@ -82,6 +82,7 @@ export async function createApp({dataDir=resolve(HERE,'../../../runtime-practica
      if(!Array.isArray(b.records)||!b.records.length||b.records.length>500)fail('每次导入1至500条记录');
      const prepared=b.records.map((raw,index)=>{try{if(!raw||!KINDS.has(raw.kind)||raw.kind==='module'||isSocialKind(raw.kind))fail('记录类型不支持此导入方式');if(raw.kind==='health'&&p.data.internal!==true)fail('健康资料应保存到私人空间');const body=validateRecord(raw.kind,raw.body);try{globalThis.ActorForms.validate(raw.kind,body,{complete:true});}catch(e){fail(e.message);}checkRecordFiles(body,pid,studio,user.id);validateIPReferences(raw.kind,body,{store,pid,studio,user:user.id});if(raw.kind==='report')verifyReport(body,docs(pid,studio,user.id));if(!['team','private'].includes(raw.visibility||'team'))fail('可见范围无效');return {...raw,title:title(raw.title),body};}catch(e){fail('第'+(index+2)+'行：'+e.message,e.status||400);}});
      const ipReleaseLinks=new Set();for(const r of prepared.filter(r=>r.kind==='ip-release'&&r.body.url)){if(ipReleaseLinks.has(r.body.url))fail('导入批次存在重复作品链接，本次未保存');ipReleaseLinks.add(r.body.url);}
+     const matrixKeys=new Set();for(const r of prepared.filter(r=>['ip-account','ip-account-snapshot','ip-work-snapshot'].includes(r.kind))){const key=JSON.stringify(r.kind==='ip-account'?[r.kind,r.body.platform,r.body.handle]:[r.kind,r.body.accountId,r.body.measuredOn,r.body.scope,r.body.url||'']);if(matrixKeys.has(key))fail('导入批次存在重复矩阵账号或快照，本次未保存');matrixKeys.add(key);}
      if(b.validateOnly===true){json(res,200,{valid:true,count:prepared.length});return;}
      const saved=store.transaction(()=>prepared.map(r=>store.saveRecord({pid,studio,user:user.id,kind:r.kind,title:r.title,body:r.body,visibility:r.visibility||'team'})));json(res,201,{records:saved});return;
     }

@@ -19,7 +19,7 @@
     "build:demo-previs": "node scripts/build-demo-previs.mjs",
     "build:demo-tools": "node scripts/build-demo-tools.mjs",
     "start:ip": "node practical/server/ip-start.mjs",
-    "test:ip": "node --test practical/tests/ip.test.mjs"
+    "test:ip": "node --test practical/tests/ip.test.mjs practical/tests/ip-matrix.test.mjs"
   },
   "dependencies": {
     "@mozilla/readability": "0.6.0",

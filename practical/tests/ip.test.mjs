@@ -67,6 +67,17 @@ test('Password-free local IP workflow survives restart, enforces approval and pr
   assert.notEqual(rc.id,c.id);assert.equal(rs.body.contentId,rc.id);assert.equal(rc.body.topicId,restored.find(r=>r.kind==='ip-topic').id);assert.notEqual(rp.body.fileId,file.id);assert.deepEqual(Buffer.from(await a.ok('/api/p/files/'+rp.body.fileId)),raw);
   assert.ok((await a.ok(base+'/records/'+c.id+'/versions')).length>=3);
   await a.ok('/api/p/projects/'+p2.id+'/records','POST',{kind:'task',title:'原演员格式记录',body:{status:'待办'}});const actorZip=await a.ok('/api/p/projects/'+p2.id+'/export');assert.equal((await a.request('/api/p/ip-import','POST',{data:Buffer.from(actorZip).toString('base64')})).status,400);
+  const account=await a.ok(base+'/records','POST',{kind:'ip-account',title:'虚构矩阵账号',body:{platform:'抖音',handle:'fixture',profileUrl:'https://example.test/account'}});
+  const asnap={accountId:account.id,measuredOn:'2026-10-31',followers:'0',dataSource:'虚构后台',sourceUrl:'https://example.test/account',sourceMode:'人工记录',scope:'平台主页累计'};
+  const wsnap={accountId:account.id,url:'https://example.test/work-1',measuredOn:'2026-10-31',likes:'0',dataSource:'虚构作品详情',sourceMode:'人工记录',scope:'作品当前累计'};
+  assert.equal((await a.request('/api/p/projects/'+p2.id+'/records','POST',{kind:'ip-account-snapshot',title:'不应跨IP关联',body:asnap})).status,404);
+  await a.ok(base+'/records','POST',{kind:'ip-account-snapshot',title:'账号数据',body:asnap});
+  await a.ok(base+'/records','POST',{kind:'ip-work-snapshot',title:'作品数据',body:wsnap});
+  assert.equal((await a.request(base+'/records','POST',{kind:'ip-account-snapshot',title:'不应重复',body:asnap})).status,400);
+  const dup={kind:'ip-work-snapshot',title:'批次重复',body:{...wsnap,url:'https://example.test/duplicate'}};
+  assert.equal((await a.request(base+'/records-batch','POST',{records:[dup,dup]})).status,400);
+  const matrixZip=await a.ok(base+'/export'),matrixImport=await a.ok('/api/p/ip-import','POST',{data:Buffer.from(matrixZip).toString('base64')}),matrixRestored=await a.ok('/api/p/projects/'+matrixImport.id+'/records'),restoredAccount=matrixRestored.find(x=>x.kind==='ip-account');
+  assert.notEqual(restoredAccount.id,account.id);for(const r of matrixRestored.filter(x=>['ip-account-snapshot','ip-work-snapshot'].includes(x.kind)))assert.equal(r.body.accountId,restoredAccount.id);
   const count=(await a.ok(base+'/records')).length;await app.close();app=await createApp({dataDir:dir,baseURL:origin,profile:'ip'});await app.listen(port);assert.equal((await a.ok(base+'/records')).length,count);assert.equal((await a.ok(base+'/records')).find(r=>r.id===s.id).body.checklist,'[ ] 回看样片\n[x] 检查电量');
  }finally{await app.close();await rm(dir,{recursive:true,force:true});}
 });

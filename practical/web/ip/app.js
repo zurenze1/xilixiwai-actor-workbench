@@ -1,8 +1,10 @@
+import {renderMatrix,matrixConnectionInfo} from './matrix.js?v=20261102';
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const {D,validate,cents}=window.IPSchema;
-const NAV=[['today','今日工作台','把今天最重要的事，放在眼前。'],['topics','选题库','让灵感有出处，让选题有明确的受众。'],['content','内容创作','从第一句，到IP确认的那一版。'],['shoots','拍摄准备','把稿件变成镜头，把现场准备到位。'],['schedule','日程与任务','每个安排，都有时间、负责人和完成标准。'],['operations','账号运营与复盘','记录实际发布，带着证据调整下一条。'],['business','商务合作','从第一次沟通，到交付和回款。'],['library','IP资料库','积累经历、观点与素材，让表达有根有据。']];
+const NAV=[['today','今日工作台','把今天最重要的事，放在眼前。'],['topics','选题库','让灵感有出处，让选题有明确的受众。'],['content','内容创作','从第一句，到IP确认的那一版。'],['shoots','拍摄准备','把稿件变成镜头，把现场准备到位。'],['schedule','日程与任务','每个安排，都有时间、负责人和完成标准。'],['operations','账号矩阵与复盘','把多个平台放在一起看，把下一步放进工作里。'],['business','商务合作','从第一次沟通，到交付和回款。'],['library','IP资料库','积累经历、观点与素材，让表达有根有据。']];
 let ctx=null,ips=[],ip=null,records=[],files=[],route='today',search='',status='',showArchived=false,saving=false,dirty=false,calendarMonth='',toastTimer;
+let matrixFilters={platform:'',accountId:'',metric:'likes',from:'',to:'',page:1};
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 const localTime=()=>{const d=new Date();return `${localDate()}T${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;};
 calendarMonth=localDate().slice(0,7);
@@ -32,7 +34,7 @@ async function boot(){
  try{ctx=await api('context');$('#shell').hidden=false;$('#startup-error').hidden=true;$('#identity').textContent='无需登录 · 当前电脑使用';$('#nav').innerHTML=NAV.map(([key,title],i)=>`<a href="#${key}" data-route="${key}"><span>0${i+1}</span><span>${title}</span></a>`).join('');await reload();navigate();}
  catch(e){$('#startup-error').hidden=false;$('#startup-error').textContent=e.message+'\n请检查启动窗口是否仍在运行，再刷新页面。';}
 }
-$('#ip-select').onchange=async e=>{ip=ips.find(p=>p.id===e.target.value);search='';status='';showArchived=false;await guarded(async()=>{await reload();render();});};
+$('#ip-select').onchange=async e=>{ip=ips.find(p=>p.id===e.target.value);search='';status='';showArchived=false;matrixFilters={platform:'',accountId:'',metric:'likes',from:'',to:'',page:1};await guarded(async()=>{await reload();render();});};
 $('#menu-toggle').onclick=()=>toggleMenu(!document.body.classList.contains('nav-open'));$('#backdrop').onclick=()=>toggleMenu(false);
 function toggleMenu(open){document.body.classList.toggle('nav-open',open);$('#menu-toggle').setAttribute('aria-expanded',String(open));}
 function navigate(){const key=location.hash.slice(1);route=NAV.some(n=>n[0]===key)?key:'today';search='';status='';showArchived=false;toggleMenu(false);render();}
@@ -49,7 +51,7 @@ function heading(actions=''){
  return `<section class="page-head illustrated" data-scene="${route}" aria-labelledby="page-title"><img class="head-photo" src="${sceneImage(route)}" alt="" decoding="async" fetchpriority="high"><div class="head-copy"><span class="eyebrow">${esc(ip?.title||'YOUR IP WORKSPACE')} / 0${NAV.indexOf(n)+1}</span><h1 id="page-title">${n[1]}</h1><p>${n[2]}</p><div class="actions">${actions}</div></div></section>`;
 }
 function visualShortcuts(){
- const shortcuts=[['topics','01 / TOPICS','开始选题'],['content','02 / CONTENT','写一条内容'],['shoots','03 / SHOOT','准备拍摄'],['operations','04 / REVIEW','查看复盘']];
+ const shortcuts=[['topics','01 / TOPICS','开始选题'],['content','02 / CONTENT','写一条内容'],['shoots','03 / SHOOT','准备拍摄'],['operations','04 / MATRIX','查看账号矩阵']];
  return `<nav class="visual-shortcuts" aria-label="内容工作的四个入口">${shortcuts.map(([key,kicker,title])=>`<a class="visual-shortcut" href="#${key}"><img src="${sceneImage(key)}" alt="" loading="lazy" decoding="async"><span><small>${kicker}</small><b>${title}</b></span><i aria-hidden="true">↗</i></a>`).join('')}</nav>`;
 }
 function rowsFor(kind){return records.filter(r=>r.kind===kind&&Boolean(r.body.archived)===showArchived&&(!status||r.body.status===status)&&(!search||JSON.stringify([r.title,r.body]).toLowerCase().includes(search.toLowerCase())));}
@@ -92,12 +94,14 @@ function render(){
  if(!ip){$('#main').innerHTML=heading()+`<section class="panel">${empty('先创建你的 IP 工作空间','填一个你自己辨认的名称即可。资料、稿件和商务都会保存在这个 IP 下，不会预填虚构经历。',writable()?button('new-ip','＋ 新建第一个 IP','','primary'):'请管理员先创建 IP。')}</section>`;return;}
  if(route==='today'){$('#main').innerHTML=renderToday();return;}
  const kind={topics:'ip-topic',content:'ip-content',shoots:'ip-shoot',schedule:'ip-task',operations:'ip-release',business:'ip-deal',library:'ip-profile'}[route];
- let actions=add(kind);if(route==='schedule')actions+=add('ip-event','添加日程');if(route==='operations')actions+=add('ip-review','写复盘')+button('csv-import','导入数据 CSV')+button('csv-template','CSV模板');if(route==='library')actions+=button('rename-ip','修改 IP 名称');
+ let actions=add(kind);if(route==='schedule')actions+=add('ip-event','添加日程');if(route==='operations')actions=add('ip-account','添加矩阵账号')+button('matrix-snapshot','记录账号数据')+button('matrix-connection','查看接入进展');if(route==='library')actions+=button('rename-ip','修改 IP 名称');
  let extra='';
  if(route==='business'){const sums={};for(const r of active('ip-deal').filter(r=>r.body.status!=='未合作'&&r.body.amount)){sums[r.body.currency]??=0n;sums[r.body.currency]+=BigInt(cents(r.body.amount))-BigInt(cents(r.body.received||'0'));}extra=`<div class="money-summary">${Object.entries(sums).map(([c,n])=>`<div><span>${esc(c)} 待收款</span><strong>${money(n)}</strong><small>合同金额减累计已收，不含未合作</small></div>`).join('')}</div>`;}
- if(route==='operations')extra='<div class="note">先登记发布，再填写采集时间、数据来源和实际数据。空白代表未记录；0代表实际为零。每条发布记录保存最近一次数据，历史修改可在记录详情查看。</div>';
+ if(route==='operations')extra=renderMatrix(records,matrixFilters,writable());
  if(route==='content')extra='<div class="note">填写确认人和确认日期，才能把稿件标为已确认。已确认后修改标题或正文，需要重新审核。</div>';
- $('#main').innerHTML=heading(actions)+extra+(route==='schedule'?renderCalendar():'')+toolbar(kind)+table(kind)+(route==='schedule'?`<h2 class="section-title">日程记录</h2>${table('ip-event')}`:'')+(route==='operations'?`<h2 class="section-title">复盘与下一步</h2>${table('ip-review')}`:'')+(route==='library'?resources():'');
+ $('#main').innerHTML=heading(actions)+extra+(route==='schedule'?renderCalendar():'')+(route==='operations'?`<details class="panel release-workflow"><summary>发布登记与运营复盘</summary><div class="panel-body"><div class="actions">${add('ip-release')}${add('ip-review','写复盘')}${button('csv-import','导入发布CSV')}${button('csv-template','发布CSV模板')}</div><p class="fine">登记本人负责的稿件发布；矩阵历史作品的收录不代表本人制作。</p>${toolbar(kind)}${table(kind)}<h2 class="section-title">复盘与下一步</h2>${table('ip-review')}</div></details>`:toolbar(kind)+table(kind))+(route==='schedule'?`<h2 class="section-title">日程记录</h2>${table('ip-event')}`:'')+(route==='library'?resources():'');
+ for(const el of document.querySelectorAll('[data-matrix-filter]'))el.onchange=()=>{matrixFilters[el.dataset.matrixFilter]=el.value;if(el.dataset.matrixFilter==='platform')matrixFilters.accountId='';matrixFilters.page=1;render();};
+
  $('#search').oninput=e=>{search=e.target.value;const position=e.target.selectionStart;render();const input=$('#search');input.focus();input.setSelectionRange(position,position);};$('#status-filter').onchange=e=>{status=e.target.value;render();};$('#archived').onchange=e=>{showArchived=e.target.checked;render();};
 }
 
@@ -106,7 +110,7 @@ function fieldHTML(f,value){
  let input;
  if(f.type==='textarea')input=`<textarea name="${f.key}" maxlength="100000"${required}>${esc(v)}</textarea>`;
  else if(f.type==='select')input=`<select name="${f.key}"${required}>${f.options.map(x=>`<option${x===v?' selected':''}>${esc(x)}</option>`).join('')}</select>`;
- else if(['topic','content','file'].includes(f.type)){
+ else if(['topic','content','file','account'].includes(f.type)){
   const items=f.type==='file'?files:records.filter(r=>r.kind==='ip-'+f.type&&(!r.body.archived||r.id===v));
   input=`<select name="${f.key}"${required}><option value="">${f.required?'请选择':'不关联'}</option>${items.map(r=>`<option value="${esc(r.id)}"${r.id===v?' selected':''}>${esc(r.title||r.name)}</option>`).join('')}</select>`;
  }else{const type=['date','datetime-local','url'].includes(f.type)?f.type:['count','percent','money'].includes(f.type)?'number':'text';input=`<input name="${f.key}" type="${type}" value="${esc(v)}"${required}${['count','percent','money'].includes(f.type)?` min="0" step="${f.type==='count'?'1':f.type==='money'?'0.01':'any'}"${f.type==='percent'?' max="100"':''}`:' maxlength="100000"'}>`;}
@@ -126,7 +130,7 @@ function editor(kind,r=null,seed={}){
  };
 }
 function detailFields(r){return D[r.kind].fields.filter(f=>r.body[f.key]!==''&&r.body[f.key]!==undefined).map(f=>{let v=r.body[f.key];
- if(f.type==='content'||f.type==='topic')v=byId(v)?`<button class="record-link" data-action="view" data-id="${esc(v)}">${esc(relatedTitle(v))} ↗</button>`:'关联记录未找到';
+ if(['content','topic','account'].includes(f.type))v=byId(v)?`<button class="record-link" data-action="view" data-id="${esc(v)}">${esc(relatedTitle(v))} ↗</button>`:'关联记录未找到';
  else if(f.type==='file'){const file=files.find(x=>x.id===v);v=file?`<a href="/api/p/files/${encodeURIComponent(v)}" data-file-id="${esc(v)}">下载原件：${esc(file.name)} ↗</a>`:'关联原件未找到';}
  else if(f.type==='url')v=`<a href="${esc(v)}" target="_blank" rel="noopener noreferrer">${esc(v)} ↗</a>`;
  else if(r.kind==='ip-shoot'&&f.key==='checklist')v=String(v).split('\n').filter(Boolean).map((line,i)=>{const done=/^\s*\[x\]/i.test(line);return `<label class="check-item ${done?'done':''}"><input type="checkbox" data-check-id="${esc(r.id)}" data-check-index="${i}"${done?' checked':''}${!writable()?' disabled':''}><span>${esc(line.replace(/^\s*\[[ x]\]\s*/i,''))}</span></label>`;}).join('');
@@ -147,9 +151,9 @@ async function history(r){const items=await api(path()+'/records/'+r.id+'/versio
 function download(name,data,type='text/plain;charset=utf-8'){const blob=data instanceof Blob?data:new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);}
 const safeName=s=>s.replace(/[\\/:*?"<>|]/g,'_').slice(0,80);
 const base64=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(Error('文件读取失败'));reader.readAsDataURL(file);});
-function exportRecord(r){const text=`# ${r.title}\n\n${D[r.kind].name} · 第 ${r.revision} 版\n\n`+D[r.kind].fields.filter(f=>r.body[f.key]!==''&&r.body[f.key]!==undefined).map(f=>`## ${f.label}\n\n${['topic','content'].includes(f.type)?relatedTitle(r.body[f.key]):f.type==='file'?(files.find(x=>x.id===r.body[f.key])?.name||'原件'):r.body[f.key]}\n`).join('\n');download(safeName(r.title)+'.md',text);}
+function exportRecord(r){const text=`# ${r.title}\n\n${D[r.kind].name} · 第 ${r.revision} 版\n\n`+D[r.kind].fields.filter(f=>r.body[f.key]!==''&&r.body[f.key]!==undefined).map(f=>`## ${f.label}\n\n${['topic','content','account'].includes(f.type)?relatedTitle(r.body[f.key]):f.type==='file'?(files.find(x=>x.id===r.body[f.key])?.name||'原件'):r.body[f.key]}\n`).join('\n');download(safeName(r.title)+'.md',text);}
 async function backup(){if(!ip)return toast('请先创建IP');toast('正在准备包含原始附件的备份…');const r=await api(path()+'/export',{raw:true});download(safeName(ip.title)+'-'+localDate()+'.zip',await r.blob());toast('备份已生成，请在浏览器下载中查看');}
-function help(){modal('使用说明与数据备份',`<h2>从一个选题，走到一次复盘。</h2><div class="note">1. 新建IP，在IP资料库确认定位、经历和素材。\n2. 选题确认后转为稿件，记录审核人和确认日期。\n3. 从稿件安排拍摄、勾选准备清单，再登记发布。\n4. 填写实际数据和采集时间，把复盘的下一步建成任务。</div><p>每次点击“保存”后，数据写入本机数据库。切换板块前请保存表单；多窗口同时修改会提示版本冲突。</p><h3 class="section-title">完整 IP 备份</h3><p class="fine">包含当前账号可见的记录、资料文字和原始附件。恢复时新建一个IP，原来的IP保留。备份不含服务运行配置。</p><div class="actions" style="margin:16px 0">${button('backup','导出当前 IP 完整备份','','primary')}${writable()?button('restore-backup','从 ZIP 恢复为新 IP'):''}</div><h3 class="section-title">使用范围</h3><p class="fine">打开即用，无需注册或密码。此版本运行在这台电脑上。关掉服务窗口后页面无法继续读写，重新双击启动器即可恢复。跨电脑协作需要另外部署服务。平台发布和数据登记由人完成；本版没有接入自动发帖或AI调用。</p><p class="fine" style="margin-top:15px">公开方法来源在IP资料库中，可打开原文。资料库提纲默认待确认，不会代替IP的真实经历和观点。</p><p id="form-error" role="alert"></p>`);}
+function help(){modal('使用说明与数据备份',`<h2>从一个选题，走到一次复盘。</h2><div class="note">1. 新建IP，在IP资料库确认定位、经历和素材。\n2. 选题确认后转为稿件，记录审核人和确认日期。\n3. 从稿件安排拍摄、勾选准备清单，再登记发布。\n4. 填写实际数据和采集时间，把复盘的下一步建成任务。</div><p>每次点击“保存”后，数据写入本机数据库。切换板块前请保存表单；多窗口同时修改会提示版本冲突。</p><h3 class="section-title">完整 IP 备份</h3><p class="fine">包含当前账号可见的记录、资料文字和原始附件。恢复时新建一个IP，原来的IP保留。备份不含服务运行配置。</p><div class="actions" style="margin:16px 0">${button('backup','导出当前 IP 完整备份','','primary')}${writable()?button('restore-backup','从 ZIP 恢复为新 IP'):''}</div><h3 class="section-title">使用范围</h3><p class="fine">打开即用，无需注册或密码。此版本运行在这台电脑上。关掉服务窗口后页面无法继续读写，重新双击启动器即可恢复。跨电脑协作需要另外部署服务。账号矩阵可管理多平台账号、账号快照、作品累计数据和矩阵任务。平台自动同步尚未接通；目前已有数据为带日期的历史快照，可继续记录新数据。本版未接入自动发帖或AI调用。</p><p class="fine" style="margin-top:15px">公开方法来源在IP资料库中，可打开原文。资料库提纲默认待确认，不会代替IP的真实经历和观点。</p><p id="form-error" role="alert"></p>`);}
 function pickFile(accept){return new Promise(resolve=>{const input=document.createElement('input');input.type='file';input.accept=accept;input.onchange=()=>resolve(input.files[0]||null);input.addEventListener('cancel',()=>resolve(null));input.click();});}
 async function restoreBackup(){const file=await pickFile('.zip');if(!file)return;if(file.size>160*1024*1024)throw Error('备份压缩文件超过160 MiB，请按IP分开恢复');if(!confirm('将从备份新建一个IP，当前IP保留。继续恢复吗？'))return;toast('正在校验并恢复备份…');const p=await api('ip-import',{method:'POST',body:{data:await base64(file)}});ip=p;await reload();render();$('#dialog').close();toast('已恢复为新IP，原IP仍保留');}
 const csvColumns=['作品标题','稿件标题','平台','账号','状态','计划发布时间','实际发布时间','作品链接','采集时间','播放阅读数','点赞','评论','分享','收藏','有效咨询','完播率','数据来源','复盘备注'];
@@ -164,6 +168,11 @@ async function csvImport(){
 }
 document.addEventListener('click',e=>{const el=e.target.closest('[data-action]');if(!el)return;const action=el.dataset.action,r=byId(el.dataset.id);guarded(async()=>{
  if(saving)return;
+ if(action==='matrix-snapshot')return editor('ip-account-snapshot',null,{accountId:el.dataset.id||active('ip-account')[0]?.id||'',measuredOn:localDate(),sourceMode:'人工记录',scope:'平台主页累计'});
+ if(action==='matrix-work')return editor('ip-work-snapshot',null,{accountId:active('ip-account')[0]?.id||'',measuredOn:localDate(),sourceMode:'人工记录',scope:'作品当前累计'});
+ if(action==='matrix-connection')return modal('数据接入进展',matrixConnectionInfo());
+ if(action==='matrix-page'){matrixFilters.page=Math.max(1,matrixFilters.page+Number(el.dataset.step));return render();}
+ if(action==='matrix-task')return editor('ip-task',null,{title:el.dataset.title||'账号矩阵工作',status:'待办',notes:el.dataset.notes||'记录目标账号、要做什么、怎样验收。',templateId:'matrix-task-v1'});
  if(action==='new')return editor(el.dataset.kind);
  if(action==='view')return view(r);
  if(action==='edit')return editor(r.kind,r);
