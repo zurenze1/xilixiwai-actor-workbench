@@ -20,4 +20,5 @@ practical/tests/social-qa/
 
 # IP workspace: never publish user records, credentials or QA artifacts
 runtime-ip/
+/runtime-ip
 qa-ip/

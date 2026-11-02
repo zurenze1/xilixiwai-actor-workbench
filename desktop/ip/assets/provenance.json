@@ -1,0 +1,8 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-11-02",
+  "transparent_background": true,
+  "prompt": "Use case: logo-brand. Create one polished original macOS application icon for a Chinese personal-IP content production workbench named IP工作台. Single square 1024x1024 icon asset, front view, centered rounded-square plate occupying about 88% of the canvas; transparent outside the rounded corners. Established app palette: deep indigo #2e3a6b, midnight navy, restrained cobalt-blue edge lighting. Main mark is exactly the two uppercase Latin letters \"IP\", large, bold, beautifully balanced, satin-silver white, clearly legible at 32px. Integrate four simple fine camera-viewfinder corner brackets around the IP monogram to suggest content creation. Subtle tactile relief and a softly lit premium enamel/glass surface, carefully restrained gradients, crisp edges. Calm professional creative-software identity, strong silhouette, ample negative space. No other text, no Chinese characters, no extra symbols, no people, no scenery, no charts, no stars or planets, no badges, no document icon, no outer drop shadow or presentation background, no app mockup sheet, no watermark. Deliver the actual isolated icon asset, not a desktop screenshot.",
+  "sha256": "a5f678a127c3a799cd98a99d4069eb03ab684c2937ba0e3befbdbd2394f7e36a",
+  "source_file": "icon-master.png"
+}
