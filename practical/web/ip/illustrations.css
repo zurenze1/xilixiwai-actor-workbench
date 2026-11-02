@@ -21,3 +21,10 @@
 @media(prefers-reduced-motion:reduce){.visual-shortcut img{transition:none}.visual-shortcut:hover img{transform:none}}
 
 @media(min-width:761px){.illustrated[data-scene=today] .head-photo{object-position:67% 0%}.illustrated[data-scene=schedule] .head-photo{object-position:67% 65%}}
+
+/* The added desks use the same photographic series as the original eight. */
+.page-head.illustrated[data-scene="radar"],.page-head.illustrated[data-scene="execution"]{min-height:230px}
+.page-head[data-scene="radar"] .head-photo{object-position:65% 30%}
+.page-head[data-scene="execution"] .head-photo{object-position:65% 35%}
+.page-head[data-scene="final-check"] .head-photo{object-position:65% 20%}
+@media(max-width:760px){.page-head.illustrated[data-scene="radar"],.page-head.illustrated[data-scene="execution"]{min-height:290px;padding-top:145px}.page-head[data-scene="radar"] .head-photo,.page-head[data-scene="execution"] .head-photo,.page-head[data-scene="final-check"] .head-photo{object-position:76% 30%}.creator-tabs{gap:7px}.creator-tabs a{font-size:12px;padding:8px 10px}.creator-module-bar h2{font-size:18px}}

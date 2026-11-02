@@ -53,7 +53,7 @@ $('#close-dialog').onclick=closeDialog;$('#dialog').addEventListener('cancel',e=
 window.addEventListener('beforeunload',e=>{if(dirty||saving||creatorDirty){e.preventDefault();e.returnValue='';}});
 async function guarded(fn){try{await fn();}catch(e){if($('#dialog').open){let box=$('#form-error');if(!box){box=document.createElement('p');box.id='form-error';box.setAttribute('role','alert');$('#dialog-body').append(box);}box.textContent=e.message;}else if(e.message.includes('\n')||e.message.length>100)modal('请核对后重试',`<h2>本次操作未完成</h2><div class="note error">${esc(e.message)}</div>`);else toast(e.message);}}
 function empty(title,text,actions='',compact=false){return `<div class="empty ${compact?'compact':''}"><h2>${title}</h2><p>${text}</p>${actions}</div>`;}
-function sceneImage(key){if(key==='final-check')key='shoots';return `assets/ip-scenes-v1/${key}.jpg`;}
+function sceneImage(key){return `assets/ip-scenes-v1/${key}.jpg`;}
 function heading(actions=''){
  const n=NAV.find(n=>n[0]===route);
  return `<section class="page-head illustrated" data-scene="${route}" aria-labelledby="page-title"><img class="head-photo" src="${sceneImage(route)}" alt="" decoding="async" fetchpriority="high"><div class="head-copy"><span class="eyebrow">${esc(ip?.title||'YOUR IP WORKSPACE')} / ${String(NAV.indexOf(n)+1).padStart(2,'0')}</span><h1 id="page-title">${n[1]}</h1><p>${n[2]}</p><div class="actions">${actions}</div></div></section>`;
@@ -108,7 +108,7 @@ function render(){
  if(deskPage){
   const src='/api/p/projects/'+encodeURIComponent(ip.id)+'/creator/app/#page='+deskPage;
   const label=(CREATOR_DESKS[route]||[]).find(x=>x[0]===deskPage)?.[1]||'制作项目';
-  $('#main').innerHTML=`${tabs}<section class="creator-module-shell"><div class="creator-module-bar"><h1>${esc(label)}</h1><span>${esc(ip.title)} · 创作资料</span><a href="${src}" target="_blank" rel="noopener noreferrer">展开 ↗</a><a href="/api/p/projects/${encodeURIComponent(ip.id)}/creator/app/#page=settings" target="_blank" rel="noopener noreferrer">创作资料备份与恢复 ↗</a></div><iframe class="creator-module-frame" title="${esc(label)}" src="${src}"></iframe></section>`;return;
+  $('#main').innerHTML=heading()+`${tabs}<section class="creator-module-shell"><div class="creator-module-bar"><h2>${esc(label)}</h2><a href="${src}" target="_blank" rel="noopener noreferrer">展开 ↗</a><a href="/api/p/projects/${encodeURIComponent(ip.id)}/creator/app/#page=settings" target="_blank" rel="noopener noreferrer">创作资料备份与恢复 ↗</a></div><iframe class="creator-module-frame" title="${esc(label)}" src="${src}"></iframe></section>`;return;
  }
 
  const kind={topics:'ip-topic',content:'ip-content',shoots:'ip-shoot','final-check':'ip-finalcheck',schedule:'ip-task',operations:'ip-release',business:'ip-deal',library:'ip-profile'}[route];
