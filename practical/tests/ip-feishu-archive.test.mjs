@@ -19,6 +19,11 @@ test('Cloud bridge preserves last good snapshot, scopes IPs, and retries immutab
   const second=await f.state('a');offline=true;await assert.rejects(f.refresh());const last=await f.state('a');assert.equal(last.lastSuccess,second.lastSuccess);assert.equal(last.sources[0].records.length,1);assert.ok(last.lastError);assert.ok(!last.lastError.includes('内容'));
  }finally{await f.close();await rm(dir,{recursive:true,force:true});}
 });
+test('CLI failures retain structured permission errors and never expose command arguments',async()=>{
+ const dir=await mkdtemp(resolve('qa-ip/feishu-error-'));await mkdir(join(dir,'feishu'));await writeFile(join(dir,'feishu/connection.json'),JSON.stringify({cli:'/test/lark-cli',profile:'fixture',baseToken:'private-fixture',projects:{a:{name:'甲'}},sources:[{name:'策划',tableId:'plans'}]}));
+ let timeout=false;const runner=async()=>{throw timeout?Object.assign(Error('command private-fixture'),{killed:true,code:'ETIMEDOUT'}):Object.assign(Error('command private-fixture'),{code:1,stderr:JSON.stringify({ok:false,error:{message:'权限不足'}})});};
+ const f=feishuService({dataDir:dir,store:{},enabled:true,runner});try{await assert.rejects(f.refresh(),/权限不足/);assert.equal((await f.state('a')).lastStep,'读取策划');timeout=true;await assert.rejects(f.refresh(),/120秒/);assert.ok(!(await f.state('a')).lastError.includes('private-fixture'));}finally{await f.close();await rm(dir,{recursive:true,force:true});}
+});
 test('Snapshot content remains fixed after a new draft and archived topic survives reopening',()=>{
  const s=new Store(':memory:');try{const t=s.topic({title:'测试作品'});let draft=s.saveDraft(t.id,{draft:{title:t.title,segments:[{narration:'第一版',shot:'近景'}]}});const v=s.snapshot(t.id,'完成归档');s.topic({...t,stage:'归档'},t.id);
   s.saveDraft(t.id,{revision:draft.revision,draft:{title:t.title,segments:[{narration:'第二版',shot:'远景'}]}});assert.equal(JSON.parse(s.row('script_versions',v.id).payload).draft.segments[0].narration,'第一版');assert.equal(s.row('topics',t.id).stage,'归档');assert.match(archiveName('测试作品',new Date(),v.number),/\d\d\.\d\d 测试作品 V1/);assert.ok(!archiveFilename('A/B',new Date(),2).includes('/'));

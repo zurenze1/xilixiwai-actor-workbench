@@ -8,12 +8,14 @@ const exec=promisify(execFile),json=async p=>JSON.parse(await readFile(p,'utf8')
 const kinds={'ip-topic':'选题','ip-content':'文案脚本','ip-shoot':'拍摄准备','ip-task':'任务','ip-event':'日程','ip-profile':'IP资料','ip-review':'复盘','ip-deal':'商务合作','ip-finalcheck':'成片核对','ip-release':'发布登记'};
 export function feishuService({dataDir,store,enabled=false,runner=exec,intervalMs=600000}){
  const dir=join(dataDir,'feishu'),configFile=join(dir,'connection.json'),cacheFile=join(dir,'cache.json');
- let running=null,timer=null,debounce=null,closed=false,lastError='',lastAttempt='',exportCount=0;
+ let running=null,timer=null,debounce=null,closed=false,lastError='',lastAttempt='',lastStep='',exportCount=0;
  const write=async(p,v)=>{await mkdir(dir,{recursive:true,mode:0o700});await writeFile(p+'.tmp',JSON.stringify(v,null,2),{mode:0o600});await rename(p+'.tmp',p);};
  const config=async()=>{if(!enabled)return null;try{const c=await json(configFile);if(!isAbsolute(c.cli||'')||!c.profile||!c.baseToken||!c.projects||!Array.isArray(c.sources))throw Error('连接配置不完整');return c;}catch(e){if(e.code==='ENOENT')return null;throw e;}};
  async function command(c,action,args=[],cwd=dir){
-  let result;try{result=await runner(c.cli,['base',action,'--profile',c.profile,'--as','user','--base-token',c.baseToken,...args],{cwd,timeout:120000,maxBuffer:16*1024*1024});}catch(e){result={stdout:e.stdout||''};}
-  let value;try{value=JSON.parse(result.stdout);}catch{throw Error('飞书CLI未返回有效结果，请检查本机登录');}
+  let result,failure;try{result=await runner(c.cli,['base',action,'--profile',c.profile,'--as','user','--base-token',c.baseToken,...args],{cwd,timeout:120000,maxBuffer:16*1024*1024});}catch(e){failure=e;result={stdout:e.stdout||'',stderr:e.stderr||''};}
+  let value;for(const output of [result.stdout,result.stderr]){try{value=JSON.parse(output);break;}catch{}}
+  if(failure&&value?.ok!==false)throw Error(failure.killed?'飞书读取超过120秒，已保留上次快照':`飞书CLI执行失败（${failure.code||'未知退出状态'}），已保留上次快照`);
+  if(!value)throw Error('飞书CLI未返回有效结果，请检查本机登录');
   if(value.manifest_version==='v1'&&value.format==='ndjson')return value;
   if(value.ok!==true)throw Error('飞书操作未完成：'+(value.error?.message||value.error?.type||value.code||'请检查登录和原表权限'));
   return value.data;
@@ -44,15 +46,15 @@ export function feishuService({dataDir,store,enabled=false,runner=exec,intervalM
  }
  async function refresh(){if(running)return running;running=(async()=>{
   lastAttempt=new Date().toISOString();try{const c=await config();if(!c)return;await mkdir(dir,{recursive:true,mode:0o700});
-   const sources=[];for(const s of c.sources)sources.push({...s,records:await list(c,s.tableId)});
+   const sources=[];for(const s of c.sources){lastStep='读取'+s.name;sources.push({...s,records:await list(c,s.tableId)});}
    // Append immutable version rows. Read remote keys each time so retry after a crash is idempotent.
-   if(c.productionTable){const remote=await list(c,c.productionTable),keys=new Set(remote.map(r=>r['本机记录ID'])),pending=(await snapshots(c)).filter(r=>!keys.has(r['本机记录ID']));
+   if(c.productionTable){lastStep='核对制作版本';const remote=await list(c,c.productionTable),keys=new Set(remote.map(r=>r['本机记录ID'])),pending=(await snapshots(c)).filter(r=>!keys.has(r['本机记录ID']));lastStep='保存制作版本';
     for(let i=0;i<pending.length;i+=50)await command(c,'+record-batch-create',['--table-id',c.productionTable,'--json',JSON.stringify({create_records:pending.slice(i,i+50)})]);exportCount=pending.length;
    }
-   await write(cacheFile,{lastSuccess:new Date().toISOString(),sources});lastError='';
+   await write(cacheFile,{lastSuccess:new Date().toISOString(),sources});lastError='';lastStep='同步完成';
   }catch(e){lastError=String(e.message||e).slice(0,500);throw e;}
  })().finally(()=>{running=null;});return running;}
- async function state(pid){const c=await config();let cache={sources:[]};try{cache=await json(cacheFile);}catch{}return {configured:!!c?.projects?.[pid],connected:!!c?.projects?.[pid]&&!!cache.lastSuccess,sourceUrl:c?.url||'',operator:c?.operator||'',destination:c?.destination||'',lastSuccess:cache.lastSuccess||'',lastAttempt,lastError,refreshing:!!running,exportCount,project:c?.projects?.[pid]?.name||'',sources:(cache.sources||[]).filter(s=>!s.projects||s.projects.includes(pid)).map(s=>({name:s.name,type:s.type,url:s.url,tableId:s.tableId,records:(c?.projects?.[pid]?s.records:[]).filter(r=>!r.IP||r.IP===c?.projects?.[pid]?.name)}))};}
+ async function state(pid){const c=await config();let cache={sources:[]};try{cache=await json(cacheFile);}catch{}return {configured:!!c?.projects?.[pid],connected:!!c?.projects?.[pid]&&!!cache.lastSuccess,sourceUrl:c?.url||'',operator:c?.operator||'',destination:c?.destination||'',lastSuccess:cache.lastSuccess||'',lastAttempt,lastStep,lastError,refreshing:!!running,exportCount,project:c?.projects?.[pid]?.name||'',sources:(cache.sources||[]).filter(s=>!s.projects||s.projects.includes(pid)).map(s=>({name:s.name,type:s.type,url:s.url,tableId:s.tableId,records:(c?.projects?.[pid]?s.records:[]).filter(r=>!r.IP||r.IP===c?.projects?.[pid]?.name)}))};}
  function schedule(){if(closed||!enabled)return;clearTimeout(debounce);debounce=setTimeout(()=>refresh().catch(()=>{}),1800);debounce.unref?.();}
  function start(){if(!enabled)return;schedule();timer=setInterval(()=>refresh().catch(()=>{}),intervalMs);timer.unref?.();}
  async function close(){closed=true;clearTimeout(timer);clearTimeout(debounce);await running?.catch(()=>{});}
