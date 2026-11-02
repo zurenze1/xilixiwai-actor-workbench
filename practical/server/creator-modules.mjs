@@ -6,10 +6,15 @@ import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('../modules/creator-workbench/',import.meta.url));
 import {Store} from '../modules/creator-workbench/server/store.mjs';
+import {DatabaseSync} from 'node:sqlite';
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
 async function unusedPort(){const s=createServer();await new Promise((r,j)=>{s.once('error',j);s.listen(0,'127.0.0.1',r);});const port=s.address().port;await new Promise(r=>s.close(r));return port;}
 export function creatorModules(dataDir){
  const children=new Map();
+ function summary(project){
+  let db;try{db=new DatabaseSync(resolve(dataDir,'creator-modules',project.id,'workbench.sqlite'),{readOnly:true});return Object.fromEntries(['topics','sources','blobs','publications','script_versions','metric_snapshots','transcripts'].map(t=>[t,db.prepare('SELECT count(*) n FROM '+t).get().n]));}
+  catch(e){if(e.code==='ERR_SQLITE_ERROR'&&e.message.includes('unable to open'))return null;throw e;}finally{db?.close();}
+ }
  async function start(project){
   if(children.has(project.id))return children.get(project.id).ready;
   const state={proc:null,ready:null};children.set(project.id,state);
@@ -38,5 +43,5 @@ export function creatorModules(dataDir){
   });
  }
  async function close(){await Promise.allSettled([...children.values()].map(async s=>{try{await s.ready;}catch{}if(!s.proc||s.proc.exitCode!=null||s.proc.signalCode)return;s.proc.kill('SIGTERM');await Promise.race([new Promise(r=>s.proc.once('exit',r)),delay(6000).then(()=>{if(s.proc.exitCode==null&&!s.proc.signalCode)s.proc.kill('SIGKILL');})]);}));children.clear();}
- return {start,proxy,close};
+ return {start,proxy,close,summary};
 }

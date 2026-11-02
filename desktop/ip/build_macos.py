@@ -64,7 +64,7 @@ def main():
     info = {
         'CFBundleName':'IP工作台','CFBundleDisplayName':'IP工作台','CFBundleExecutable':'IPWorkbench',
         'CFBundleIdentifier':'com.zurenze.ip-workbench','CFBundlePackageType':'APPL',
-        'CFBundleShortVersionString':'1.0.4','CFBundleVersion':'5',
+        'CFBundleShortVersionString':'1.1.0','CFBundleVersion':'6',
         'CFBundleIconFile':'IPWorkbench','LSMinimumSystemVersion':'13.5',
         'LSMultipleInstancesProhibited':True,'NSHighResolutionCapable':True,
         'NSAppTransportSecurity':{'NSAllowsLocalNetworking':True},

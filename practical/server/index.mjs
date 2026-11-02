@@ -57,7 +57,7 @@ export async function createApp({dataDir=resolve(HERE,'../../../runtime-practica
    res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','same-origin');
    if(profile==='ip'&&req.headers.host!==new URL(baseURL).host)fail('请使用本机工作台地址访问',403);
    if(path.startsWith('/api/auth/')){if(profile==='ip')fail('本机IP版无需账号登录',404);await toNodeHandler(identity.auth)(req,res);return;}
-   if(path==='/api/health'){json(res,200,{ok:true,mode:baseURL.startsWith('https:')?'online':'local',version:'3.1-practical',profile,...(profile==='ip'?{ipVersion:'1.4.1'}:{})});return;}
+   if(path==='/api/health'){json(res,200,{ok:true,mode:baseURL.startsWith('https:')?'online':'local',version:'3.1-practical',profile,...(profile==='ip'?{ipVersion:'1.5.0'}:{})});return;}
    if(!path.startsWith('/api/p/')){
     if(method!=='GET'&&method!=='HEAD')fail('不支持的方法',405);
     if(path==='/'||path==='/practical'){res.writeHead(302,{Location:profile==='ip'?'/practical/ip/':'/practical/'});res.end();return;}
@@ -80,6 +80,7 @@ export async function createApp({dataDir=resolve(HERE,'../../../runtime-practica
    const pm=path.match(/^\/api\/p\/projects\/([^/]+)(?:\/(.*))?$/);
    if(pm){const pid=pm[1],sub=pm[2]||'',p=store.project(pid,studio,user.id,!['GET','HEAD'].includes(method)&&!(sub==='module'&&method==='POST'));
     if(!['GET','HEAD'].includes(method))res.once('finish',()=>{if(res.statusCode<300)feishu.schedule();});
+    if(sub==='creator-summary'&&method==='GET'){if(profile!=='ip')fail('仅本机IP版支持创作资料',404);json(res,200,creator.summary(p));return;}
     if(sub==='feishu'&&method==='GET'){json(res,200,await feishu.state(pid));return;}
     if(sub==='feishu/sync'&&method==='POST'){if(profile!=='ip')fail('仅本机IP版支持飞书连接',404);await feishu.refresh();json(res,200,await feishu.state(pid));return;}
     if(!sub&&method==='GET'){json(res,200,p);return;}

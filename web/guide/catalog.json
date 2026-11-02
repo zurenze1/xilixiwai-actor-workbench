@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "42f9d6332b0a7e4c9ddb93e7ebeb8e676a0b3c3b9f53f9ae66f324172cce3b65",
+  "sourceHash": "e5502eefa0695a20cf46ab8e45a377c27260492edc9eec3a1604d079d0b6edbf",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -40,7 +40,7 @@
     },
     {
       "path": "practical/web/ip/app.js",
-      "sha256": "2a07f38ec2d81dcd0b35ca304e42476af74aeb355174099b05cddc6eb9965be1"
+      "sha256": "2b46ba390a13ee2e1dea496d10aa49f1e712b1c5d3937d75caa3245621bf8cb0"
     },
     {
       "path": "practical/web/ip/archive-model.mjs",
@@ -49,6 +49,10 @@
     {
       "path": "practical/web/ip/content-risk.js",
       "sha256": "a2849df9b663745f11659c42bba800cbb91bfbcefdff88fd2b467f24ede75b38"
+    },
+    {
+      "path": "practical/web/ip/creator-navigation.mjs",
+      "sha256": "6c619a6fd65e6dbfd0110a97f4032006a03805cc5280464d65c33abc58a48ce9"
     },
     {
       "path": "practical/web/ip/feishu.js",
@@ -64,7 +68,7 @@
     },
     {
       "path": "practical/web/ip/index.html",
-      "sha256": "c1dd7450b347fbd8006d79945cd080cd8b2be596efbc5e22e5d772881d734403"
+      "sha256": "c9a681fc29200c485766eb58e5562664eba4a274ffd5c0e4d21afd022f452c99"
     },
     {
       "path": "practical/web/ip/matrix.css",
@@ -80,7 +84,7 @@
     },
     {
       "path": "practical/web/ip/review.css",
-      "sha256": "8538cb12fe04a1a77e582a4979864cfc9ed7c3c57f8fe83774144a26993b5f6c"
+      "sha256": "fc00c00bdceb148322eeb7b3d8991370af42c68405b03e9198d914aecebf8cce"
     },
     {
       "path": "practical/web/ip/schema.js",
@@ -3033,6 +3037,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "5b9d1adfd0ce13f4e271bb50860f2cf839e449b18c23920fd55711bdce7ba212",
-  "generatedAt": "2026-11-02T17:23:32.801Z"
+  "contentHash": "1bf899e23398344bbe7a776cc87dc54fcb24ac9ed5fe2bb5515313c7f229e558",
+  "generatedAt": "2026-11-02T18:44:14.514Z"
 }
