@@ -16,6 +16,9 @@ jobs:
       - run: npm test
       - run: npm run test:practical
       - run: npm run test:ip
+      - run: npm run build:creator-modules
+      - run: git diff --exit-code -- practical/modules/creator-workbench/dist
+      - run: npm run test:creator-modules
       - run: npm run build:demo-lab
       - run: git diff --exit-code -- web/demo-lab/forms.js web/demo-lab/sources.json
       - run: npm run build:demo-operations

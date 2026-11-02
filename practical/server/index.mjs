@@ -1,3 +1,4 @@
+import {creatorModules} from './creator-modules.mjs';
 import http from 'node:http';
 import {readFile,writeFile,unlink,mkdir} from 'node:fs/promises';
 import {resolve,join,extname,dirname} from 'node:path';
@@ -22,7 +23,7 @@ const KINDS=new Set([...IP_KINDS,'module','evaluation','scene','task','event','m
 export async function createApp({dataDir=resolve(HERE,'../../../runtime-practical'),baseURL='http://127.0.0.1:4930',modelRunner=runModel,sourceFetcher=fetchSource,enableLocalTools=false,cliRunner=runCLI,profile='actor'}={}){
  if(profile==='ip'&&!['127.0.0.1','localhost'].includes(new URL(baseURL).hostname))throw Error('免登录IP版只能在本机地址运行');
  const identity=await createAuth({dataDir,baseURL}),store=createDatabase(dataDir,identity.masterSecret),files=fileService(store,dataDir),running=new Map(),pendingJobs=new Set();if(enableLocalTools&&(process.env.PRACTICAL_MODE==='online'||!['localhost','127.0.0.1'].includes(new URL(baseURL).hostname)))throw Error('本机工具只能在127.0.0.1/localhost本机模式启用');
- const social=socialService(store,files);
+ const social=socialService(store,files),creator=creatorModules(dataDir);
  const localIPUser=profile==='ip'?{id:store.get("SELECT value FROM settings WHERE key='local_owner'")?.value||'ip-local-owner',name:'本机工作空间',email:''}:null;
  if(localIPUser){const studio=store.ensureStudio(localIPUser)[0].id;if(!store.get("SELECT id FROM projects WHERE studio_id=? AND json_extract(data,'$.internal') IS NULL",studio)){const stamp=now();store.run('INSERT INTO projects VALUES(?,?,?,?,?,?,?,?,?,?,?)',id(),studio,'我的IP','',0,1,JSON.stringify({director:'',production:'',notes:''}),0,localIPUser.id,stamp,stamp);}}
  store.run("UPDATE jobs SET status='error',error='服务重启，中断任务未自动重发；请确认后重试',updated_at=? WHERE status IN ('queued','running')",now());
@@ -55,7 +56,7 @@ export async function createApp({dataDir=resolve(HERE,'../../../runtime-practica
    res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','same-origin');
    if(profile==='ip'&&req.headers.host!==new URL(baseURL).host)fail('请使用本机工作台地址访问',403);
    if(path.startsWith('/api/auth/')){if(profile==='ip')fail('本机IP版无需账号登录',404);await toNodeHandler(identity.auth)(req,res);return;}
-   if(path==='/api/health'){json(res,200,{ok:true,mode:baseURL.startsWith('https:')?'online':'local',version:'3.1-practical',profile,...(profile==='ip'?{ipVersion:'1.2.0'}:{})});return;}
+   if(path==='/api/health'){json(res,200,{ok:true,mode:baseURL.startsWith('https:')?'online':'local',version:'3.1-practical',profile,...(profile==='ip'?{ipVersion:'1.3.0'}:{})});return;}
    if(!path.startsWith('/api/p/')){
     if(method!=='GET'&&method!=='HEAD')fail('不支持的方法',405);
     if(path==='/'||path==='/practical'){res.writeHead(302,{Location:profile==='ip'?'/practical/ip/':'/practical/'});res.end();return;}
@@ -66,6 +67,8 @@ export async function createApp({dataDir=resolve(HERE,'../../../runtime-practica
    }
    if(!['GET','HEAD'].includes(method)&&req.headers.origin!==new URL(baseURL).origin)fail('请求来源不匹配，请从工作台页面提交',403);
    const session=localIPUser?{user:localIPUser}:await identity.auth.api.getSession({headers:fromNodeHeaders(req.headers)});if(!session)fail('请先登录',401);const user=session.user,studios=store.ensureStudio(user),studio=req.headers['x-studio-id']||studios[0].id,membership=store.member(studio,user.id),owner=()=>{if(membership.role!=='owner')fail('仅工作室管理员可操作',403);};
+   const creatorPath=path.match(/^\/api\/p\/projects\/([a-f0-9-]+)\/creator\/app\/(.*)$/);
+   if(creatorPath){if(profile!=='ip')fail('该模块用于本机IP工作台',404);const project=store.project(creatorPath[1],studio,user.id,!['GET','HEAD'].includes(method));await creator.proxy(req,res,{project,suffix:creatorPath[2],query:url.search,baseURL});return;}
    let b;if(!['GET','HEAD'].includes(method))b=await body(req);
    if(path==='/api/p/context'&&method==='GET'){json(res,200,{user:{id:user.id,name:user.name,email:user.email},studios,studioId:studio,role:membership.role,personalProjectId:store.personalProject(studio,user),businessProjectId:store.businessProject(studio,user),socialProjectId:store.socialProject(studio,user),tasks:TASKS,deployment:{mode:baseURL.startsWith('https:')?'online':'local',baseURL},capabilities:{apiModels:true,localTools:enableLocalTools&&store.get("SELECT value FROM settings WHERE key='local_owner'")?.value===user.id,automaticTaxFiling:false}});return;}
    if(path==='/api/p/members'&&method==='GET'){json(res,200,store.all('SELECT user_id,name,email,role FROM members WHERE studio_id=?',studio));return;}
@@ -131,6 +134,6 @@ export async function createApp({dataDir=resolve(HERE,'../../../runtime-practica
    fail('接口不存在',404);
   }catch(e){if(res.headersSent){res.end();return;}const status=e.status||((e.name==='AnalysisError')?400:500);json(res,status,{error:status===500?'操作失败，请检查服务日志；原始资料仍保留':e.message});if(status===500)console.error('[practical]',e.name,'operation failed');}
  });
- return {server,store,files,auth:identity.auth,listen:(port=4930,host='127.0.0.1')=>new Promise(resolve=>server.listen(port,host,()=>resolve(server.address()))),close:async()=>{for(const c of running.values())c.abort();await new Promise(resolve=>server.close(resolve));await Promise.allSettled([...pendingJobs]);store.close();identity.close();}};
+ return {server,store,files,auth:identity.auth,listen:(port=4930,host='127.0.0.1')=>new Promise(resolve=>server.listen(port,host,()=>resolve(server.address()))),close:async()=>{await creator.close();for(const c of running.values())c.abort();await new Promise(resolve=>server.close(resolve));await Promise.allSettled([...pendingJobs]);store.close();identity.close();}};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){const port=Number(process.env.PORT||4930),online=process.env.PRACTICAL_MODE==='online',baseURL=process.env.PUBLIC_URL||`http://127.0.0.1:${port}`;if(online&&!baseURL.startsWith('https://'))throw Error('在线模式必须配置HTTPS PUBLIC_URL');const app=await createApp({dataDir:process.env.DATA_DIR,baseURL,enableLocalTools:process.argv.includes('--local-tools')});await app.listen(port,online?'0.0.0.0':'127.0.0.1');console.log('实战工作台 '+baseURL+'/practical/');for(const sig of ['SIGINT','SIGTERM'])process.once(sig,()=>app.close().then(()=>process.exit(0)));}

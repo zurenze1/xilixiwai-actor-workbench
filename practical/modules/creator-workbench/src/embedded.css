@@ -1,0 +1,1 @@
+html[data-theme] .shell>.sidebar,html[data-theme] .topbar,html[data-theme] .ip-context{display:none!important}html[data-theme] .workspace{width:100%!important;margin:0!important}html[data-theme] .workspace main{padding:20px!important;max-width:none}.shell{display:block!important}body{background:#f5f7f5!important}

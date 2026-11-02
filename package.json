@@ -1,6 +1,6 @@
 {
   "name": "xilixiwai-actor-workbench",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -18,18 +18,32 @@
     "build:demo-operations": "node scripts/build-demo-operations.mjs",
     "build:demo-previs": "node scripts/build-demo-previs.mjs",
     "build:demo-tools": "node scripts/build-demo-tools.mjs",
-    "start:ip": "node practical/server/ip-start.mjs",
-    "test:ip": "node --test practical/tests/ip.test.mjs practical/tests/ip-matrix.test.mjs"
+    "start:ip": "npm run build:creator-modules && node practical/server/ip-start.mjs",
+    "test:ip": "node --test practical/tests/ip.test.mjs practical/tests/ip-matrix.test.mjs",
+    "build:creator-modules": "node scripts/build-creator-modules.mjs",
+    "test:creator-modules": "node --test practical/tests/creator-modules.test.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.131.0",
+    "@fastify/multipart": "10.1.3",
+    "@fastify/static": "10.1.6",
     "@mozilla/readability": "0.6.0",
+    "@tesseract.js-data/chi_sim": "1.0.0",
     "better-auth": "1.7.12",
+    "fastify": "5.12.7",
     "fflate": "0.8.3",
     "idb-keyval": "6.2.2",
+    "jsdom": "30.1.2",
     "linkedom": "0.18.14",
     "mammoth": "^1.11.0",
     "papaparse": "^5.5.3",
+    "pdf-parse": "2.4.5",
     "pdfjs-dist": "6.4.299",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tar-stream": "3.2.2",
+    "tesseract.js": "7.0.0",
+    "undici": "8.12.3",
     "zod": "4.6.7"
   },
   "devDependencies": {
@@ -38,6 +52,11 @@
     "playwright": "1.62.1"
   },
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=24.21.0"
+  },
+  "overrides": {
+    "@fastify/static": {
+      "glob": "14.0.3"
+    }
   }
 }

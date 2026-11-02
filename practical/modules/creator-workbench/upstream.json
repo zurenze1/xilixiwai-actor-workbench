@@ -1,0 +1,14 @@
+{
+  "source": "zurenze1/content-workbench",
+  "sourceVersion": "0.10.4",
+  "modules": [
+    "hotspot-radar",
+    "storyboard-execution"
+  ],
+  "adaptations": [
+    "relative API base",
+    "IP-owned navigation",
+    "same-origin authenticated embedding"
+  ],
+  "privateDataIncluded": false
+}

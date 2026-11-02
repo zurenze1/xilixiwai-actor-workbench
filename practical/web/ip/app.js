@@ -2,8 +2,10 @@ import {renderMatrix,matrixConnectionInfo} from './matrix.js?v=20261102';
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const {D,validate,cents}=window.IPSchema;
-const NAV=[['today','今日工作台','把今天最重要的事，放在眼前。'],['topics','选题库','让灵感有出处，让选题有明确的受众。'],['content','内容创作','从第一句，到IP确认的那一版。'],['shoots','拍摄准备','把稿件变成镜头，把现场准备到位。'],['schedule','日程与任务','每个安排，都有时间、负责人和完成标准。'],['operations','账号矩阵与复盘','把多个平台放在一起看，把下一步放进工作里。'],['business','商务合作','从第一次沟通，到交付和回款。'],['library','IP资料库','积累经历、观点与素材，让表达有根有据。']];
+const NAV=[['today','今日工作台','把今天最重要的事，放在眼前。'],['radar','热点雷达','按日期查看人物、文化、AI与观众反馈。'],['execution','分镜执行台','把文案、画面、声音和执行要求放在一起。'],['topics','选题库','让灵感有出处，让选题有明确的受众。'],['content','内容创作','从第一句，到IP确认的那一版。'],['shoots','拍摄准备','把稿件变成镜头，把现场准备到位。'],['schedule','日程与任务','每个安排，都有时间、负责人和完成标准。'],['operations','账号矩阵与复盘','把多个平台放在一起看，把下一步放进工作里。'],['business','商务合作','从第一次沟通，到交付和回款。'],['library','IP资料库','积累经历、观点与素材，让表达有根有据。']];
 let ctx=null,ips=[],ip=null,records=[],files=[],route='today',search='',status='',showArchived=false,saving=false,dirty=false,calendarMonth='',toastTimer;
+let creatorDirty=false;
+window.addEventListener('message',e=>{const f=document.querySelector('.creator-module-frame');if(e.origin===location.origin&&e.source===f?.contentWindow&&e.data?.type==='creator-dirty')creatorDirty=e.data.dirty===true;});
 let matrixFilters={platform:'',accountId:'',metric:'likes',from:'',to:'',page:1};
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 const localTime=()=>{const d=new Date();return `${localDate()}T${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;};
@@ -31,24 +33,24 @@ async function reload(){
  $('#sync').textContent='已读取 '+new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
 }
 async function boot(){
- try{ctx=await api('context');$('#shell').hidden=false;$('#startup-error').hidden=true;$('#identity').textContent='无需登录 · 当前电脑使用';$('#nav').innerHTML=NAV.map(([key,title],i)=>`<a href="#${key}" data-route="${key}"><span>0${i+1}</span><span>${title}</span></a>`).join('');await reload();navigate();}
- catch(e){$('#startup-error').hidden=false;$('#startup-error').textContent=e.message+'\n请检查启动窗口是否仍在运行，再刷新页面。';}
+ try{ctx=await api('context');$('#shell').hidden=false;$('#startup-error').hidden=true;$('#identity').textContent='无需登录 · 当前电脑使用';$('#nav').innerHTML=NAV.map(([key,title],i)=>`<a href="#${key}" data-route="${key}"><span>${String(i+1).padStart(2,'0')}</span><span>${title}</span></a>`).join('');await reload();navigate();}
+ catch(e){$('#startup-error').hidden=false;$('#startup-error').textContent=e.message+'\n请重新打开 IP 工作台，再刷新页面。';}
 }
-$('#ip-select').onchange=async e=>{ip=ips.find(p=>p.id===e.target.value);search='';status='';showArchived=false;matrixFilters={platform:'',accountId:'',metric:'likes',from:'',to:'',page:1};await guarded(async()=>{await reload();render();});};
+$('#ip-select').onchange=async e=>{if(creatorDirty){e.target.value=ip.id;toast('分镜还有修改未保存，请先保存。');return;}ip=ips.find(p=>p.id===e.target.value);search='';status='';showArchived=false;matrixFilters={platform:'',accountId:'',metric:'likes',from:'',to:'',page:1};await guarded(async()=>{await reload();render();});};
 $('#menu-toggle').onclick=()=>toggleMenu(!document.body.classList.contains('nav-open'));$('#backdrop').onclick=()=>toggleMenu(false);
 function toggleMenu(open){document.body.classList.toggle('nav-open',open);$('#menu-toggle').setAttribute('aria-expanded',String(open));}
-function navigate(){const key=location.hash.slice(1);route=NAV.some(n=>n[0]===key)?key:'today';search='';status='';showArchived=false;toggleMenu(false);render();}
+function navigate(){if(creatorDirty){window.history.replaceState(null,'','#'+route);toast('分镜还有修改未保存，请先保存。');return;}const key=location.hash.slice(1);route=NAV.some(n=>n[0]===key)?key:'today';search='';status='';showArchived=false;toggleMenu(false);render();}
 window.addEventListener('hashchange',navigate);
 function modal(title,html){dirty=false;$('#dialog-label').textContent=title;$('#dialog-body').innerHTML=html;if(!$('#dialog').open)$('#dialog').showModal();$('#dialog').scrollTop=0;}
 function closeDialog(){if(saving)return;if(dirty&&!confirm('还有未保存的修改，确定关闭吗？'))return;dirty=false;$('#dialog').close();}
 $('#close-dialog').onclick=closeDialog;$('#dialog').addEventListener('cancel',e=>{e.preventDefault();closeDialog();});$('#dialog').addEventListener('input',()=>{if($('#record-form')||$('#ip-form'))dirty=true;});
-window.addEventListener('beforeunload',e=>{if(dirty||saving){e.preventDefault();e.returnValue='';}});
+window.addEventListener('beforeunload',e=>{if(dirty||saving||creatorDirty){e.preventDefault();e.returnValue='';}});
 async function guarded(fn){try{await fn();}catch(e){if($('#dialog').open){let box=$('#form-error');if(!box){box=document.createElement('p');box.id='form-error';box.setAttribute('role','alert');$('#dialog-body').append(box);}box.textContent=e.message;}else if(e.message.includes('\n')||e.message.length>100)modal('请核对后重试',`<h2>本次操作未完成</h2><div class="note error">${esc(e.message)}</div>`);else toast(e.message);}}
 function empty(title,text,actions='',compact=false){return `<div class="empty ${compact?'compact':''}"><h2>${title}</h2><p>${text}</p>${actions}</div>`;}
 function sceneImage(key){return `assets/ip-scenes-v1/${key}.jpg`;}
 function heading(actions=''){
  const n=NAV.find(n=>n[0]===route);
- return `<section class="page-head illustrated" data-scene="${route}" aria-labelledby="page-title"><img class="head-photo" src="${sceneImage(route)}" alt="" decoding="async" fetchpriority="high"><div class="head-copy"><span class="eyebrow">${esc(ip?.title||'YOUR IP WORKSPACE')} / 0${NAV.indexOf(n)+1}</span><h1 id="page-title">${n[1]}</h1><p>${n[2]}</p><div class="actions">${actions}</div></div></section>`;
+ return `<section class="page-head illustrated" data-scene="${route}" aria-labelledby="page-title"><img class="head-photo" src="${sceneImage(route)}" alt="" decoding="async" fetchpriority="high"><div class="head-copy"><span class="eyebrow">${esc(ip?.title||'YOUR IP WORKSPACE')} / ${String(NAV.indexOf(n)+1).padStart(2,'0')}</span><h1 id="page-title">${n[1]}</h1><p>${n[2]}</p><div class="actions">${actions}</div></div></section>`;
 }
 function visualShortcuts(){
  const shortcuts=[['topics','01 / TOPICS','开始选题'],['content','02 / CONTENT','写一条内容'],['shoots','03 / SHOOT','准备拍摄'],['operations','04 / MATRIX','查看账号矩阵']];
@@ -93,6 +95,11 @@ function render(){
  if(!ctx)return;$('#crumb').textContent=NAV.find(n=>n[0]===route)[1];document.querySelectorAll('#nav a').forEach(a=>{a.classList.toggle('active',a.dataset.route===route);if(a.dataset.route===route)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
  if(!ip){$('#main').innerHTML=heading()+`<section class="panel">${empty('先创建你的 IP 工作空间','填一个你自己辨认的名称即可。资料、稿件和商务都会保存在这个 IP 下，不会预填虚构经历。',writable()?button('new-ip','＋ 新建第一个 IP','','primary'):'请管理员先创建 IP。')}</section>`;return;}
  if(route==='today'){$('#main').innerHTML=renderToday();return;}
+ if(route==='radar'||route==='execution'){
+  const page=route==='radar'?'daily':'edit-plan',src='/api/p/projects/'+encodeURIComponent(ip.id)+'/creator/app/#page='+page;
+  $('#main').innerHTML=`<section class="creator-module-shell"><div class="creator-module-bar"><h1>${route==='radar'?'热点雷达':'分镜执行台'}</h1><span>${esc(ip.title)} · 独立保存</span><a href="${src}" target="_blank" rel="noopener noreferrer">在新标签页展开 ↗</a><a href="/api/p/projects/${encodeURIComponent(ip.id)}/creator/app/#page=settings" target="_blank" rel="noopener noreferrer">模块备份与恢复 ↗</a></div><iframe class="creator-module-frame" title="${route==='radar'?'热点雷达':'分镜执行台'}" src="${src}"></iframe></section>`;return;
+ }
+
  const kind={topics:'ip-topic',content:'ip-content',shoots:'ip-shoot',schedule:'ip-task',operations:'ip-release',business:'ip-deal',library:'ip-profile'}[route];
  let actions=add(kind);if(route==='schedule')actions+=add('ip-event','添加日程');if(route==='operations')actions=add('ip-account','添加矩阵账号')+button('matrix-snapshot','记录账号数据')+button('matrix-connection','查看接入进展');if(route==='library')actions+=button('rename-ip','修改 IP 名称');
  let extra='';
@@ -152,8 +159,8 @@ function download(name,data,type='text/plain;charset=utf-8'){const blob=data ins
 const safeName=s=>s.replace(/[\\/:*?"<>|]/g,'_').slice(0,80);
 const base64=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(Error('文件读取失败'));reader.readAsDataURL(file);});
 function exportRecord(r){const text=`# ${r.title}\n\n${D[r.kind].name} · 第 ${r.revision} 版\n\n`+D[r.kind].fields.filter(f=>r.body[f.key]!==''&&r.body[f.key]!==undefined).map(f=>`## ${f.label}\n\n${['topic','content','account'].includes(f.type)?relatedTitle(r.body[f.key]):f.type==='file'?(files.find(x=>x.id===r.body[f.key])?.name||'原件'):r.body[f.key]}\n`).join('\n');download(safeName(r.title)+'.md',text);}
-async function backup(){if(!ip)return toast('请先创建IP');toast('正在准备包含原始附件的备份…');const r=await api(path()+'/export',{raw:true});download(safeName(ip.title)+'-'+localDate()+'.zip',await r.blob());toast('备份已生成，请在浏览器下载中查看');}
-function help(){modal('使用说明与数据备份',`<h2>从一个选题，走到一次复盘。</h2><div class="note">1. 新建IP，在IP资料库确认定位、经历和素材。\n2. 选题确认后转为稿件，记录审核人和确认日期。\n3. 从稿件安排拍摄、勾选准备清单，再登记发布。\n4. 填写实际数据和采集时间，把复盘的下一步建成任务。</div><p>每次点击“保存”后，数据写入本机数据库。切换板块前请保存表单；多窗口同时修改会提示版本冲突。</p><h3 class="section-title">完整 IP 备份</h3><p class="fine">包含当前账号可见的记录、资料文字和原始附件。恢复时新建一个IP，原来的IP保留。备份不含服务运行配置。</p><div class="actions" style="margin:16px 0">${button('backup','导出当前 IP 完整备份','','primary')}${writable()?button('restore-backup','从 ZIP 恢复为新 IP'):''}</div><h3 class="section-title">使用范围</h3><p class="fine">打开即用，无需注册或密码。此版本运行在这台电脑上。关掉服务窗口后页面无法继续读写，重新双击启动器即可恢复。跨电脑协作需要另外部署服务。账号矩阵可管理多平台账号、账号快照、作品累计数据和矩阵任务。平台自动同步尚未接通；目前已有数据为带日期的历史快照，可继续记录新数据。本版未接入自动发帖或AI调用。</p><p class="fine" style="margin-top:15px">公开方法来源在IP资料库中，可打开原文。资料库提纲默认待确认，不会代替IP的真实经历和观点。</p><p id="form-error" role="alert"></p>`);}
+async function backup(){if(!ip)return toast('请先创建IP');toast('正在准备包含原始附件的备份…');const r=await api(path()+'/export',{raw:true});download(safeName(ip.title)+'-'+localDate()+'.zip',await r.blob());toast('备份已生成，请确认文件已保存');}
+function help(){modal('使用说明与数据备份',`<h2>从一个选题，走到一次复盘。</h2><div class="note">1. 新建IP，在IP资料库确认定位、经历和素材。\n2. 选题确认后转为稿件，记录审核人和确认日期。\n3. 从稿件安排拍摄、勾选准备清单，再登记发布。\n4. 填写实际数据和采集时间，把复盘的下一步建成任务。</div><p>每次点击“保存”后，数据写入本机数据库。切换板块前请保存表单；多窗口同时修改会提示版本冲突。</p><h3 class="section-title">IP基础资料备份</h3><p class="fine">包含当前账号可见的基础记录、资料文字和原始附件。热点雷达与分镜执行台使用独立资料目录，请在两个模块上方的“模块备份与恢复”另行导出含原件的完整备份。恢复时新建一个IP，原来的IP保留。备份不含服务运行配置。</p><div class="actions" style="margin:16px 0">${button('backup','导出当前 IP 完整备份','','primary')}${writable()?button('restore-backup','从 ZIP 恢复为新 IP'):''}</div><h3 class="section-title">使用范围</h3><p class="fine">打开即用，无需注册或密码。此版本运行在这台电脑上。本机服务停止后无法继续读写，重新双击 IP 工作台即可恢复。跨电脑协作需要另外部署服务。账号矩阵可管理多平台账号、账号快照、作品累计数据和矩阵任务。平台自动同步尚未接通；目前已有数据为带日期的历史快照，可继续记录新数据。本版未接入自动发帖或AI调用。</p><p class="fine" style="margin-top:15px">公开方法来源在IP资料库中，可打开原文。资料库提纲默认待确认，不会代替IP的真实经历和观点。</p><p id="form-error" role="alert"></p>`);}
 function pickFile(accept){return new Promise(resolve=>{const input=document.createElement('input');input.type='file';input.accept=accept;input.onchange=()=>resolve(input.files[0]||null);input.addEventListener('cancel',()=>resolve(null));input.click();});}
 async function restoreBackup(){const file=await pickFile('.zip');if(!file)return;if(file.size>160*1024*1024)throw Error('备份压缩文件超过160 MiB，请按IP分开恢复');if(!confirm('将从备份新建一个IP，当前IP保留。继续恢复吗？'))return;toast('正在校验并恢复备份…');const p=await api('ip-import',{method:'POST',body:{data:await base64(file)}});ip=p;await reload();render();$('#dialog').close();toast('已恢复为新IP，原IP仍保留');}
 const csvColumns=['作品标题','稿件标题','平台','账号','状态','计划发布时间','实际发布时间','作品链接','采集时间','播放阅读数','点赞','评论','分享','收藏','有效咨询','完播率','数据来源','复盘备注'];
@@ -178,7 +185,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-action]')
  if(action==='edit')return editor(r.kind,r);
  if(action==='new-ip')return ipForm();
  if(action==='rename-ip')return ipForm(true);
- if(action==='refresh'){await reload();render();return toast('已重新读取本机数据');}
+ if(action==='refresh'){if(creatorDirty)return toast('分镜还有修改未保存，请先保存。');await reload();render();return toast('已重新读取本机数据');}
  if(action==='help')return help();if(action==='backup')return backup();if(action==='restore-backup')return restoreBackup();
  if(action==='topic-content'){if(r.body.status!=='已确认')throw Error('请先编辑选题，将状态确认为“已确认”后再转稿件');return editor('ip-content',null,{title:r.title,topicId:r.id,audience:r.body.audience,outline:[r.body.angle,r.body.evidence].filter(Boolean).join('\n\n'),status:'写作中'});}
  if(action==='content-shoot'){const start=localTime();return editor('ip-shoot',null,{title:r.title+' · 拍摄',contentId:r.id,start,end:endAfterHour(start),checklist:IPResources.find(r=>r.id==='shoot-v1').template});}
