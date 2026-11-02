@@ -2,7 +2,7 @@ import {renderMatrix,matrixConnectionInfo} from './matrix.js?v=20261102';
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const {D,validate,cents}=window.IPSchema;
-const NAV=[['today','今日工作台','把今天最重要的事，放在眼前。'],['radar','热点雷达','按日期查看人物、文化、AI与观众反馈。'],['execution','分镜执行台','把文案、画面、声音和执行要求放在一起。'],['topics','选题库','让灵感有出处，让选题有明确的受众。'],['content','内容创作','从第一句，到IP确认的那一版。'],['shoots','拍摄准备','把稿件变成镜头，把现场准备到位。'],['schedule','日程与任务','每个安排，都有时间、负责人和完成标准。'],['operations','账号矩阵与复盘','把多个平台放在一起看，把下一步放进工作里。'],['business','商务合作','从第一次沟通，到交付和回款。'],['library','IP资料库','积累经历、观点与素材，让表达有根有据。']];
+const NAV=[['today','今日工作台','把今天最重要的事，放在眼前。'],['schedule','日程与任务','每个安排，都有时间、负责人和完成标准。'],['library','IP资料库','积累经历、观点与素材，让表达有根有据。'],['radar','热点雷达','按日期查看人物、文化、AI与观众反馈。'],['topics','选题库','让灵感有出处，让选题有明确的受众。'],['content','内容创作','从第一句，到IP确认的那一版。'],['execution','分镜执行台','把文案、画面、声音和执行要求放在一起。'],['shoots','拍摄准备','把稿件变成镜头，把现场准备到位。'],['operations','账号矩阵与复盘','把多个平台放在一起看，把下一步放进工作里。'],['business','商务合作','从第一次沟通，到交付和回款。']];
 let ctx=null,ips=[],ip=null,records=[],files=[],route='today',search='',status='',showArchived=false,saving=false,dirty=false,calendarMonth='',toastTimer;
 let creatorDirty=false;
 window.addEventListener('message',e=>{const f=document.querySelector('.creator-module-frame');if(e.origin===location.origin&&e.source===f?.contentWindow&&e.data?.type==='creator-dirty')creatorDirty=e.data.dirty===true;});
