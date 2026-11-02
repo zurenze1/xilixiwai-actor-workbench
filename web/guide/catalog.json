@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "96294250e881f22a1aa2329aba5e54da01b971134d13e362e0b7736fc3b6a251",
+  "sourceHash": "259ab1952ef441184fc8b78d34da6f022162f072aafec4c0a977fc722a3956dc",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -40,7 +40,15 @@
     },
     {
       "path": "practical/web/ip/app.js",
-      "sha256": "d55fd1392024a51328fc8e0ad5ba4e90fb49082ee9c3e30ee5279f03771a65d6"
+      "sha256": "ff1fd384b48fc6d6f2e3ba77942ffa416a43107a0237f7e27ca8eddf270938f8"
+    },
+    {
+      "path": "practical/web/ip/content-risk.js",
+      "sha256": "a2849df9b663745f11659c42bba800cbb91bfbcefdff88fd2b467f24ede75b38"
+    },
+    {
+      "path": "practical/web/ip/final-review.js",
+      "sha256": "ab5ed83ab34e1a19f0f5e9361d570deb95dde87f0cf01b957d12210c77afabfb"
     },
     {
       "path": "practical/web/ip/illustrations.css",
@@ -48,7 +56,7 @@
     },
     {
       "path": "practical/web/ip/index.html",
-      "sha256": "a8bac79a99aa79710490dd68a7d005e1db1fd896b6960bb7a24072b288e4bb1a"
+      "sha256": "c1dd7450b347fbd8006d79945cd080cd8b2be596efbc5e22e5d772881d734403"
     },
     {
       "path": "practical/web/ip/matrix.css",
@@ -63,8 +71,12 @@
       "sha256": "733a789cc21fcdb5e8b940501ba821b7d13930ddc3e5a031d3118ff50d1cb298"
     },
     {
+      "path": "practical/web/ip/review.css",
+      "sha256": "8538cb12fe04a1a77e582a4979864cfc9ed7c3c57f8fe83774144a26993b5f6c"
+    },
+    {
       "path": "practical/web/ip/schema.js",
-      "sha256": "b3da2a043ab471da3ea475f05d4f96d278622df249f430240d2283d6c1f86ab1"
+      "sha256": "2a04321e91d3c24590f99e5fbb539cef1d206d5c153a93ad5f00213ef55c50df"
     },
     {
       "path": "practical/web/ip/style.css",
@@ -3013,6 +3025,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "38dbf7aeced592bdc898da739090ca59607fd93e9c04e8bb127fc787e0fd4c75",
-  "generatedAt": "2026-11-02T13:35:53.534Z"
+  "contentHash": "786482318ba78903d90b4f122697d85cb057f00018b18e1ac3bb449d9c66eff9",
+  "generatedAt": "2026-11-02T16:45:53.259Z"
 }
