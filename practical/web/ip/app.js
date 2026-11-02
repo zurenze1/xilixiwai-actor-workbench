@@ -1,12 +1,15 @@
+import {feishuPanel,cloudSourceHTML,cloudTopic} from './feishu.js';
 import {renderMatrix,matrixConnectionInfo} from './matrix.js?v=20261102';
 import {finalChecksHTML,emptyChecks,checkProgress} from './final-review.js?v=20261103';
 import {rulebookRecord,riskPanelHTML,attachRiskPanel} from './content-risk.js?v=20261103-red';
+import {archiveName,archiveFilename} from './archive-model.mjs';
 const $=s=>document.querySelector(s);
+const recordName=r=>archiveName(r.title,r.created_at,r.revision);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const {D,validate,cents}=window.IPSchema;
 const NAV=[['today','今日工作台','把今天最重要的事，放在眼前。'],['schedule','日程与任务','每个安排，都有时间、负责人和完成标准。'],['library','IP资料库','积累经历、观点与素材，让表达有根有据。'],['radar','热点雷达','按日期查看人物、文化、AI与观众反馈。'],['topics','选题库','让灵感有出处，让选题有明确的受众。'],['content','内容创作','从第一句，到IP确认的那一版。'],['execution','分镜执行台','把文案、画面、声音和执行要求放在一起。'],['shoots','拍摄准备','把稿件变成镜头，把现场准备到位。'],['final-check','成片核对','剪完以后，逐项看过，再放心进入发布。'],['operations','账号矩阵与复盘','把多个平台放在一起看，把下一步放进工作里。'],['business','商务合作','从第一次沟通，到交付和回款。']];
 let ctx=null,ips=[],ip=null,records=[],files=[],route='today',search='',status='',showArchived=false,saving=false,dirty=false,calendarMonth='',toastTimer;
-let creatorDirty=false;
+let creatorDirty=false,feishuState=null,cloudSource=null;
 window.addEventListener('message',e=>{const f=document.querySelector('.creator-module-frame');if(e.origin===location.origin&&e.source===f?.contentWindow&&e.data?.type==='creator-dirty')creatorDirty=e.data.dirty===true;});
 let matrixFilters={platform:'',accountId:'',metric:'likes',from:'',to:'',page:1};
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
@@ -29,7 +32,7 @@ async function api(p,{method='GET',body,raw=false}={}){
 async function reload(){
  const all=await api('projects');ips=all.filter(p=>!p.archived);const key='ip-workbench-selected-'+ctx.user.id;
  ip=ips.find(p=>p.id===(ip?.id||localStorage.getItem(key)))||ips[0]||null;
- if(ip){localStorage.setItem(key,ip.id);[records,files]=await Promise.all([api(path()+'/records'),api(path()+'/files')]);records=records.filter(r=>r.kind.startsWith('ip-'));}else{records=[];files=[];}
+ if(ip){localStorage.setItem(key,ip.id);[records,files]=await Promise.all([api(path()+'/records'),api(path()+'/files')]);records=records.filter(r=>r.kind.startsWith('ip-'));try{feishuState=await api(path()+'/feishu');}catch{feishuState=null;}}else{records=[];files=[];}
  $('#ip-select').innerHTML=ips.length?ips.map(p=>`<option value="${esc(p.id)}">${esc(p.title)}</option>`).join(''):'<option value="">尚未创建 IP</option>';
  if(ip)$('#ip-select').value=ip.id;
  $('#sync').textContent='已读取 '+new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
@@ -59,10 +62,10 @@ function visualShortcuts(){
  return `<nav class="visual-shortcuts" aria-label="内容工作的四个入口">${shortcuts.map(([key,kicker,title])=>`<a class="visual-shortcut" href="#${key}"><img src="${sceneImage(key)}" alt="" loading="lazy" decoding="async"><span><small>${kicker}</small><b>${title}</b></span><i aria-hidden="true">↗</i></a>`).join('')}</nav>`;
 }
 function rowsFor(kind){return records.filter(r=>r.kind===kind&&Boolean(r.body.archived)===showArchived&&(!status||r.body.status===status)&&(!search||JSON.stringify([r.title,r.body]).toLowerCase().includes(search.toLowerCase())));}
-function rowLink(r){return `<button class="record-link" data-action="view" data-id="${esc(r.id)}">${esc(r.title)}</button>`;}
+function rowLink(r){return `<button class="record-link" data-action="view" data-id="${esc(r.id)}">${esc(recordName(r))}</button>`;}
 function relatedTitle(id){const r=byId(id);return r?r.title:'未关联';}
 function actionsFor(r){return `${button('view','查看',r.id,'subtle')}${writable()?button('edit','编辑',r.id,'subtle'):''}`;}
-function toolbar(kind){const choices=D[kind].fields.find(f=>f.key==='status')?.options||[];return `<div class="toolbar"><input id="search" type="search" placeholder="搜索标题、负责人或内容" aria-label="搜索记录" value="${esc(search)}"><select id="status-filter" aria-label="筛选状态"><option value="">全部状态</option>${choices.map(v=>`<option${status===v?' selected':''}>${esc(v)}</option>`).join('')}</select><label class="archive-toggle"><input id="archived" type="checkbox"${showArchived?' checked':''}>查看已归档</label></div>`;}
+function toolbar(kind){const choices=D[kind].fields.find(f=>f.key==='status')?.options||[];return `<div class="toolbar"><input id="search" type="search" placeholder="搜索标题、负责人或内容" aria-label="搜索记录" value="${esc(search)}"><select id="status-filter" aria-label="筛选状态"><option value="">全部状态</option>${choices.map(v=>`<option${status===v?' selected':''}>${esc(v)}</option>`).join('')}</select><label class="archive-toggle"><input id="archived" type="checkbox"${showArchived?' checked':''}>档案库（${records.filter(r=>r.kind===kind&&r.body.archived).length}）</label></div>`;}
 function table(kind){const items=rowsFor(kind);if(!items.length)return empty(showArchived?'还没有归档记录':'这里还没有记录',search||status?'没有符合筛选条件的记录，试试清空搜索或更换状态。':`新建第一条${D[kind].name}，保存后即可在这里继续跟进。`,!search&&!status&&!showArchived?add(kind):'');
  const cols={
  'ip-finalcheck':[['作品 / 成片版本',r=>rowLink(r)+`<small>${esc(r.body.cutVersion)}</small>`],['关联稿件',r=>esc(relatedTitle(r.body.contentId))],['核对进度',r=>{const p=checkProgress(r.body.checks);return `<span class="badge ${p.complete?'good':'warm'}">${p.done} / ${p.total} 项已核对</span>`;}],['最近保存',r=>esc(new Date(r.updated_at).toLocaleString('zh-CN'))]],
@@ -106,10 +109,12 @@ function render(){
  const kind={topics:'ip-topic',content:'ip-content',shoots:'ip-shoot','final-check':'ip-finalcheck',schedule:'ip-task',operations:'ip-release',business:'ip-deal',library:'ip-profile'}[route];
  let actions=add(kind);if(route==='schedule')actions+=add('ip-event','添加日程');if(route==='operations')actions=add('ip-account','添加矩阵账号')+button('matrix-snapshot','记录账号数据')+button('matrix-connection','查看接入进展');if(route==='library')actions+=button('rename-ip','修改 IP 名称');
  let extra='';
+ if(['topics','library'].includes(route))extra=feishuPanel(feishuState,{esc,button,route});
  if(route==='final-check')extra='<div class="note">按画面、字幕、声音核对14项。每份核对单对应一个成片版本；勾选后自动保存。更换成片版本或关联稿件后，重新核对。</div>';
  if(route==='business'){const sums={};for(const r of active('ip-deal').filter(r=>r.body.status!=='未合作'&&r.body.amount)){sums[r.body.currency]??=0n;sums[r.body.currency]+=BigInt(cents(r.body.amount))-BigInt(cents(r.body.received||'0'));}extra=`<div class="money-summary">${Object.entries(sums).map(([c,n])=>`<div><span>${esc(c)} 待收款</span><strong>${money(n)}</strong><small>合同金额减累计已收，不含未合作</small></div>`).join('')}</div>`;}
  if(route==='operations')extra=renderMatrix(records,matrixFilters,writable());
- if(route==='content')extra='<div class="note">填写确认人和确认日期，才能把稿件标为已确认。已确认后修改标题或正文，需要重新审核。</div>';
+ if(route==='content')extra='<div class="note">一篇一份稿件，每次修改保留历史版本。完成后可保存并归档，再新建下一篇。填写确认人和确认日期后才能标为已确认。</div>';
+ if(route==='shoots')extra='<div class="note">每次拍摄新建一份准备单，关联对应稿件；完成后保存并归档，下次准备另开一份。旧清单、附件和勾选记录都会保留。</div>';
  $('#main').innerHTML=heading(actions)+extra+(route==='schedule'?renderCalendar():'')+(route==='operations'?`<details class="panel release-workflow"><summary>发布登记与运营复盘</summary><div class="panel-body"><div class="actions">${add('ip-release')}${add('ip-review','写复盘')}${button('csv-import','导入发布CSV')}${button('csv-template','发布CSV模板')}</div><p class="fine">登记稿件发布，并跟进运营复盘。</p>${toolbar(kind)}${table(kind)}<h2 class="section-title">复盘与下一步</h2>${table('ip-review')}</div></details>`:toolbar(kind)+table(kind))+(route==='schedule'?`<h2 class="section-title">日程记录</h2>${table('ip-event')}`:'')+(route==='library'?resources():'');
  for(const el of document.querySelectorAll('[data-matrix-filter]'))el.onchange=()=>{matrixFilters[el.dataset.matrixFilter]=el.value;if(el.dataset.matrixFilter==='platform')matrixFilters.accountId='';matrixFilters.page=1;render();};
 
@@ -130,7 +135,7 @@ function fieldHTML(f,value){
 }
 function editor(kind,r=null,seed={}){
  if(!ip)return ipForm();if(!writable())return toast('当前账号只有查看权限');const def=D[kind];if(!def)throw Error('记录类型无效');const initial={...r?.body,...seed};
- modal(`${r?'编辑':'新建'}${def.name}`,`<form id="record-form"><div class="form-grid"><label class="wide"><span>标题 <span class="required">*</span></span><input name="title" required maxlength="500" value="${esc(r?.title||seed.title||'')}"></label>${def.fields.map(f=>fieldHTML(f,initial[f.key])+(kind==='ip-content'&&f.key==='script'?riskPanelHTML(rulebookRecord(records),esc):'')).join('')}${def.fields.some(f=>f.type==='file')?'<label class="wide">或者上传一个新附件（最大32 MiB）<input name="upload" type="file"><small>上传后保留原文件，并随完整IP备份导出。</small></label>':''}</div><p id="form-error" role="alert"></p><div class="form-actions"><small>${r?'保存会生成新版本。':'资料保存到当前 IP：'+esc(ip.title)} · ${r?.visibility==='private'?'仅创建者可见':'工作空间内可见'}</small><div class="actions">${button('download-draft','下载未保存草稿','','subtle')}<button class="primary" type="submit">保存${def.name}</button></div></div></form>`);
+ modal(`${r?'编辑':'新建'}${def.name}`,`<form id="record-form"><div class="form-grid"><label class="wide"><span>标题 <span class="required">*</span></span><input name="title" required maxlength="500" value="${esc(r?.title||seed.title||'')}"></label>${def.fields.map(f=>fieldHTML(f,initial[f.key])+(kind==='ip-content'&&f.key==='script'?riskPanelHTML(rulebookRecord(records),esc):'')).join('')}${def.fields.some(f=>f.type==='file')?'<label class="wide">或者上传一个新附件（最大32 MiB）<input name="upload" type="file"><small>上传后保留原文件，并随完整IP备份导出。</small></label>':''}</div><p id="form-error" role="alert"></p><div class="form-actions"><small>${r?'保存会生成新版本。':'资料保存到当前 IP：'+esc(ip.title)} · ${r?.visibility==='private'?'仅创建者可见':'工作空间内可见'}</small><div class="actions">${button('download-draft','下载未保存草稿','','subtle')}${!r?.body.archived?'<button type="submit" name="saveMode" value="archive">保存并归档</button>':''}<button class="primary" type="submit">保存${def.name}</button></div></div></form>`);
  const form=$('#record-form');let uploaded='';
  if(kind==='ip-content')attachRiskPanel(form,rulebookRecord(records),{esc});
  if(kind==='ip-finalcheck'){
@@ -140,10 +145,10 @@ function editor(kind,r=null,seed={}){
  }
  if(kind==='ip-content'&&r&&IPSchema.approved.has(r.body.status))form.addEventListener('input',e=>{if(['title','hook','outline','script','cta'].includes(e.target.name)){form.elements.status.value='待IP审核';form.elements.reviewer.value='';form.elements.reviewedAt.value='';$('#form-error').textContent='稿件表达已改变，本次保存将回到待IP审核。请先保存，再由IP重新确认。';}});
  form.onsubmit=async e=>{e.preventDefault();if(saving)return;saving=true;const buttons=[...form.querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);$('#form-error').textContent='';
-  try{const body={...r?.body,...seed};delete body.title;for(const f of def.fields)body[f.key]=String(form.elements[f.key].value).trim();validate(kind,body);
+  try{const body={...r?.body,...seed};delete body.title;for(const f of def.fields)body[f.key]=String(form.elements[f.key].value).trim();validate(kind,body);if(e.submitter?.value==='archive')body.archived=true;
    const file=form.elements.upload?.files[0];if(file){if(file.size>32*1024*1024)throw Error('单个附件最大32 MiB，请分开上传');if(!uploaded){const meta=await api(path()+'/files',{method:'POST',body:{name:file.name,type:file.type||'application/octet-stream',data:await base64(file),visibility:r?.visibility||'team'}});uploaded=meta.id;}body.fileId=uploaded;}
    const payload={title:form.elements.title.value.trim(),kind,body,...(r?{revision:r.revision,visibility:r.visibility}:{visibility:'team'})};
-   const saved=await api(path()+'/records'+(r?'/'+r.id:''),{method:r?'PATCH':'POST',body:payload});dirty=false;await reload();view(byId(saved.id));render();toast(def.name+'已保存');
+   const saved=await api(path()+'/records'+(r?'/'+r.id:''),{method:r?'PATCH':'POST',body:payload});dirty=false;await reload();view(byId(saved.id));render();toast(body.archived?'已保存至档案库，可新建下一份':def.name+'已保存');
   }catch(err){$('#form-error').textContent=err.message;}finally{saving=false;buttons.forEach(b=>b.disabled=false);}
  };
 }
@@ -158,8 +163,9 @@ function detailFields(r){return D[r.kind].fields.filter(f=>r.body[f.key]!==''&&r
  }).join('');}
 function view(r){if(!r)throw Error('记录不存在，请刷新后重试');const def=D[r.kind];let actions=writable()?button('edit','编辑',r.id,'primary'):'';
  if(writable()&&!r.body.archived){if(r.kind==='ip-topic')actions+=button('topic-content','转为稿件',r.id);if(r.kind==='ip-content'){actions+=button('content-shoot','安排拍摄',r.id)+button('content-final','核对成片',r.id)+button('content-release','安排发布',r.id);if(['写作中','需修改'].includes(r.body.status))actions+=button('submit-review','送IP审核',r.id);}if(r.kind==='ip-task'&&r.body.status!=='完成')actions+=button('finish-task','标为完成',r.id);if(r.kind==='ip-review')actions+=button('review-task','把下一步建成任务',r.id);}
+ if(writable())actions+=button('archive-new',r.body.archived?'新建下一份':'归档并新建下一份',r.id);
  actions+=button('history','历史版本',r.id)+button('export-record','导出文稿',r.id)+(writable()?button('archive',r.body.archived?'恢复记录':'归档',r.id,'subtle'):'');
- modal(def.name,`<h2>${esc(r.title)}</h2><p class="detail-meta">第 ${r.revision} 版 · 更新于 ${esc(new Date(r.updated_at).toLocaleString('zh-CN'))}${r.body.archived?' · 已归档':''}</p><div class="actions">${actions}</div><div class="details-grid">${detailFields(r)}</div>`);
+ modal(def.name,`<h2>${esc(recordName(r))}</h2><p class="detail-meta">第 ${r.revision} 版 · 更新于 ${esc(new Date(r.updated_at).toLocaleString('zh-CN'))}${r.body.archived?' · 已归档':''}</p><div class="actions">${actions}</div><div class="details-grid">${detailFields(r)}</div>`);
 }
 async function update(r,body,message){if(saving)return;saving=true;try{const saved=await api(path()+'/records/'+r.id,{method:'PATCH',body:{title:r.title,body,revision:r.revision,visibility:r.visibility}});await reload();render();if($('#dialog').open)view(byId(saved.id));toast(message);return saved;}finally{saving=false;}}
 function ipForm(rename=false){if(!writable())return;modal(rename?'修改IP名称':'创建IP工作空间',`<form id="ip-form"><div class="form-grid"><label class="wide"><span>IP名称 / 你习惯的称呼 <span class="required">*</span></span><input name="title" maxlength="80" required value="${rename?esc(ip.title):''}" placeholder="例如：品牌主理人 / 某某的内容工作室"></label><label class="wide">当前目标与备注<textarea name="notes" maxlength="20000" placeholder="可先留空，之后到IP资料库补充定位">${rename?esc(ip.data.notes||''):''}</textarea></label></div><p id="form-error" role="alert"></p><div class="form-actions"><small>每个IP的稿件、日程和合作分别保存。</small><button class="primary">${rename?'保存名称':'创建工作空间'}</button></div></form>`);
@@ -170,7 +176,7 @@ async function history(r){const items=await api(path()+'/records/'+r.id+'/versio
 function download(name,data,type='text/plain;charset=utf-8'){const blob=data instanceof Blob?data:new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);}
 const safeName=s=>s.replace(/[\\/:*?"<>|]/g,'_').slice(0,80);
 const base64=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(Error('文件读取失败'));reader.readAsDataURL(file);});
-function exportRecord(r){const text=`# ${r.title}\n\n${D[r.kind].name} · 第 ${r.revision} 版\n\n`+D[r.kind].fields.filter(f=>r.body[f.key]!==''&&r.body[f.key]!==undefined).map(f=>`## ${f.label}\n\n${['topic','content','account'].includes(f.type)?relatedTitle(r.body[f.key]):f.type==='file'?(files.find(x=>x.id===r.body[f.key])?.name||'原件'):r.body[f.key]}\n`).join('\n');download(safeName(r.title)+'.md',text);}
+function exportRecord(r){const text=`# ${r.title}\n\n${D[r.kind].name} · 第 ${r.revision} 版\n\n`+D[r.kind].fields.filter(f=>r.body[f.key]!==''&&r.body[f.key]!==undefined).map(f=>`## ${f.label}\n\n${['topic','content','account'].includes(f.type)?relatedTitle(r.body[f.key]):f.type==='file'?(files.find(x=>x.id===r.body[f.key])?.name||'原件'):r.body[f.key]}\n`).join('\n');download(archiveFilename(r.title,r.created_at,r.revision),text);}
 async function backup(){if(!ip)return toast('请先创建IP');toast('正在准备包含原始附件的备份…');const r=await api(path()+'/export',{raw:true});download(safeName(ip.title)+'-'+localDate()+'.zip',await r.blob());toast('备份已生成，请确认文件已保存');}
 function help(){modal('使用说明与数据备份',`<h2>从一个选题，走到一次复盘。</h2><div class="note">1. 新建IP，在IP资料库确认定位、经历和素材。\n2. 选题确认后转为稿件，记录审核人和确认日期。\n3. 从稿件安排拍摄；剪辑完成后，在成片核对中逐项勾选，再登记发布。\n4. 填写实际数据和采集时间，把复盘的下一步建成任务。</div><p>每次点击“保存”后，数据写入本机数据库。切换板块前请保存表单；多窗口同时修改会提示版本冲突。</p><h3 class="section-title">IP基础资料备份</h3><p class="fine">包含当前账号可见的基础记录、资料文字和原始附件。热点雷达与分镜执行台使用独立资料目录，请在两个模块上方的“模块备份与恢复”另行导出含原件的完整备份。恢复时新建一个IP，原来的IP保留。备份不含服务运行配置。</p><div class="actions" style="margin:16px 0">${button('backup','导出当前 IP 完整备份','','primary')}${writable()?button('restore-backup','从 ZIP 恢复为新 IP'):''}</div><h3 class="section-title">使用范围</h3><p class="fine">打开即用，无需注册或密码。此版本运行在这台电脑上。本机服务停止后无法继续读写，重新双击 IP 工作台即可恢复。跨电脑协作需要另外部署服务。账号矩阵可管理多平台账号、账号快照、作品累计数据和矩阵任务。平台自动同步尚未接通；目前已有数据为带日期的历史快照，可继续记录新数据。本版未接入自动发帖或AI调用。</p><p class="fine" style="margin-top:15px">公开方法来源在IP资料库中，可打开原文。资料库提纲默认待确认，不会代替IP的真实经历和观点。</p><p id="form-error" role="alert"></p>`);}
 function pickFile(accept){return new Promise(resolve=>{const input=document.createElement('input');input.type='file';input.accept=accept;input.onchange=()=>resolve(input.files[0]||null);input.addEventListener('cancel',()=>resolve(null));input.click();});}
@@ -192,6 +198,9 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-action]')
  if(action==='matrix-connection')return modal('数据接入进展',matrixConnectionInfo());
  if(action==='matrix-page'){matrixFilters.page=Math.max(1,matrixFilters.page+Number(el.dataset.step));return render();}
  if(action==='matrix-task')return editor('ip-task',null,{title:el.dataset.title||'账号矩阵工作',status:'待办',notes:el.dataset.notes||'记录目标账号、要做什么、怎样验收。',templateId:'matrix-task-v1'});
+ if(action==='feishu-sync'){toast('正在读取飞书并保存归档版本…');feishuState=await api(path()+'/feishu/sync',{method:'POST',body:{}});render();return toast('飞书已同步，旧版本与来源已保留');}
+ if(action==='feishu-source'){cloudSource=feishuState.sources[Number(el.dataset.index)];return modal(cloudSource.name,cloudSourceHTML(cloudSource,{esc}));}
+ if(action==='feishu-adopt'){const seed=cloudTopic(cloudSource.records[Number(el.dataset.index)],cloudSource);return editor('ip-topic',null,seed);}
  if(action==='new')return editor(el.dataset.kind);
  if(action==='view')return view(r);
  if(action==='edit')return editor(r.kind,r);
@@ -205,6 +214,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-action]')
  if(action==='content-release')return editor('ip-release',null,{title:r.title,contentId:r.id,platform:r.body.platform,plannedAt:localTime(),status:'待发布'});
  if(action==='submit-review')return update(r,{...r.body,status:'待IP审核'},'已送入IP审核列表');
  if(action==='finish-task')return update(r,{...r.body,status:'完成'},'任务已完成');
+ if(action==='archive-new'){if(!r.body.archived)await update(r,{...r.body,archived:true},'当前记录已归档');return editor(r.kind);}
  if(action==='archive')return update(r,{...r.body,archived:!r.body.archived},r.body.archived?'记录已恢复':'记录已归档，可在列表切换查看');
  if(action==='review-task')return editor('ip-task',null,{title:r.title+' · 后续行动',contentId:r.body.contentId||'',owner:r.body.owner||'',due:r.body.due||'',notes:r.body.next,status:'待办'});
  if(action==='history')return history(r);

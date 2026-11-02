@@ -1,0 +1,14 @@
+const cell=v=>Array.isArray(v)?v.map(cell).filter(Boolean).join('、'):v&&typeof v==='object'?String(v.text||v.name||v.url||''):String(v??'');
+const pick=(r,names)=>names.map(n=>cell(r[n])).find(v=>v.trim())||'';
+const url=v=>{const match=String(v||'').match(/https?:\/\/[^\s\]>)]+/);return match?.[0]||'';};
+export function cloudTitle(r){return pick(r,['名称','标题','竞品名称','对标账号','作品标题','作品名称'])||'未命名参考';}
+export function cloudTopic(r,s){return {title:cloudTitle(r),audience:pick(r,['目标受众','受众'])||'待确认：请结合当前IP决定目标观众',question:pick(r,['要回答的问题'])||'待确认：这条内容要替观众回答什么问题？',angle:pick(r,['切入角度','什么点激发了你的灵感？','可借鉴点','重点拆解项']),evidence:pick(r,['核心信息','来源与依据','核查内容']),sourceUrl:url(pick(r,['来源链接','作品链接','作品网址','主页链接','核查入口'])),status:'待讨论',notes:'来自飞书「'+s.name+'」的参考；选题角度与受众尚待确认。\n原记录：'+r.record_id};}
+export function feishuPanel(state,{esc,button,route}){
+ if(!state?.configured)return '';
+ const sources=state.sources||[],count=sources.reduce((n,s)=>n+s.records.length,0),last=state.lastSuccess?new Date(state.lastSuccess).toLocaleString('zh-CN'):'等待首次读取';
+ const relevant=sources.filter(s=>route==='topics'?['topics','references','plans'].includes(s.type):['competitors','strategy'].includes(s.type));
+ return `<section class="panel"><div class="panel-head"><h2>飞书与选题来源</h2><div class="actions">${button('feishu-sync',state.refreshing?'正在同步…':'刷新飞书')}${state.sourceUrl?`<a href="${esc(state.sourceUrl)}" target="_blank" rel="noopener noreferrer">打开豆包原表 ↗</a>`:''}</div></div><div class="panel-body"><p class="fine">豆包保存原表 · 飞书账号通过CLI协作 · 最近成功：${esc(last)} · 已读取 ${count} 条参考。工作台打开时每10分钟刷新，已保存版本会写入原表的“制作项目”。</p>${state.lastError?`<p class="note error">本次同步未完成：${esc(state.lastError)}。下方保留上次成功结果。</p>`:''}${route==='topics'?'<div class="note">选题从四处来：热点雷达、飞书收藏、对标作品、观众问题。先选参考，再确定“给谁看、回答什么、用什么角度讲”，保存成当前IP的选题。</div>':''}<div class="resource-grid">${relevant.map((s,i)=>`<article class="resource"><span class="eyebrow">${esc(s.type==='competitors'?'对标研究':'选题入口')}</span><h3>${esc(s.name)}</h3><p>${s.records.length} 条${s.type==='plans'?'策划':'参考'} · ${esc(state.project)}</p><button data-action="feishu-source" data-index="${sources.indexOf(s)}">展开查看 →</button></article>`).join('')}</div>${!relevant.length?'<p>正在等待首次读取，稍后点击刷新飞书。</p>':''}</div></section>`;
+}
+export function cloudSourceHTML(s,{esc}){
+ return `<h2>${esc(s.name)}</h2><p class="fine">这是来源参考。加入选题后仍需结合当前IP确认受众和角度。</p>${s.records.map((r,i)=>`<article class="history-item"><h3>${esc(cloudTitle(r))}</h3>${Object.entries(r).filter(([k,v])=>k!=='record_id'&&v!=null&&cell(v)&&!['内容JSON','逐字稿','转逐字稿'].includes(k)).map(([k,v])=>`<p><strong>${esc(k)}：</strong>${esc(cell(v))}</p>`).join('')}${pick(r,['逐字稿','转逐字稿'])?`<details><summary>查看原逐字稿</summary><pre>${esc(pick(r,['逐字稿','转逐字稿']))}</pre></details>`:''}<button data-action="feishu-adopt" data-index="${i}">以此建立当前IP选题</button></article>`).join('')||'<p>飞书这张表目前没有记录。</p>'}`;
+}

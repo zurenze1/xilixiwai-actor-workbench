@@ -29,3 +29,7 @@ python3 desktop/ip/build_macos.py --node-root /path/to/official-node --output /p
 应用不包含运行数据库、密钥、环境配置或个人原件。新版本业务源码更新后，应重新构建并替换应用，数据目录继续复用。本机临时签名不等于 Apple Developer ID 签名或公证；本仓库尚无面向其他电脑发布的安装包。
 
 图标原图及生成来源保存在 `assets/`；Node 和依赖许可随应用保留。
+
+## 飞书协作与档案库
+
+共享原件、CLI运行环境、读取来源、制作版本写回与留档规则，见[接入与留档说明](../../docs/ip-feishu-bridge.md)。连接信息只保存在用户数据目录，源码不含账号标识或凭据。

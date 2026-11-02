@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "259ab1952ef441184fc8b78d34da6f022162f072aafec4c0a977fc722a3956dc",
+  "sourceHash": "42f9d6332b0a7e4c9ddb93e7ebeb8e676a0b3c3b9f53f9ae66f324172cce3b65",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -40,11 +40,19 @@
     },
     {
       "path": "practical/web/ip/app.js",
-      "sha256": "ff1fd384b48fc6d6f2e3ba77942ffa416a43107a0237f7e27ca8eddf270938f8"
+      "sha256": "2a07f38ec2d81dcd0b35ca304e42476af74aeb355174099b05cddc6eb9965be1"
+    },
+    {
+      "path": "practical/web/ip/archive-model.mjs",
+      "sha256": "91837670503419a3d79e0b42828126ac382ecc677da06b1f03208abba8f39a0b"
     },
     {
       "path": "practical/web/ip/content-risk.js",
       "sha256": "a2849df9b663745f11659c42bba800cbb91bfbcefdff88fd2b467f24ede75b38"
+    },
+    {
+      "path": "practical/web/ip/feishu.js",
+      "sha256": "88fa68c61b8cec297a58a76dd47bfa96ca5c5cdb219e672eac2c5dede40eed3b"
     },
     {
       "path": "practical/web/ip/final-review.js",
@@ -3025,6 +3033,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "786482318ba78903d90b4f122697d85cb057f00018b18e1ac3bb449d9c66eff9",
-  "generatedAt": "2026-11-02T16:45:53.259Z"
+  "contentHash": "5b9d1adfd0ce13f4e271bb50860f2cf839e449b18c23920fd55711bdce7ba212",
+  "generatedAt": "2026-11-02T17:23:32.801Z"
 }
