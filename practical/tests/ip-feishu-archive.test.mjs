@@ -5,6 +5,8 @@ import {join,resolve} from 'node:path';
 import {feishuService} from '../server/feishu.mjs';
 import {archiveName,archiveFilename} from '../web/ip/archive-model.mjs';
 import {Store} from '../modules/creator-workbench/server/store.mjs';
+// A clean checkout does not contain the ignored local QA parent directory.
+await mkdir(resolve('qa-ip'),{recursive:true});
 test('Cloud bridge preserves last good snapshot, scopes IPs, and retries immutable versions without duplication',async()=>{
  const dir=await mkdtemp(resolve('qa-ip/feishu-')),remote=[],calls=[];let offline=false;
  await mkdir(join(dir,'feishu'));await writeFile(join(dir,'feishu/connection.json'),JSON.stringify({cli:'/test/lark-cli',profile:'fixture',baseToken:'base-fixture',projects:{a:{name:'甲'},b:{name:'乙'}},productionTable:'production',sources:[{name:'策划',tableId:'plans',type:'plans'}]}));
