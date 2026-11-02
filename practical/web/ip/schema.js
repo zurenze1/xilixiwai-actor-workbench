@@ -15,6 +15,7 @@
     'ip-deal':{name:'商务合作',route:'business',fields:[f('counterparty','合作方','text',true),f('contact','工作联系人'),f('scope','交付内容与验收标准','textarea',true),f('currency','币种','select',true,['CNY','USD','HKD','EUR']),f('amount','合同金额','money'),f('received','累计已收','money'),f('due','交付截止','date'),f('paymentDue','约定回款日期','date'),f('status','状态','select',true,['洽谈中','待签约','执行中','待验收','待回款','已结清','未合作']),f('owner','负责人'),f('fileId','合同 / 需求附件','file'),f('notes','付款节点、授权范围与下一步','textarea')]},
     'ip-profile':{name:'IP资料',route:'library',fields:[f('category','分类','select',true,['IP定位','个人经历','观点故事','产品服务','常见问题','素材授权','工作方法']),f('summary','内容','textarea',true),f('audience','适用受众 / 场景'),f('sourceUrl','来源链接','url'),f('verifiedAt','确认 / 查阅日期','date'),f('status','状态','select',true,['待确认','已确认','可复用','已过期']),f('fileId','照片、视频或文档原件','file'),f('notes','使用边界、出处与待确认项','textarea')]}
   };
+  D['ip-finalcheck']={name:'成片核对单',route:'final-check',fields:[f('contentId','关联稿件（可稍后补充）','content'),f('cutVersion','成片文件名 / 剪辑版本','text',true),f('checks','成片核对','final-checks',true),f('notes','发现的问题与处理记录','textarea')]};
   const approved=new Set(['已确认','已拍摄','已发布']);
   function day(s){if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;const d=new Date(s+'T00:00:00Z');return Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===s&&!s.startsWith('0000');}
   function cents(s){if(!/^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/.test(String(s)))throw Error('金额须为非负数，最多两位小数和十位整数');const [a,b='']=String(s).split('.');return Number(a)*100+Number(b.padEnd(2,'0'));}
@@ -32,6 +33,7 @@
       if(x.type==='percent'&&(!/^\d+(?:\.\d+)?$/.test(v)||Number(v)>100))throw Error(x.label+'须在0到100之间');
       if(x.type==='money')cents(v);
     }
+    if(kind==='ip-finalcheck'&&!/^[01]{14}$/.test(b.checks||''))throw Error('成片核对需要完整的14项勾选状态');
     if(b.start&&b.end&&b.end<=b.start)throw Error('结束时间须晚于开始时间');
     if(kind==='ip-content'&&approved.has(b.status)&&(!b.reviewer?.trim()||!b.reviewedAt))throw Error('确认稿件前请填写确认人和确认日期');
     if(kind==='ip-release'&&b.status==='已发布'&&(!b.publishedAt||!b.url))throw Error('已发布作品需要实际发布时间和作品链接');

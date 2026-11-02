@@ -3,6 +3,7 @@ import {fail} from './database.mjs';
 export const IP_KINDS=globalThis.IPSchema.kinds;
 export function validateIPReferences(kind,body,{store,pid,studio,user,old,title}){
   if(!IP_KINDS.includes(kind))return;
+  if(kind==='ip-finalcheck'&&old&&['cutVersion','contentId'].some(k=>(body[k]||'')!==(old.body[k]||''))&&body.checks!=='0'.repeat(14))fail('更换成片版本或关联稿件后，请重新核对14项');
   for(const [field,target]of [['topicId','ip-topic'],['contentId','ip-content'],['accountId','ip-account']])if(body[field]){
     const r=store.record(body[field],pid,studio,user);
     if(r.kind!==target)fail('关联的'+(field==='topicId'?'选题':field==='accountId'?'账号':'稿件')+'类型不正确');
