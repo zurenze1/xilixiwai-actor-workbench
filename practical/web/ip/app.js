@@ -1,6 +1,6 @@
 import {renderMatrix,matrixConnectionInfo} from './matrix.js?v=20261102';
 import {finalChecksHTML,emptyChecks,checkProgress} from './final-review.js?v=20261103';
-import {rulebookRecord,riskPanelHTML,attachRiskPanel} from './content-risk.js?v=20261103';
+import {rulebookRecord,riskPanelHTML,attachRiskPanel} from './content-risk.js?v=20261103-red';
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const {D,validate,cents}=window.IPSchema;

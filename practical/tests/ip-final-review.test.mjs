@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createApp} from '../server/index.mjs';
 import {FINAL_GROUPS,FINAL_COUNT,emptyChecks,checkProgress} from '../web/ip/final-review.js';
-import {parseRulebook,scanContent} from '../web/ip/content-risk.js';
+import {parseRulebook,scanContent,markedText} from '../web/ip/content-risk.js';
 
 const fixture=`# 高风险词与表达分类库
 ## 效果担保
@@ -24,6 +24,8 @@ test('Source conditions and separate platform guidance survive parsing without b
  assert.equal(bad.hits[0].index,3);assert.equal(bad.hits[0].condition,'商业推广中保证效果');
  assert.match(bad.guides[0],/合作笔记/);assert.match(scanContent([],book,'抖音').guides[0],/挂车/);
  assert.equal(scanContent([{key:'script',text:'第一次夺冠，100%棉，介绍ChatGPT。'}],book,'抖音').hits.length,0);
+ const repeated=scanContent([{key:'script',text:'百分百有效，百分百有效'}],book,'抖音');assert.equal(repeated.hits.length,2);
+ assert.equal((markedText('百分百有效，百分百有效',repeated.hits,s=>s).match(/risk-inline-mark/g)||[]).length,2);
  assert.throws(()=>scanContent([],book,'其他'),/请选择/);
  assert.deepEqual(FINAL_GROUPS.map(g=>g.items.length),[4,5,5]);assert.equal(FINAL_COUNT,14);assert.equal(checkProgress(emptyChecks()).complete,false);
 });

@@ -26,28 +26,45 @@ export function scanContent(fields,book,platform){
  for(const field of fields){const text=String(field.text||''),lower=text.toLowerCase();
   for(const rule of book.rules){
    if(ordinaryRow(rule))continue;
-   const found=words(rule).map(word=>({word,index:lower.indexOf(word.toLowerCase())})).filter(x=>x.index>=0).sort((a,b)=>a.index-b.index);
-   if(!found.length)continue;
-   const {word,index}=found[0],from=Math.max(0,index-28),to=Math.min(text.length,index+word.length+45);
-   hits.push({...rule,field:field.key,label:field.label,word,index,before:text.slice(from,index),after:text.slice(index+word.length,to),platform});
+   for(const word of new Set(words(rule)))for(let index=lower.indexOf(word.toLowerCase());index>=0;index=lower.indexOf(word.toLowerCase(),index+word.length)){
+    const from=Math.max(0,index-28),to=Math.min(text.length,index+word.length+45);
+    hits.push({...rule,field:field.key,label:field.label,word,index,before:text.slice(from,index),after:text.slice(index+word.length,to),platform});
+   }
   }
  }
  // This is recall against source phrases, not a semantic platform verdict.
  return {platform,hits,guides:book.guides[platform]||[]};
 }
 export function rulebookRecord(records){return records.find(r=>r.kind==='ip-profile'&&!r.body.archived&&r.body.templateId===RULEBOOK_TEMPLATE);}
+export function markedText(text,hits,esc){
+ const ranges=hits.map(h=>[h.index,h.index+h.word.length]).sort((a,b)=>a[0]-b[0]),merged=[];
+ for(const range of ranges){const last=merged.at(-1);if(last&&range[0]<=last[1])last[1]=Math.max(last[1],range[1]);else merged.push([...range]);}
+ let html='',cursor=0;for(const [from,to]of merged){html+=esc(text.slice(cursor,from))+`<mark class="risk-inline-mark">${esc(text.slice(from,to))}</mark>`;cursor=to;}
+ return html+esc(text.slice(cursor));
+}
 export function riskPanelHTML(record,esc){
  if(!record)return '<section class="risk-panel"><h3>发布前文案检查</h3><p>当前IP尚未载入风险词表。可在IP资料库添加来源规则后检查。</p></section>';
  const book=parseRulebook(record.body.summary),url=safeUrl(record.body.sourceUrl);
- return `<section class="risk-panel" aria-label="发布前文案检查"><div class="risk-panel-head"><div><h3>发布前文案检查</h3><p class="fine">${book.categories} 类 · ${book.rules.length} 组表达 · 规则核验 ${esc(record.body.verifiedAt||'日期未记录')}</p></div>${url?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">飞书原表 ↗</a>`:''}</div><div class="actions"><button type="button" data-risk-platform="抖音">抖音扫描</button><button type="button" data-risk-platform="小红书">小红书扫描</button><span class="fine">输入后自动更新当前平台结果</span></div><div id="risk-results" aria-live="polite"></div><p class="fine">本地词句扫描帮助定位线索，需结合原表条件核对语境；本次检查文字。</p></section>`;
+ return `<section class="risk-panel" aria-label="发布前文案检查"><div class="risk-panel-head"><div><h3>发布前文案检查</h3><p class="fine">${book.categories} 类 · ${book.rules.length} 组表达 · 规则核验 ${esc(record.body.verifiedAt||'日期未记录')}</p></div>${url?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">飞书原表 ↗</a>`:''}</div><div class="actions"><button type="button" data-risk-platform="抖音">抖音扫描</button><button type="button" data-risk-platform="小红书">小红书扫描</button><span class="fine">输入后自动更新当前平台结果</span></div><div id="risk-results" aria-live="polite"></div><p class="fine">红色仅作待核对提醒，修改由你决定，可正常保存。请按规则原文与完整语境复核；本次检查文字。</p></section>`;
 }
 export function attachRiskPanel(form,record,{esc}={}){
  if(!record)return;
  const book=parseRulebook(record.body.summary),out=form.querySelector('#risk-results');if(!out)return;
  let platform=form.elements.platform?.value==='小红书'?'小红书':'抖音',timer;
  const fields=()=>[['title','标题'],['hook','标题与开头'],['script','正文 / 逐字稿'],['cta','结尾引导']].map(([key,label])=>({key,label,text:form.elements[key]?.value||''}));
+ const mirrors=new Map();
+ if(book.rules.length)for(const field of fields()){
+  const el=form.elements[field.key];if(!el)continue;
+  const style=getComputedStyle(el),wrap=document.createElement('div'),mirror=document.createElement('div');wrap.className='risk-field-wrap';mirror.className='risk-field-highlights';mirror.setAttribute('aria-hidden','true');
+  for(const key of ['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','paddingTop','paddingRight','paddingBottom','paddingLeft','borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','textIndent'])mirror.style[key]=style[key];
+  mirror.style.whiteSpace=el.tagName==='TEXTAREA'?'pre-wrap':'pre';mirror.style.overflowWrap=el.tagName==='TEXTAREA'?'break-word':'normal';
+  el.before(wrap);wrap.append(mirror,el);const sync=()=>{mirror.scrollTop=el.scrollTop;mirror.scrollLeft=el.scrollLeft;};el.addEventListener('scroll',sync);
+  el.addEventListener('compositionstart',()=>wrap.classList.add('risk-composing'));el.addEventListener('compositionend',()=>{wrap.classList.remove('risk-composing');render();});
+  el.addEventListener('input',()=>{mirror.innerHTML=esc(el.value)+(el.tagName==='TEXTAREA'?'\n':'');sync();});mirrors.set(field.key,{el,mirror,sync});
+ }
  function render(){
   const result=scanContent(fields(),book,platform);
+  for(const [key,{el,mirror,sync}]of mirrors){mirror.innerHTML=markedText(el.value,result.hits.filter(h=>h.field===key),esc)+(el.tagName==='TEXTAREA'?'\n':'');sync();}
   form.querySelectorAll('[data-risk-platform]').forEach(b=>{const selected=b.dataset.riskPlatform===platform;b.classList.toggle('primary',selected);b.setAttribute('aria-pressed',String(selected));});
   const hasText=fields().some(f=>f.text.trim());
   if(!book.rules.length){out.innerHTML='<p class="note error">词表未能解析，请核对来源内容；尚未完成扫描。</p>';return;}
