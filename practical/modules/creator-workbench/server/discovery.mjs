@@ -46,7 +46,7 @@ export function latestDigest(store,day=shanghaiDay()){
 }
 export function dailyStatus(store){
   const cfg=store.get('discovery.automation')||{},latest=store.db.prepare('SELECT day,created_at FROM daily_digests ORDER BY day DESC,created_at DESC LIMIT 1').get();
-  return {...cfg,latest:latest||null,state:cfg.linked?'已连接现有Codex每日任务 · 上海09:00':'尚未连接每日任务',note:'09:00开始执行，采集完成后入库；电脑与Codex需运行。未来定时投递以实际记录为准。'};
+  return {...cfg,latest:latest||null,state:cfg.linked?'已连接现有Codex每日任务'+(cfg.scheduleLabel?' · '+cfg.scheduleLabel:''):'尚未连接每日任务',note:'按Codex原任务的准备与交付时刻执行；电脑与Codex需运行。未来定时投递以实际记录为准。'};
 }
 function newsItem(n){
   if(!Array.isArray(n.sources)||!n.sources.length||n.sources.length>10)throw new Error('每条热点必须有真实来源');
