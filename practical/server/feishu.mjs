@@ -1,3 +1,4 @@
+import {syncCloudDirectory} from '../modules/creator-workbench/server/comment-cloud.mjs';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {readFile,writeFile,mkdir,rename,rm,stat} from 'node:fs/promises';
@@ -51,7 +52,7 @@ export function feishuService({dataDir,store,enabled=false,runner=exec,intervalM
    if(c.productionTable){lastStep='核对制作版本';const remote=await list(c,c.productionTable),keys=new Set(remote.map(r=>r['本机记录ID'])),pending=(await snapshots(c)).filter(r=>!keys.has(r['本机记录ID']));lastStep='保存制作版本';
     for(let i=0;i<pending.length;i+=50)await command(c,'+record-batch-create',['--table-id',c.productionTable,'--json',JSON.stringify({create_records:pending.slice(i,i+50)})]);exportCount=pending.length;
    }
-   await write(cacheFile,{lastSuccess:new Date().toISOString(),sources});lastError='';lastStep='同步完成';
+   await write(cacheFile,{lastSuccess:new Date().toISOString(),sources});syncCloudDirectory(dataDir);lastError='';lastStep='同步完成';
   }catch(e){lastError=String(e.message||e).slice(0,500);throw e;}
  })().finally(()=>{running=null;});return running;}
  async function state(pid){const c=await config();let cache={sources:[]};try{cache=await json(cacheFile);}catch{}return {configured:!!c?.projects?.[pid],connected:!!c?.projects?.[pid]&&!!cache.lastSuccess,sourceUrl:c?.url||'',operator:c?.operator||'',destination:c?.destination||'',lastSuccess:cache.lastSuccess||'',lastAttempt,lastStep,lastError,refreshing:!!running,exportCount,project:c?.projects?.[pid]?.name||'',sources:(cache.sources||[]).filter(s=>!s.projects||s.projects.includes(pid)).map(s=>({name:s.name,type:s.type,url:s.url,tableId:s.tableId,records:(c?.projects?.[pid]?s.records:[]).filter(r=>!r.IP||r.IP===c?.projects?.[pid]?.name)}))};}

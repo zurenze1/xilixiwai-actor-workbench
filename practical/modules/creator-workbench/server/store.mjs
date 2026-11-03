@@ -68,13 +68,17 @@ CREATE INDEX IF NOT EXISTS digests_day ON daily_digests(day,created_at);
 CREATE TABLE IF NOT EXISTS creator_checks(id TEXT PRIMARY KEY,account_id TEXT NOT NULL REFERENCES accounts(id),status TEXT NOT NULL,note TEXT NOT NULL,url TEXT NOT NULL,observed_at TEXT NOT NULL,created_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS comment_observations(id TEXT PRIMARY KEY,comment_key TEXT NOT NULL,account_id TEXT REFERENCES accounts(id),video_url TEXT NOT NULL,video_title TEXT NOT NULL,comment_url TEXT NOT NULL,author TEXT NOT NULL,text TEXT NOT NULL,likes REAL,likes_label TEXT NOT NULL,observed_at TEXT NOT NULL,origin TEXT NOT NULL,scope TEXT NOT NULL,blob_hash TEXT NOT NULL REFERENCES blobs(hash),created_at TEXT NOT NULL,UNIQUE(comment_key,observed_at));
 CREATE INDEX IF NOT EXISTS comments_key ON comment_observations(comment_key,observed_at);
+CREATE TABLE IF NOT EXISTS comment_scans(id TEXT PRIMARY KEY,account_id TEXT NOT NULL REFERENCES accounts(id),purpose TEXT NOT NULL,observed_at TEXT NOT NULL,videos TEXT NOT NULL,status TEXT NOT NULL,note TEXT NOT NULL,blob_hash TEXT REFERENCES blobs(hash),created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS comment_reply_drafts(id TEXT PRIMARY KEY,comment_id TEXT NOT NULL UNIQUE REFERENCES comment_observations(id),account_id TEXT NOT NULL REFERENCES accounts(id),body TEXT NOT NULL,state TEXT NOT NULL,revision INTEGER NOT NULL,approved_body TEXT NOT NULL,approved_at TEXT NOT NULL,dispatch_token TEXT NOT NULL,sent_at TEXT NOT NULL,receipt TEXT NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS comment_reply_history(id TEXT PRIMARY KEY,draft_id TEXT NOT NULL REFERENCES comment_reply_drafts(id),action TEXT NOT NULL,body TEXT NOT NULL,revision INTEGER NOT NULL,created_at TEXT NOT NULL);
+
 CREATE TABLE IF NOT EXISTS public_events(id TEXT PRIMARY KEY,dedup_key TEXT NOT NULL UNIQUE,title TEXT NOT NULL,subject TEXT NOT NULL,event_date TEXT NOT NULL,time_label TEXT NOT NULL,timezone TEXT NOT NULL,location TEXT NOT NULL,kind TEXT NOT NULL,status TEXT NOT NULL,announcement_url TEXT NOT NULL,announced_at TEXT NOT NULL,evidence TEXT NOT NULL,source_id TEXT REFERENCES sources(id),topic_id TEXT REFERENCES topics(id),updated_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS public_event_versions(id TEXT PRIMARY KEY,event_id TEXT NOT NULL REFERENCES public_events(id),payload TEXT NOT NULL,blob_hash TEXT REFERENCES blobs(hash),created_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS archive_assets(id TEXT PRIMARY KEY,path TEXT NOT NULL,project TEXT NOT NULL,name TEXT NOT NULL,kind TEXT NOT NULL,category TEXT NOT NULL,blob_hash TEXT NOT NULL REFERENCES blobs(hash),bytes INTEGER NOT NULL,modified_at TEXT NOT NULL,body TEXT NOT NULL,read_scope TEXT NOT NULL,source_id TEXT REFERENCES sources(id),created_at TEXT NOT NULL,UNIQUE(path,blob_hash));
 CREATE INDEX IF NOT EXISTS archive_project ON archive_assets(project,category);
 ${OPERATIONS_SCHEMA}
 `;
-export const SCHEMA_VERSION=7;
+export const SCHEMA_VERSION=8;
 // 旧发布记录保留固定版本；历史作品可明确登记为版本待确认，不制造脚本快照。
 function migratePublications(db){
   if(!db.prepare('PRAGMA table_info(publications)').all().some(c=>c.name==='version_id'&&c.notnull))return;
@@ -88,7 +92,7 @@ function migratePublications(db){
     db.exec('COMMIT;');
   }catch(e){db.exec('ROLLBACK;');throw e;}finally{db.exec('PRAGMA foreign_keys=ON;');}
 }
-export const BACKUP_TABLES=['accounts','topics','sources','source_versions','evidence','scripts','script_versions','publications','jobs','feeds','hot_events','hot_items','briefs','ref_works','publish_plans','metric_snapshots','metric_values','experiments','variants','data_screenshots','transcripts','daily_digests','creator_checks','comment_observations','public_events','public_event_versions','archive_assets','ip_profiles','opportunities','productions','approval_rounds','workflow_events','handoffs'];
+export const BACKUP_TABLES=['accounts','topics','sources','source_versions','evidence','scripts','script_versions','publications','jobs','feeds','hot_events','hot_items','briefs','ref_works','publish_plans','metric_snapshots','metric_values','experiments','variants','data_screenshots','transcripts','daily_digests','creator_checks','comment_scans','comment_reply_drafts','comment_reply_history','comment_observations','public_events','public_event_versions','archive_assets','ip_profiles','opportunities','productions','approval_rounds','workflow_events','handoffs'];
 // 内置指标定义：只描述口径，不代表平台接口已经提供这些字段。
 const METRICS=[
 ['impressions','曝光','曝光与观看','count','平台统计的作品曝光次数',['曝光','曝光量','展现量']],

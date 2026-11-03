@@ -32,7 +32,7 @@ export async function codexModels(force=false){
 
 // Each invocation is ephemeral, has no user MCP configuration, and cannot write files.
 // Only the explicitly supplied conversation and selected textual evidence enter the prompt.
-export async function runCodex({prompt,model,effort='low',signal,onText=()=>{},schemaPath}){
+export async function runCodex({prompt,model,effort='low',signal,onText=()=>{},schemaPath,timeoutMs=100000}){
   if(!codexStatus().loggedIn)throw new Error('请先在 Codex 登录 ChatGPT，然后重新连接');
   const cwd=path.join(os.tmpdir(),'zrz-workbench-model');fs.mkdirSync(cwd,{recursive:true,mode:0o700});
   const args=['exec','--ignore-user-config','--ephemeral','--sandbox','read-only','--skip-git-repo-check','--json','--color','never','-C',cwd,'-m',model,'-c',`model_reasoning_effort=${JSON.stringify(effort)}`,'-c','features.shell_tool=false','-c','features.multi_agent=false'];
@@ -44,7 +44,7 @@ export async function runCodex({prompt,model,effort='low',signal,onText=()=>{},s
     const p=spawn(codexBinary(),args,{stdio:['pipe','pipe','pipe'],env:{...process.env,CODEX_INTERNAL_ORIGINATOR_OVERRIDE:'zrz_content_workbench'}});
     const rl=createInterface({input:p.stdout});let content='',usage={},issue='',stderr='',settled=false;
     const kill=()=>{p.kill('SIGTERM');setTimeout(()=>{if(p.exitCode===null&&p.signalCode===null)p.kill('SIGKILL');},1500).unref();};
-    const timer=setTimeout(()=>{issue='模型响应超时，请重试或降低推理强度';kill();},100000);
+    const timer=setTimeout(()=>{issue='模型响应超时，请重试或降低推理强度';kill();},timeoutMs);
     const abort=()=>{issue='模型请求已取消';kill();};signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
     rl.on('line',line=>{try{const e=JSON.parse(line);if(e.type==='item.completed'&&e.item?.type==='agent_message'){content=e.item.text||content;onText(content);}if(e.type==='turn.completed'){usage=e.usage||{};issue='';}if(e.type==='turn.failed')issue=e.error?.message||'模型请求失败';if(e.type==='error')issue=e.message||'模型连接失败';}catch{}});
     p.stderr.on('data',b=>{stderr=(stderr+String(b)).slice(-1500);});p.stdin.on('error',()=>{});

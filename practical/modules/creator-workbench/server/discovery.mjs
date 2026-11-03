@@ -28,7 +28,7 @@ export function comments(store,q={}){
   const conditions=clauses.length?' AND '+clauses.join(' AND '):'';
   const rows=store.db.prepare(`SELECT c.*,a.name creator FROM comment_observations c LEFT JOIN accounts a ON a.id=c.account_id WHERE c.rowid=(SELECT c2.rowid FROM comment_observations c2 WHERE c2.comment_key=c.comment_key${conditions.replaceAll('observed_at','c2.observed_at')} ORDER BY observed_at DESC,rowid DESC LIMIT 1)${conditions.replaceAll('observed_at','c.observed_at')} ORDER BY c.observed_at DESC,c.rowid DESC`).all(...params,...params);
   const result=rows.filter(c=>(!q.accountId||c.account_id===q.accountId)&&(!q.q||[c.text,c.author,c.video_title,c.creator].join(' ').toLowerCase().includes(String(q.q).toLowerCase()))&&(!q.videoUrl||c.video_url===q.videoUrl));
-  if(q.sort==='likes')result.sort((a,b)=>shanghaiDay(new Date(b.observed_at)).localeCompare(shanghaiDay(new Date(a.observed_at)))||(b.likes??-1)-(a.likes??-1)||b.observed_at.localeCompare(a.observed_at));
+  if(q.sort==='likes')result.sort((a,b)=>(b.likes??-1)-(a.likes??-1)||b.observed_at.localeCompare(a.observed_at));
   return result.slice(0,2000);
 }
 export function queueDigestImages(store,digest){
