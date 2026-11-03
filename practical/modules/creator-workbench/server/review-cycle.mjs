@@ -76,7 +76,7 @@ export function cycleAction(store,id,index,body={}){
  const cycle=(store.get('review.cycles')||{})[id],action=cycle?.report.actions[index];if(!action)throw Error('未找到这条复盘建议');
  return store.transaction(()=>{const key=id+':'+index,all=store.get('review.actions')||{};if(all[key])return {...all[key],existing:true};
   const account=store.db.prepare("SELECT id FROM accounts WHERE role='自有' ORDER BY created_at LIMIT 1").get();if(!account)throw Error('请先建立当前IP账号');
-  const topic=store.topic({title:text(body.title,200)||'下一期：'+action.title,account_id:account.id,stage:'选题',brief:['下一期制作计划 · 待审','原作品：'+cycle.context.work.url,'来源复盘：'+id,'具体改动：'+action.change,'如何验证：'+action.verify,'依据：'+action.evidenceIds.join('、')].join('\n')});
+  const topic=store.topic({title:text(body.title,200)||'下一期：'+action.title,account_id:account.id,stage:'选题',brief:['下一期待审计划','原作品：'+cycle.context.work.url,'来源复盘：'+id,'具体改动：'+action.change,'如何验证：'+action.verify,'依据：'+action.evidenceIds.join('、')].join('\n')});
   const source=store.createSource({title:'复盘依据：'+cycle.context.work.title,kind:'文档',url:cycle.context.work.url},'review-cycle:'+id).source;
   if(!store.latest(source.id))store.addVersion(source.id,{body:JSON.stringify(cycle,null,2),method:'保存本次复盘的固定输入、来源与待审建议'});
   store.link(topic.id,source.id);
