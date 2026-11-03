@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "8010ce298318ac2f21b03ebac25bc61f80131e704c3951f8cf6109dc3984b01a",
+  "sourceHash": "044bbed2354e776f70ed590b1532aa4bb13bb639964df70ada9a27fd38d1efc7",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -52,7 +52,7 @@
     },
     {
       "path": "practical/web/ip/creator-navigation.mjs",
-      "sha256": "6c619a6fd65e6dbfd0110a97f4032006a03805cc5280464d65c33abc58a48ce9"
+      "sha256": "355c99fc2af8f2d177fde67974226671d82d92b73036c48ddad8553a264c19c7"
     },
     {
       "path": "practical/web/ip/date-time.css",
@@ -3045,6 +3045,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "b384eb1b1c5d9b27923bd5922db9617146a15e6a2b533a4556eff754f7f80b21",
-  "generatedAt": "2026-11-03T03:10:24.709Z"
+  "contentHash": "316761c69691b0d30e571f10269000c9b8941a9edb731c38b88de86844cf4186",
+  "generatedAt": "2026-11-03T14:34:15.686Z"
 }

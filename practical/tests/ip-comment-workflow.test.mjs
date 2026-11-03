@@ -32,6 +32,19 @@ test('飞书竞品新增即进入名单，手动停用保留，原表移除不�
  assert.equal(syncCloudCompetitors(s,src([row])).added,1);assert.equal(syncCloudCompetitors(s,src([row])).added,0);const account=s.db.prepare("SELECT id FROM accounts WHERE name='原表竞品'").get();saveCreator(s,{follow:false},account.id);syncCloudCompetitors(s,src([row]));assert.equal(researchPool(s).creators.length,0);syncCloudCompetitors(s,src([]));assert.ok(s.row('accounts',account.id));
 }));
 
+test('飞书对标理由保留明确目标IP和原表链接，账号仍使用已核对的抖音主页',()=>fixture(async(s)=>{
+ const rows=[{record_id:'one',竞品名称:'服装观察者',对标对象:'目标IP',入选理由:'与目标IP同讲服装与人物',差异与限制:'不照搬人设',重点拆解项:'把审美判断写成可见细节',关系类型:['内容接近'],抖音主页:'https://www.douyin.com/user/verified'}];
+ syncCloudCompetitors(s,[{type:'competitors',tableId:'tableA',url:'https://example.test/base',records:rows}]);
+ const peer=researchPool(s).creators[0];assert.equal(peer.research.target,'目标IP');assert.equal(peer.research.reason,rows[0].入选理由);assert.equal(peer.research.sourceUrl,'https://example.test/base');assert.equal(peer.url,rows[0].抖音主页);
+}));
+
+test('多竞品样本超过2000条后仍完整筛出低赞竞品，概览不随单个竞品或门槛隐藏',()=>fixture(async(s,dir)=>{
+ const peers=[];
+ for(let i=0;i<3;i++){const p=saveCreator(s,{name:'竞品'+i,url:'https://www.douyin.com/user/p'+i});peers.push(p);const u=url(100+i);await ingestCommentScan(s,dir,scan(p.id,{videos:[{url:u,title:'隔离作品'+i}],comments:Array.from({length:800},(_,n)=>({...comment(i+'-'+n,i===2?50:10000-i),videoUrl:u}))}));}
+ const pool=researchPool(s,{accountId:peers[2].id});assert.equal(pool.total,800);assert.deepEqual(pool.coverage.map(c=>c.hotCount),[800,800,800]);assert.equal(pool.items.length,5);
+ const high=researchPool(s,{accountId:peers[2].id,minLikes:1000});assert.equal(high.total,0);assert.equal(high.coverage.length,3);assert.equal(high.coverage[2].works,1);assert.equal(high.coverage[2].hotCount,800);
+}));
+
 test('生成未完成先显示评论，人工改稿后迟到模型结果不覆盖',()=>fixture(async(s,dir)=>{
  const a=s.account({name:'本人',role:'自有'});setReplyTarget(s,{accountId:a.id,name:'本人',douyinId:'12345678',url:'https://www.douyin.com/user/selfA'});await ingestCommentScan(s,dir,scan(a.id,{purpose:'inbox',identity:{douyinId:'12345678'},comments:[comment('真实问题',0)]}));let r=replyRows(s)[0];assert.equal(r.state,'待生成');r=changeReply(s,r.id,{revision:r.revision,body:'本人已经修改的回复'});await generateCommentReplies(s,dir,{accountId:a.id,ids:[r.comment_id]},{run:async()=>({text:JSON.stringify({replies:[{id:r.comment_id,body:'迟到的模型草稿'}]})})});assert.equal(replyRows(s)[0].body,'本人已经修改的回复');
 }));

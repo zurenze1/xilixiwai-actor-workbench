@@ -12,14 +12,16 @@ export function replyTarget(store){return store.get('comments.replyTarget')||nul
 export function setReplyTarget(store,b){const prior=replyTarget(store);if(prior&&(prior.accountId!==b.accountId||prior.douyinId!==b.douyinId)&&table(store,'comment_reply_drafts')&&store.db.prepare("SELECT id FROM comment_reply_drafts WHERE state='发送中' LIMIT 1").get())fail('有回复正在发送，完成或核对结果后再更换账号');own(store,b.accountId);if(!/^\d{5,30}$/.test(b.douyinId||''))fail('请填写抖音号');const url=sourceUrl(b.url),u=new URL(url);if(!/^(www\.)?douyin\.com$/.test(u.hostname)||!/^\/user\/[A-Za-z0-9_-]+$/.test(u.pathname))fail('请填写该账号的公开主页');const v={accountId:b.accountId,name:text(b.name,100,true),douyinId:b.douyinId,url,enabled:b.enabled!==false,updatedAt:now()};store.set('comments.replyTarget',v);return v;}
 export function researchPool(store,q={}){
  const min=Number(q.minLikes??50);if(!Number.isSafeInteger(min)||min<50)fail('点赞筛选最低为50，填写整数');
- const peers=creators(store).filter(c=>c.follow&&c.role==='对标'),ids=new Set(peers.map(c=>c.id)),current=new Map();
- if(table(store,'comment_scans'))for(const a of peers){const scan=store.db.prepare("SELECT * FROM comment_scans WHERE account_id=? AND purpose='research' AND json_array_length(videos)>0 ORDER BY observed_at DESC,rowid DESC LIMIT 1").get(a.id);if(scan)current.set(a.id,new Set(parse(scan.videos).map(v=>v.url)));}
- const rows=comments(store,{...q,videoUrl:'',sort:'likes'}).filter(c=>ids.has(c.account_id)&&c.likes!=null&&c.likes>=min&&(current.has(c.account_id)&&current.get(c.account_id).has(c.video_url)));
+ const peers=creators(store).filter(c=>c.follow&&c.role==='对标'),ids=new Set(peers.map(c=>c.id)),current=new Map(),scans=new Map();
+ if(table(store,'comment_scans'))for(const a of peers){const scan=store.db.prepare("SELECT * FROM comment_scans WHERE account_id=? AND purpose='research' AND json_array_length(videos)>0 ORDER BY observed_at DESC,rowid DESC LIMIT 1").get(a.id);if(scan){scans.set(a.id,scan);current.set(a.id,new Set(parse(scan.videos).map(v=>v.url)));}}
+ const all=comments(store,{from:q.from,to:q.to,sort:'likes'},Infinity).filter(c=>ids.has(c.account_id)&&c.likes!=null&&c.likes>=50&&current.get(c.account_id)?.has(c.video_url));
+ const coverage=peers.map(a=>({id:a.id,name:a.name,hotCount:all.filter(c=>c.account_id===a.id).length,works:current.get(a.id)?.size||0,observedAt:scans.get(a.id)?.observed_at||'',status:a.lastCheck?.status||'待采集'}));
+ const rows=all.filter(c=>c.likes>=min&&(!q.accountId||c.account_id===q.accountId)&&(!q.q||[c.text,c.author,c.video_title,c.creator].join(' ').toLowerCase().includes(String(q.q).toLowerCase())));
  rows.sort((a,b)=>b.likes-a.likes||b.observed_at.localeCompare(a.observed_at)||a.comment_key.localeCompare(b.comment_key));
  const videos=[...new Map(rows.map(c=>[c.video_url,{url:c.video_url,title:c.video_title}])).values()];
  const filtered=q.videoUrl?rows.filter(c=>c.video_url===q.videoUrl):rows;
  const limit=Math.max(5,Math.min(2000,Number(q.limit)||5));
- return {rule:COMMENT_RULE,total:filtered.length,items:filtered.slice(0,limit),videos,creators:peers};
+ return {rule:COMMENT_RULE,total:filtered.length,items:filtered.slice(0,limit),videos,creators:peers,coverage};
 }
 export function replyRows(store,q={}){
  if(!table(store,'comment_reply_drafts'))return [];

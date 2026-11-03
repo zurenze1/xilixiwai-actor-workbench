@@ -7,8 +7,8 @@ import {dateWindow,decorateDigest,newsChannel} from './discovery-media.mjs';
 
 const date=v=>{const d=new Date(v);if(!v||!Number.isFinite(d.getTime())||d.getTime()>Date.now()+300000)throw new Error('请提供实际采集时间，不能填写未来时间');return d.toISOString();};
 export function creators(store){
-  const prefs=store.get('discovery.creators')||{};
-  return store.db.prepare('SELECT * FROM accounts ORDER BY created_at').all().map(a=>({...a,follow:prefs[a.id]?.follow??a.role!=='自有',lastCheck:store.db.prepare('SELECT * FROM creator_checks WHERE account_id=? ORDER BY observed_at DESC,created_at DESC LIMIT 1').get(a.id)||null}));
+  const prefs=store.get('discovery.creators')||{},research=store.get('comments.competitorResearch')||{};
+  return store.db.prepare('SELECT * FROM accounts ORDER BY created_at').all().map(a=>({...a,research:research[a.id]||null,follow:prefs[a.id]?.follow??a.role!=='自有',lastCheck:store.db.prepare('SELECT * FROM creator_checks WHERE account_id=? ORDER BY observed_at DESC,created_at DESC LIMIT 1').get(a.id)||null}));
 }
 export function saveCreator(store,b,id=null){
   if(id){const old=store.row('accounts',id);store.db.prepare('UPDATE accounts SET name=?,url=? WHERE id=?').run(text(b.name??old.name,100,true),b.url===undefined?old.url:sourceUrl(b.url),id);}
@@ -22,14 +22,14 @@ export function normalizeComment(c){
   const likesLabel=text(c.likesLabel,60)||String(value??'未知');
   return {accountId:c.accountId||null,videoUrl,videoTitle:text(c.videoTitle,300)||'标题待补',commentUrl:c.commentUrl?sourceUrl(c.commentUrl):videoUrl,author,text:body,likes:value,likesLabel,observedAt,origin:text(c.origin,300,true),scope:text(c.scope,1000,true),commentKey:hash(videoUrl+'|'+(text(c.commentId,200)||author+'|'+body))};
 }
-export function comments(store,q={}){
+export function comments(store,q={},limit=2000){
   const w=dateWindow(q),clauses=[],params=[];
   if(w.from){clauses.push('observed_at>=?');params.push(w.from);}if(w.to){clauses.push('observed_at<?');params.push(w.to);}
   const conditions=clauses.length?' AND '+clauses.join(' AND '):'';
   const rows=store.db.prepare(`SELECT c.*,a.name creator FROM comment_observations c LEFT JOIN accounts a ON a.id=c.account_id WHERE c.rowid=(SELECT c2.rowid FROM comment_observations c2 WHERE c2.comment_key=c.comment_key${conditions.replaceAll('observed_at','c2.observed_at')} ORDER BY observed_at DESC,rowid DESC LIMIT 1)${conditions.replaceAll('observed_at','c.observed_at')} ORDER BY c.observed_at DESC,c.rowid DESC`).all(...params,...params);
   const result=rows.filter(c=>(!q.accountId||c.account_id===q.accountId)&&(!q.q||[c.text,c.author,c.video_title,c.creator].join(' ').toLowerCase().includes(String(q.q).toLowerCase()))&&(!q.videoUrl||c.video_url===q.videoUrl));
   if(q.sort==='likes')result.sort((a,b)=>(b.likes??-1)-(a.likes??-1)||b.observed_at.localeCompare(a.observed_at));
-  return result.slice(0,2000);
+  return result.slice(0,limit);
 }
 export function queueDigestImages(store,digest){
   if(!digest)return [];
