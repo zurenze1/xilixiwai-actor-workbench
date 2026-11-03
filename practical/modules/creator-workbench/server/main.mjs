@@ -1,4 +1,5 @@
 import {registerCommentWorkflow} from './comment-workflow.mjs';
+import {registerReviewCycle} from './review-cycle.mjs';
 import {registerExecutionGeneration} from './execution-generation.mjs';
 import Fastify from 'fastify';
 import multipart from '@fastify/multipart';
@@ -42,6 +43,7 @@ registerStudio(app,store,cfg);
 registerTranscription(app,store,cfg);
 registerDiscovery(app,store,cfg);
 registerCommentWorkflow(app,store,cfg);
+registerReviewCycle(app,store,cfg);
 registerEvents(app,store,cfg);
 registerWorkspace(app,store,cfg);
 registerOperations(app,store,cfg);

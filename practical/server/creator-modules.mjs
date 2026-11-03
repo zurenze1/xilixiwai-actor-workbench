@@ -23,6 +23,9 @@ export function creatorModules(dataDir){
    const seed=new Store(resolve(dir,'workbench.sqlite'));try{if(!seed.db.prepare('SELECT id FROM accounts LIMIT 1').get())seed.account({name:project.title,role:'自有'});}finally{seed.close();}
    const port=await unusedPort(),log=await open(resolve(dir,'service.log'),'a',0o600);
    const env={...process.env};for(const k of Object.keys(env))if(k.startsWith('WORKBENCH_')||k==='OPENAI_API_KEY'||k==='ANTHROPIC_API_KEY')delete env[k];
+   // Trusted parent context; child modules can read only this project's shared records.
+   env.WORKBENCH_IP_PARENT_DB=resolve(dataDir,'workbench.sqlite');
+   env.WORKBENCH_IP_PROJECT_ID=project.id;
    state.proc=spawn(process.execPath,[root+'server/main.mjs','--data',dir,'--port',String(port)],{cwd:root,env,stdio:['ignore',log.fd,log.fd]});await log.close();
    state.proc.once('exit',()=>children.delete(project.id));
    for(let i=0;i<120;i++){

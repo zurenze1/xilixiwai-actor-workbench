@@ -9,5 +9,5 @@ export function config(argv=process.argv.slice(2)) {
   const port=Number(option('--port',process.env.WORKBENCH_PORT||4781));
   if(!Number.isInteger(port)||port<1024||port>65535)throw new Error('无效端口');
   for(const name of ['blobs','staging','backups','restored'])fs.mkdirSync(path.join(dir,name),{recursive:true,mode:0o700});
-  return {dir,port,origin:`http://127.0.0.1:${port}`,db:path.join(dir,'workbench.sqlite'),maxFile:1024*1024*1024,maxDocumentParse:12*1024*1024,timezone:'Asia/Shanghai'};
+  return {dir,port,origin:`http://127.0.0.1:${port}`,db:path.join(dir,'workbench.sqlite'),maxFile:1024*1024*1024,maxDocumentParse:12*1024*1024,timezone:'Asia/Shanghai',ipParentDb:process.env.WORKBENCH_IP_PARENT_DB||'',ipProjectId:process.env.WORKBENCH_IP_PROJECT_ID||''};
 }

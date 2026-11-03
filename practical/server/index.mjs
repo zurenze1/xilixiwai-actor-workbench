@@ -57,7 +57,7 @@ export async function createApp({dataDir=resolve(HERE,'../../../runtime-practica
    res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','same-origin');
    if(profile==='ip'&&req.headers.host!==new URL(baseURL).host)fail('请使用本机工作台地址访问',403);
    if(path.startsWith('/api/auth/')){if(profile==='ip')fail('本机IP版无需账号登录',404);await toNodeHandler(identity.auth)(req,res);return;}
-   if(path==='/api/health'){json(res,200,{ok:true,mode:baseURL.startsWith('https:')?'online':'local',version:'3.1-practical',profile,...(profile==='ip'?{ipVersion:'1.7.1'}:{})});return;}
+   if(path==='/api/health'){json(res,200,{ok:true,mode:baseURL.startsWith('https:')?'online':'local',version:'3.1-practical',profile,...(profile==='ip'?{ipVersion:'1.8.0'}:{})});return;}
    if(!path.startsWith('/api/p/')){
     if(method!=='GET'&&method!=='HEAD')fail('不支持的方法',405);
     if(path==='/'||path==='/practical'){res.writeHead(302,{Location:profile==='ip'?'/practical/ip/':'/practical/'});res.end();return;}

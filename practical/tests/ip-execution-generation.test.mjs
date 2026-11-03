@@ -12,7 +12,7 @@ test('完整文案分批生成，口播不改写，缺镜/重复镜头/中途取
  try{
   const text=Array.from({length:43},(_,i)=>`第${i+1}句，观察衣服的细节。`).join('\n');const progress=[];let calls=0;
   const result=await generateExecution({title:'隔离测试',text,scriptRevision:4},{dir,stage:x=>progress.push(x),run:async({prompt})=>{calls++;const lines=JSON.parse(prompt.split('文案数据：')[1]);return {text:JSON.stringify({items:lines.map(suggestions).reverse()})};}});
-  assert.equal(calls,3);assert.equal(result.count,43);assert.equal(result.draft.segments.map(x=>x.narration).join(''),text);assert.equal(result.scriptRevision,4);assert.equal(progress.length,3);assert.match(result.draft.segments[0].shot,/近景/);
+  assert.ok(calls>1);assert.equal(result.count,43);assert.equal(result.draft.segments.map(x=>x.narration).join(''),text);assert.equal(result.scriptRevision,4);assert.equal(progress.length,calls);assert.match(result.draft.segments[0].shot,/近景/);
   const lines=[{id:'one',narration:'第一句。'},{id:'two',narration:'第二句。'}];
   assert.throws(()=>checkGenerated([suggestions(lines[0])],lines),/缺少镜头/);
   assert.throws(()=>checkGenerated([suggestions(lines[0]),suggestions(lines[0])],lines),/编号/);

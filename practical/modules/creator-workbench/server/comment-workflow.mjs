@@ -4,6 +4,12 @@ import {sourceUrl} from './security.mjs';
 import {runCodex} from './codex.mjs';
 
 export const COMMENT_RULE={latestWorks:5,minLikes:50,preview:5,intervalHours:2};
+export function commentTopicAssessment(b){
+ const type=text(b.type,40,true),question=text(b.question,1000,true),fit=text(b.fit,2000,true);
+ if(!['观众问题','观点争议','使用场景'].includes(type))throw Error('夸赞、营销或尚未明确的评论可先存为资料，请先判断具体观众问题');
+ if(question.length<6||fit.length<6)throw Error('请具体写清观众问题，以及为什么适合当前IP');
+ return {type,question,fit,assessedAt:now()};
+}
 const fail=message=>{throw Error(message);};
 const table=(store,name)=>!!store.db.prepare("SELECT 1 FROM sqlite_schema WHERE type='table' AND name=?").get(name);
 const own=(store,id)=>{const a=store.row('accounts',id);if(!['自有','获授权管理'].includes(a.role))fail('回复箱只接自有或获授权管理账号');return a;};
@@ -66,5 +72,5 @@ export function registerCommentWorkflow(app,store,cfg){
  app.post('/api/discovery/replies/generate',async()=>{const target=replyTarget(store);if(!target?.enabled)fail('请先设置本人回复账号');if(store.db.prepare("SELECT id FROM jobs WHERE kind='comment-replies-draft' AND status IN ('排队','处理中','等待重试')").get())fail('正在生成，请稍候');const ids=store.db.prepare("SELECT comment_id id FROM comment_reply_drafts WHERE account_id=? AND state='待生成' LIMIT 20").all(target.accountId).map(r=>r.id);if(!ids.length)fail('没有等待生成的评论');return store.jobView(store.job('comment-replies-draft',{ids,accountId:target.accountId}));});
  app.post('/api/discovery/replies/:id',async req=>changeReply(store,req.params.id,req.body));
  app.post('/api/discovery/comment-scan',async req=>ingestCommentScan(store,cfg.dir,req.body));
- app.post('/api/discovery/comments/:id/topic',async req=>{const c=store.db.prepare('SELECT * FROM comment_observations WHERE id=?').get(req.params.id);if(!c)fail('评论不存在');if(req.body.accountId)own(store,req.body.accountId);const t=store.topic({title:text(req.body.title,200)||'观众关注：'+c.text.slice(0,50),account_id:req.body.accountId||null,stage:'选题',brief:`观众原话：${c.text}\n点赞：${c.likes_label}\n作品：${c.video_title}\n出处：${c.comment_url}\n采集：${c.observed_at}`});const {source}=store.createSource({title:'评论 · '+c.text.slice(0,50),url:c.comment_url,kind:'原话'},'comment:'+c.comment_key);if(!store.latest(source.id))store.addVersion(source.id,{body:c.text,blobHash:c.blob_hash,method:'从高赞评论创建选题'});store.link(t.id,source.id);return {topicId:t.id};});
+ app.post('/api/discovery/comments/:id/topic',async req=>{const c=store.db.prepare('SELECT * FROM comment_observations WHERE id=?').get(req.params.id);if(!c)fail('评论不存在');const assessment=commentTopicAssessment(req.body||{}),owners=store.db.prepare("SELECT id FROM accounts WHERE role IN ('自有','获授权管理')").all(),accountId=req.body.accountId||(owners.length===1?owners[0].id:null);if(!accountId)fail('请先选择服务的IP账号');own(store,accountId);return store.transaction(()=>{const t=store.topic({title:text(req.body.title,200)||assessment.question.slice(0,200),account_id:accountId,stage:'选题',brief:`选题判读：${assessment.type}\n观众问题：${assessment.question}\n适合当前IP的原因：${assessment.fit}\n观众原话：${c.text}\n点赞：${c.likes_label}\n作品：${c.video_title}\n出处：${c.comment_url}\n采集：${c.observed_at}`});const {source}=store.createSource({title:'评论 · '+c.text.slice(0,50),url:c.comment_url,kind:'原话'},'comment:'+c.comment_key);if(!store.latest(source.id))store.addVersion(source.id,{body:c.text,blobHash:c.blob_hash,method:'从高赞评论创建选题；具体问题另行判断'});store.link(t.id,source.id);const all=store.get('comments.topicAssessments')||{};all[t.id]={...assessment,commentId:c.id,sourceId:source.id,accountId};store.set('comments.topicAssessments',all);return {topicId:t.id};});});
 }
