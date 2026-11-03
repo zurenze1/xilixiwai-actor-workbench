@@ -41,7 +41,7 @@ export function registerExecutionGeneration(app,store,cfg){
  const writable=id=>{const t=store.topicDetail(id);if(t.stage==='归档')throw Error('归档项目请先恢复后再生成');return t;};
  app.get('/api/topics/:id/execution-generation',async req=>{
   store.row('topics',req.params.id);const job=store.db.prepare("SELECT * FROM jobs WHERE kind='execution-generate' AND json_extract(input,'$.topicId')=? ORDER BY created_at DESC LIMIT 1").get(req.params.id);
-  return {connection:codexStatus(),job:job?store.jobView(job):null};
+  return {connection:codexStatus(),text:job?JSON.parse(job.input).text:'',job:job?store.jobView(job):null};
  });
  app.post('/api/topics/:id/execution-document',async req=>{
   writable(req.params.id);const part=await req.file({limits:{fileSize:12*1024*1024}});if(!part)throw Error('请选择文案文件');
