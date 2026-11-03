@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "3b4f4d60e9b10229093eb9e1ab597c5a5d2cdd6fc57937b1200b89a1cfa1727b",
+  "sourceHash": "8010ce298318ac2f21b03ebac25bc61f80131e704c3951f8cf6109dc3984b01a",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -40,7 +40,7 @@
     },
     {
       "path": "practical/web/ip/app.js",
-      "sha256": "e9ba3478489ff6d74764453a04c34ed1a69431b7324f7e3d7955edad52543107"
+      "sha256": "72b41a50df07ee4e63bf6eb9ba62aa8d942317c8101dff1f18549216ddbaa803"
     },
     {
       "path": "practical/web/ip/archive-model.mjs",
@@ -53,6 +53,14 @@
     {
       "path": "practical/web/ip/creator-navigation.mjs",
       "sha256": "6c619a6fd65e6dbfd0110a97f4032006a03805cc5280464d65c33abc58a48ce9"
+    },
+    {
+      "path": "practical/web/ip/date-time.css",
+      "sha256": "215ddcbec865120e5bb9a143f9ae4ceb97e0883c5ad0920c5028194e7458da75"
+    },
+    {
+      "path": "practical/web/ip/date-time.mjs",
+      "sha256": "79a35f6f0bacd1c6c6626927ae817b3d8247dcb5abca0d17f4f16ad9b05f2319"
     },
     {
       "path": "practical/web/ip/feishu.js",
@@ -68,7 +76,7 @@
     },
     {
       "path": "practical/web/ip/index.html",
-      "sha256": "e877d8b880d0d8d89c91f5ca87af61113c364076c2f0bb11b23307496e38581a"
+      "sha256": "66e0046b304fba6acfc98ea910e68a9b687dfd08256d3345d1dad025f85acd3f"
     },
     {
       "path": "practical/web/ip/matrix.css",
@@ -3037,6 +3045,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "bdf4a1d428ff7fc783cbacc13be285ee06bb4f7717ac892b80eee2f820fe508c",
-  "generatedAt": "2026-11-02T20:26:24.029Z"
+  "contentHash": "b384eb1b1c5d9b27923bd5922db9617146a15e6a2b533a4556eff754f7f80b21",
+  "generatedAt": "2026-11-03T03:10:24.709Z"
 }

@@ -1,3 +1,4 @@
+import {registerExecutionGeneration} from './execution-generation.mjs';
 import Fastify from 'fastify';
 import multipart from '@fastify/multipart';
 import serveStatic from '@fastify/static';
@@ -34,6 +35,7 @@ app.get('/api/ui-font',async(req,reply)=>{const file=path.join(cfg.dir,'ui-font.
 app.get('/api/execution-background',async(req,reply)=>{const file=path.join(cfg.dir,'ui-execution-background.jpg');if(!fs.existsSync(file))return reply.code(404).send({error:'未设置本机分镜背景'});return reply.type('image/jpeg').send(fs.createReadStream(file));});
 app.get('/api/bootstrap',async()=>({version:APP_VERSION,executionDesk:true,executionBackground:fs.existsSync(path.join(cfg.dir,'ui-execution-background.jpg')),csrf,editPlanUrl:process.env.WORKBENCH_EDIT_PLAN_URL||store.get('workspace.editPlanUrl')||'',timezone:store.get('timezone'),publishTimezone:store.get('publishTimezone')||'Asia/Shanghai',uiTimezone:store.get('uiTimezone')||'Asia/Shanghai',enums:enums(),dataDirectory:cfg.dir,maxFileBytes:cfg.maxFile,accounts:store.db.prepare('SELECT * FROM accounts ORDER BY created_at').all(),topics:store.db.prepare('SELECT t.*,(SELECT max(v.number) FROM scripts s JOIN script_versions v ON v.script_id=s.id WHERE s.topic_id=t.id) script_version FROM topics t ORDER BY t.updated_at DESC').all(),counts:Object.fromEntries(['sources','topics','evidence','script_versions','blobs'].map(t=>[t,store.db.prepare(`SELECT count(*) n FROM ${t}`).get().n])),types:TYPES,states:STATES,rights:RIGHTS,natures:NATURES,stages:STAGES,services:services(store,cfg.dir)}));
 register(app,store,cfg);
+registerExecutionGeneration(app,store,cfg);
 registerCuration(app,store);
 registerStudio(app,store,cfg);
 registerTranscription(app,store,cfg);

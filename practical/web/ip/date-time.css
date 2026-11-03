@@ -1,0 +1,20 @@
+.flatpickr-wrapper{display:block;width:100%;min-width:0}
+.flatpickr-calendar{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:9px;box-shadow:0 12px 32px #0006;font:14px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}
+.flatpickr-calendar.static{top:calc(100% + 7px)}.flatpickr-calendar.static.open{z-index:35}
+.flatpickr-calendar:before,.flatpickr-calendar:after{display:none}
+.flatpickr-months .flatpickr-month,.flatpickr-current-month .flatpickr-monthDropdown-months{background:var(--panel);color:var(--ink);fill:var(--ink)}
+.flatpickr-months .flatpickr-prev-month,.flatpickr-months .flatpickr-next-month{color:var(--ink);fill:var(--ink)}
+.flatpickr-current-month input.cur-year{color:var(--ink);border:0;min-height:0;padding:0 0 0 5px}
+.flatpickr-monthDropdown-months{border:0;min-height:0;padding:0}
+.flatpickr-weekdays span.flatpickr-weekday{color:var(--muted)}.flatpickr-day{color:var(--ink);border-radius:6px}
+.flatpickr-day:hover,.flatpickr-day:focus{background:var(--hover);border-color:var(--hover)}
+.flatpickr-day.today{border-color:var(--accent)}
+.flatpickr-day.selected,.flatpickr-day.selected:hover{background:var(--pale);border-color:var(--accent);color:#fff}
+.flatpickr-day.prevMonthDay,.flatpickr-day.nextMonthDay{color:#929bb4}
+.flatpickr-time{border-top:1px solid var(--line)!important}
+.flatpickr-time input{background:var(--field);border:0;color:var(--ink);padding:0;min-height:0;box-shadow:none}
+.flatpickr-time .numInputWrapper:hover,.flatpickr-time input:hover,.flatpickr-time input:focus{background:var(--hover)}
+.flatpickr-time .flatpickr-time-separator{color:var(--ink)}
+.numInputWrapper span.arrowUp:after{border-bottom-color:var(--muted)}.numInputWrapper span.arrowDown:after{border-top-color:var(--muted)}
+.flatpickr-calendar :focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+@media(max-width:400px){.flatpickr-calendar{width:min(308px,calc(100vw - 72px))}.flatpickr-innerContainer,.flatpickr-rContainer,.flatpickr-days,.dayContainer{width:100%;min-width:0;max-width:100%}.flatpickr-day{max-width:14.285714%}}

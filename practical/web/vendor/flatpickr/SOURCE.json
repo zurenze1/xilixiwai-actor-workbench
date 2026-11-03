@@ -1,0 +1,7 @@
+{
+  "name": "flatpickr",
+  "version": "4.6.13",
+  "source": "https://github.com/flatpickr/flatpickr",
+  "package": "https://registry.npmjs.org/flatpickr/-/flatpickr-4.6.13.tgz",
+  "license": "MIT"
+}

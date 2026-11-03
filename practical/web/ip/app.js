@@ -1,3 +1,4 @@
+import {mountDateTimes,clearDateTimes,syncDateTimes} from './date-time.mjs';
 import {feishuPanel,cloudSourceHTML,cloudTopic} from './feishu.js';
 import {renderMatrix,matrixConnectionInfo} from './matrix.js?v=20261102';
 import {finalChecksHTML,emptyChecks,checkProgress} from './final-review.js?v=20261103';
@@ -47,9 +48,9 @@ $('#menu-toggle').onclick=()=>toggleMenu(!document.body.classList.contains('nav-
 function toggleMenu(open){document.body.classList.toggle('nav-open',open);$('#menu-toggle').setAttribute('aria-expanded',String(open));}
 function navigate(){if(creatorDirty){window.history.replaceState(null,'','#'+route+(deskPage?'~'+deskPage:''));toast('分镜还有修改未保存，请先保存。');return;}const next=creatorRoute(location.hash,NAV.map(n=>n[0]));route=next.route;deskPage=next.page;search='';status='';showArchived=false;toggleMenu(false);render();}
 window.addEventListener('hashchange',navigate);
-function modal(title,html){dirty=false;$('#dialog-label').textContent=title;$('#dialog-body').innerHTML=html;if(!$('#dialog').open)$('#dialog').showModal();$('#dialog').scrollTop=0;}
+function modal(title,html){clearDateTimes();dirty=false;$('#dialog-label').textContent=title;$('#dialog-body').innerHTML=html;if(!$('#dialog').open)$('#dialog').showModal();$('#dialog').scrollTop=0;}
 function closeDialog(){if(saving)return;if(dirty&&!confirm('还有未保存的修改，确定关闭吗？'))return;dirty=false;$('#dialog').close();}
-$('#close-dialog').onclick=closeDialog;$('#dialog').addEventListener('cancel',e=>{e.preventDefault();closeDialog();});$('#dialog').addEventListener('input',()=>{if($('#record-form')||$('#ip-form'))dirty=true;});
+$('#close-dialog').onclick=closeDialog;$('#dialog').addEventListener('close',clearDateTimes);$('#dialog').addEventListener('cancel',e=>{e.preventDefault();closeDialog();});$('#dialog').addEventListener('input',()=>{if($('#record-form')||$('#ip-form'))dirty=true;});
 window.addEventListener('beforeunload',e=>{if(dirty||saving||creatorDirty){e.preventDefault();e.returnValue='';}});
 async function guarded(fn){try{await fn();}catch(e){if($('#dialog').open){let box=$('#form-error');if(!box){box=document.createElement('p');box.id='form-error';box.setAttribute('role','alert');$('#dialog-body').append(box);}box.textContent=e.message;}else if(e.message.includes('\n')||e.message.length>100)modal('请核对后重试',`<h2>本次操作未完成</h2><div class="note error">${esc(e.message)}</div>`);else toast(e.message);}}
 function empty(title,text,actions='',compact=false){return `<div class="empty ${compact?'compact':''}"><h2>${title}</h2><p>${text}</p>${actions}</div>`;}
@@ -130,7 +131,8 @@ function fieldHTML(f,value){
  const v=value??(f.type==='select'?f.options[0]:''),required=f.required?' required':'';
  let input;
  if(f.type==='final-checks')return `<div class="wide"><input type="hidden" name="checks" value="${esc(v||emptyChecks())}">${finalChecksHTML(v||emptyChecks(),{esc,editable:true})}</div>`;
- if(f.type==='textarea')input=`<textarea name="${f.key}" maxlength="100000"${required}>${esc(v)}</textarea>`;
+ if(f.type==='datetime-local')input=`<input name="${f.key}" type="text" data-date-time value="${esc(v)}" autocomplete="off" placeholder="选择日期和时间"${required}>`;
+ else if(f.type==='textarea')input=`<textarea name="${f.key}" maxlength="100000"${required}>${esc(v)}</textarea>`;
  else if(f.type==='select')input=`<select name="${f.key}"${required}>${f.options.map(x=>`<option${x===v?' selected':''}>${esc(x)}</option>`).join('')}</select>`;
  else if(['topic','content','file','account'].includes(f.type)){
   const items=f.type==='file'?files:records.filter(r=>r.kind==='ip-'+f.type&&(!r.body.archived||r.id===v));
@@ -141,7 +143,7 @@ function fieldHTML(f,value){
 function editor(kind,r=null,seed={}){
  if(!ip)return ipForm();if(!writable())return toast('当前账号只有查看权限');const def=D[kind];if(!def)throw Error('记录类型无效');const initial={...r?.body,...seed};
  modal(`${r?'编辑':'新建'}${def.name}`,`<form id="record-form"><div class="form-grid"><label class="wide"><span>标题 <span class="required">*</span></span><input name="title" required maxlength="500" value="${esc(r?.title||seed.title||'')}"></label>${def.fields.map(f=>fieldHTML(f,initial[f.key])+(kind==='ip-content'&&f.key==='script'?riskPanelHTML(rulebookRecord(records),esc):'')).join('')}${def.fields.some(f=>f.type==='file')?'<label class="wide">或者上传一个新附件（最大32 MiB）<input name="upload" type="file"><small>上传后保留原文件，并随完整IP备份导出。</small></label>':''}</div><p id="form-error" role="alert"></p><div class="form-actions"><small>${r?'保存会生成新版本。':'资料保存到当前 IP：'+esc(ip.title)} · ${r?.visibility==='private'?'仅创建者可见':'工作空间内可见'}</small><div class="actions">${button('download-draft','下载未保存草稿','','subtle')}${!r?.body.archived?'<button type="submit" name="saveMode" value="archive">保存并归档</button>':''}<button class="primary" type="submit">保存${def.name}</button></div></div></form>`);
- const form=$('#record-form');let uploaded='';
+ const form=$('#record-form');mountDateTimes(form);let uploaded='';
  if(kind==='ip-content')attachRiskPanel(form,rulebookRecord(records),{esc});
  if(kind==='ip-finalcheck'){
   const refreshChecks=()=>{const bits=[...form.querySelectorAll('[data-final-index]')].map(b=>b.checked?'1':'0').join('');form.elements.checks.value=bits;const p=checkProgress(bits);form.querySelector('.review-progress').textContent=`${p.done} / ${p.total} 项已核对`;};
@@ -149,7 +151,7 @@ function editor(kind,r=null,seed={}){
   form.addEventListener('input',e=>{if(r&&['cutVersion','contentId'].includes(e.target.name)&&e.target.value!==(r.body[e.target.name]||'')){form.querySelectorAll('[data-final-index]').forEach(b=>b.checked=false);refreshChecks();}});
  }
  if(kind==='ip-content'&&r&&IPSchema.approved.has(r.body.status))form.addEventListener('input',e=>{if(['title','hook','outline','script','cta'].includes(e.target.name)){form.elements.status.value='待IP审核';form.elements.reviewer.value='';form.elements.reviewedAt.value='';$('#form-error').textContent='稿件表达已改变，本次保存将回到待IP审核。请先保存，再由IP重新确认。';}});
- form.onsubmit=async e=>{e.preventDefault();if(saving)return;saving=true;const buttons=[...form.querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);$('#form-error').textContent='';
+ form.onsubmit=async e=>{e.preventDefault();if(saving)return;try{syncDateTimes();}catch(err){$('#form-error').textContent=err.message;return;}saving=true;const buttons=[...form.querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);$('#form-error').textContent='';
   try{const body={...r?.body,...seed};delete body.title;for(const f of def.fields)body[f.key]=String(form.elements[f.key].value).trim();validate(kind,body);if(e.submitter?.value==='archive')body.archived=true;
    const file=form.elements.upload?.files[0];if(file){if(file.size>32*1024*1024)throw Error('单个附件最大32 MiB，请分开上传');if(!uploaded){const meta=await api(path()+'/files',{method:'POST',body:{name:file.name,type:file.type||'application/octet-stream',data:await base64(file),visibility:r?.visibility||'team'}});uploaded=meta.id;}body.fileId=uploaded;}
    const payload={title:form.elements.title.value.trim(),kind,body,...(r?{revision:r.revision,visibility:r.visibility}:{visibility:'team'})};
@@ -160,6 +162,7 @@ function editor(kind,r=null,seed={}){
 function detailFields(r){return D[r.kind].fields.filter(f=>r.body[f.key]!==''&&r.body[f.key]!==undefined).map(f=>{let v=r.body[f.key];
  if(['content','topic','account'].includes(f.type))v=byId(v)?`<button class="record-link" data-action="view" data-id="${esc(v)}">${esc(relatedTitle(v))} ↗</button>`:'关联记录未找到';
  else if(f.type==='file'){const file=files.find(x=>x.id===v);v=file?`<a href="/api/p/files/${encodeURIComponent(v)}" data-file-id="${esc(v)}">下载原件：${esc(file.name)} ↗</a>`:'关联原件未找到';}
+ else if(f.type==='datetime-local')v=esc(String(v).replace('T',' '));
  else if(f.type==='url')v=`<a href="${esc(v)}" target="_blank" rel="noopener noreferrer">${esc(v)} ↗</a>`;
  else if(f.type==='final-checks')v=finalChecksHTML(v,{esc,id:r.id,editable:writable()&&!r.body.archived});
  else if(r.kind==='ip-shoot'&&f.key==='checklist')v=String(v).split('\n').filter(Boolean).map((line,i)=>{const done=/^\s*\[x\]/i.test(line);return `<label class="check-item ${done?'done':''}"><input type="checkbox" data-check-id="${esc(r.id)}" data-check-index="${i}"${done?' checked':''}${!writable()?' disabled':''}><span>${esc(line.replace(/^\s*\[[ x]\]\s*/i,''))}</span></label>`;}).join('');
