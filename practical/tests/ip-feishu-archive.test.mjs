@@ -28,8 +28,16 @@ test('CLI failures retain structured permission errors and never expose command 
 });
 test('Snapshot content remains fixed after a new draft and archived topic survives reopening',()=>{
  const s=new Store(':memory:');try{const t=s.topic({title:'测试作品'});let draft=s.saveDraft(t.id,{draft:{title:t.title,segments:[{narration:'第一版',shot:'近景'}]}});const v=s.snapshot(t.id,'完成归档');s.topic({...t,stage:'归档'},t.id);
-  s.saveDraft(t.id,{revision:draft.revision,draft:{title:t.title,segments:[{narration:'第二版',shot:'远景'}]}});assert.equal(JSON.parse(s.row('script_versions',v.id).payload).draft.segments[0].narration,'第一版');assert.equal(s.row('topics',t.id).stage,'归档');assert.match(archiveName('测试作品',new Date(),v.number),/\d\d\.\d\d 测试作品 V1/);assert.ok(!archiveFilename('A/B',new Date(),2).includes('/'));
+  s.saveDraft(t.id,{revision:draft.revision,draft:{title:t.title,segments:[{narration:'第二版',shot:'远景'}]}});assert.equal(JSON.parse(s.row('script_versions',v.id).payload).draft.segments[0].narration,'第一版');assert.equal(s.row('topics',t.id).stage,'归档');assert.equal(archiveName('测试作品',new Date(),v.number),'测试作品 V1');assert.ok(!archiveFilename('A/B',new Date(),2).includes('/'));
  }finally{s.close();}
+});
+
+test('Import dates do not become historical work labels or export dates',()=>{
+ const title='2026年9月14日的作品',created='2026-11-10T09:04:34.988Z';
+ assert.equal(archiveName(title,created,3),title+' V3');
+ assert.equal(archiveName(title,'2026-11-12T01:00:00+08:00',3),title+' V3');
+ assert.equal(archiveName('无日期作品','invalid',1),'无日期作品 V1');
+ assert.equal(archiveFilename('A/B',created,2),'A_B V2.md');
 });
 
 test('HTTP archives a storyboard once, retains fixed content, and creates the next independent project',async()=>{
