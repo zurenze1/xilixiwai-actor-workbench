@@ -77,3 +77,22 @@ test('本人回复窗口不重开已发送记录，不借用改变后的目标�
  const claimed=claimReply(s,r.id);assert.throws(()=>manualReplySession(s,r.id,{action:'start'}),/重新打开/);
  finishReply(s,r.id,{dispatchToken:claimed.dispatchToken,body:r.body,state:'已发送',videoUrl:url(1),identity:{douyinId:'12345678'},proof:'隔离测试回执，没有平台发送'});assert.throws(()=>manualReplySession(s,r.id,{action:'start'}),/重新打开/);
 }));
+
+test('实测本人窗口时须显式匹配会话才可领取，日常任务不领取人工窗口',()=>fixture(async(s,dir)=>{
+ const a=s.account({name:'本人',role:'自有'});setReplyTarget(s,{accountId:a.id,name:'本人',douyinId:'12345678',url:'https://www.douyin.com/user/selfA'});
+ await ingestCommentScan(s,dir,scan(a.id,{purpose:'inbox',identity:{douyinId:'12345678'},comments:[{...comment('本人窗口测试',0),replyDraft:'只发送本人审核的原文。'}]}));
+ let r=replyRows(s)[0];r=changeReply(s,r.id,{revision:r.revision,action:'approve'});const pane=manualReplySession(s,r.id,{action:'start'});
+ assert.throws(()=>claimReply(s,r.id),/批准/);assert.throws(()=>claimReply(s,r.id,{manualSession:'其他窗口'}),/批准/);
+ const c=claimReply(s,r.id,{manualSession:pane.session});assert.equal(c.state,'发送中');assert.equal(c.body,r.approved_body);assert.throws(()=>claimReply(s,r.id,{manualSession:pane.session}),/批准/);
+ const done=finishReply(s,r.id,{dispatchToken:c.dispatchToken,body:c.approved_body,state:'已发送',videoUrl:url(1),identity:{douyinId:'12345678'},proof:'隔离测试，仅验证状态，不操作平台'});assert.equal(done.state,'已发送');
+}));
+
+test('身份验证后的原发送可补记真实回执，保留窗口信息且不重新发送',()=>fixture(async(s,dir)=>{
+ const a=s.account({name:'本人',role:'自有'});setReplyTarget(s,{accountId:a.id,name:'本人',douyinId:'12345678',url:'https://www.douyin.com/user/selfA'});
+ await ingestCommentScan(s,dir,scan(a.id,{purpose:'inbox',identity:{douyinId:'12345678'},comments:[{...comment('短信验证测试',0),replyDraft:'原审核稿保持不变。'}]}));
+ let r=replyRows(s)[0];r=changeReply(s,r.id,{revision:r.revision,action:'approve'});const pane=manualReplySession(s,r.id,{action:'start'}),c=claimReply(s,r.id,{manualSession:pane.session});
+ const receipt={dispatchToken:c.dispatchToken,body:c.approved_body,videoUrl:url(1),identity:{douyinId:'12345678'},proof:'隔离测试，没有平台发送'};
+ const held=finishReply(s,r.id,{...receipt,state:'需核对'});assert.equal(JSON.parse(held.receipt).manualSession,pane.session);assert.throws(()=>claimReply(s,r.id,{manualSession:pane.session}),/批准/);
+ assert.throws(()=>finishReply(s,r.id,{...receipt,state:'发送失败'}),/重试/);assert.throws(()=>finishReply(s,r.id,{...receipt,state:'已发送',dispatchToken:'wrong'}),/凭据/);
+ assert.equal(finishReply(s,r.id,{...receipt,state:'已发送',proof:'隔离测试中新补记的回读证据'}).state,'已发送');assert.throws(()=>finishReply(s,r.id,{...receipt,state:'已发送'}),/凭据/);
+}));

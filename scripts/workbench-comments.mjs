@@ -16,5 +16,5 @@ if(cmd==='context'){
  console.log(JSON.stringify({root,projects,cloud,notes:'每次读取动态名单；只采实际可见评论。发送必须先claim，核对账号与审核原文，完成后complete；未验证的发送用需核对，禁止自动重发。'},null,2));
 }else{
  const id=arg('--project');if(!args.includes('--project'))throw Error('请明确 --project IP标识');const s=open(id);
- try{let r;if(cmd==='ingest')r=await ingestCommentScan(s,path.join(parent,id),await file());else if(cmd==='target')r=setReplyTarget(s,await file());else if(cmd==='claim')r=claimReply(s,arg('--id'));else if(cmd==='complete')r=finishReply(s,arg('--id'),await file());else if(cmd==='automation'){r=await file();s.set('comments.automation',r);}else throw Error('使用context、ingest、target、claim或complete');console.log(JSON.stringify(r,null,2));}finally{s.close();}
+ try{let r;if(cmd==='ingest')r=await ingestCommentScan(s,path.join(parent,id),await file());else if(cmd==='target')r=setReplyTarget(s,await file());else if(cmd==='claim')r=claimReply(s,arg('--id'),{manualSession:args.includes('--manual-session')?arg('--manual-session'):undefined});else if(cmd==='complete')r=finishReply(s,arg('--id'),await file());else if(cmd==='automation'){r=await file();s.set('comments.automation',r);}else throw Error('使用context、ingest、target、claim或complete');console.log(JSON.stringify(r,null,2));}finally{s.close();}
 }
