@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "6cfb5a22efe993a1b8ed654ab5c0c9c25116c4adc9a4457e9f76c99964d25273",
+  "sourceHash": "5764b2d5408b073dc008baef73e0b41548f6f203891c74cf78e6f08e77e0f186",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -40,7 +40,7 @@
     },
     {
       "path": "practical/web/ip/app.js",
-      "sha256": "2e5697460f9302fae33db4db0a42bf465d866c83535377471f3bf87057f9d747"
+      "sha256": "b281200058f0d66bfe3d3b5c28c9467240aef4e6f67a5959dfd6291e3ebf1a2f"
     },
     {
       "path": "practical/web/ip/archive-model.mjs",
@@ -56,7 +56,7 @@
     },
     {
       "path": "practical/web/ip/creator-navigation.mjs",
-      "sha256": "db4420837e8385524668874691844c4b171a4de1f4e7843ca47a977d7af6292b"
+      "sha256": "a6d2898e4a6dcd21b20a739c10da0aca793f58f4c29772e7913dc2149e41d688"
     },
     {
       "path": "practical/web/ip/date-time.css",
@@ -80,7 +80,7 @@
     },
     {
       "path": "practical/web/ip/index.html",
-      "sha256": "6554d99b38e8f37a395474c1ad42a1d9c336e10a54dad5dd8b4f3fcb3190c61b"
+      "sha256": "5e6803bb496b8037697b886b644adfe4fe5466a972a95e15755c47001531ea1c"
     },
     {
       "path": "practical/web/ip/matrix.css",
@@ -99,8 +99,16 @@
       "sha256": "93c58e11f69d21811d1a1c074a6b6e59abe1e21c80395618d314246945480f16"
     },
     {
+      "path": "practical/web/ip/schedule-marks.css",
+      "sha256": "55dad9c8aa92f45827a11313b7b8196a343e97be148bac452f1367af9a1a8588"
+    },
+    {
+      "path": "practical/web/ip/schedule-marks.mjs",
+      "sha256": "a865a15a84d3ee2db8fdeb2f633272c240fb0301f9c3114faeeadfc70026caa3"
+    },
+    {
       "path": "practical/web/ip/schema.js",
-      "sha256": "2a04321e91d3c24590f99e5fbb539cef1d206d5c153a93ad5f00213ef55c50df"
+      "sha256": "7d53bd061ed31353613863c31c14989db7ebb11e1fa661bee694cbb7f4f5f944"
     },
     {
       "path": "practical/web/ip/style.css",
@@ -3049,6 +3057,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "4c5fcab39965d011efa1f1df13bfa1fc16b6cbe89a0be09838cc3bcdd0344f7d",
-  "generatedAt": "2026-11-12T03:34:25.151Z"
+  "contentHash": "6fd45ab6adcd8930cacfbfaca51fefb9d11adbbf923353a8ac270f7e1b4f2203",
+  "generatedAt": "2026-11-12T15:08:26.516Z"
 }
