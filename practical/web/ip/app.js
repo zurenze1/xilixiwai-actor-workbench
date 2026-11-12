@@ -1,3 +1,4 @@
+import {markedKind,scheduleColor,emphasis,markStyle,colorField,mountMarkColors} from './schedule-marks.mjs';
 import {mountDateTimes,clearDateTimes,syncDateTimes} from './date-time.mjs';
 import {feishuPanel,cloudSourceHTML,cloudTopic} from './feishu.js';
 import {renderMatrix,matrixConnectionInfo} from './matrix.js?v=20261102';
@@ -65,9 +66,9 @@ function visualShortcuts(){
  return `<nav class="visual-shortcuts" aria-label="内容工作的四个入口">${shortcuts.map(([key,kicker,title])=>`<a class="visual-shortcut" href="#${key}"><img src="${sceneImage(key)}" alt="" loading="lazy" decoding="async"><span><small>${kicker}</small><b>${title}</b></span><i aria-hidden="true">↗</i></a>`).join('')}</nav>`;
 }
 function rowsFor(kind){return records.filter(r=>r.kind===kind&&Boolean(r.body.archived)===showArchived&&(!status||r.body.status===status)&&(!search||JSON.stringify([r.title,r.body]).toLowerCase().includes(search.toLowerCase())));}
-function rowLink(r){return `<button class="record-link" data-action="view" data-id="${esc(r.id)}">${esc(recordName(r))}</button>`;}
+function rowLink(r){return `${markedKind(r.kind)?`<span class="schedule-marker" style="${markStyle(r)}" aria-hidden="true"></span>${emphasis(r)?`<span class="schedule-priority" style="${markStyle(r)}">★ 重点</span>`:''}`:''}<button class="record-link" data-action="view" data-id="${esc(r.id)}">${esc(recordName(r))}</button>`;}
 function relatedTitle(id){const r=byId(id);return r?r.title:'未关联';}
-function actionsFor(r){return `${button('view','查看',r.id,'subtle')}${writable()?button('edit','编辑',r.id,'subtle'):''}`;}
+function actionsFor(r){return `${button('view','查看',r.id,'subtle')}${writable()?button('edit','编辑',r.id,'subtle')+(markedKind(r.kind)?button('mark-schedule','颜色 / 重点',r.id,'subtle'):''):''}`;}
 function toolbar(kind){const choices=D[kind].fields.find(f=>f.key==='status')?.options||[];return `<div class="toolbar"><input id="search" type="search" placeholder="搜索标题、负责人或内容" aria-label="搜索记录" value="${esc(search)}"><select id="status-filter" aria-label="筛选状态"><option value="">全部状态</option>${choices.map(v=>`<option${status===v?' selected':''}>${esc(v)}</option>`).join('')}</select><label class="archive-toggle"><input id="archived" type="checkbox"${showArchived?' checked':''}>档案库（${records.filter(r=>r.kind===kind&&r.body.archived).length}）</label></div>`;}
 function table(kind){const items=rowsFor(kind);if(!items.length)return empty(showArchived?'还没有归档记录':'这里还没有记录',search||status?'没有符合筛选条件的记录，试试清空搜索或更换状态。':`新建第一条${D[kind].name}，保存后即可在这里继续跟进。`,!search&&!status&&!showArchived?add(kind):'');
  const cols={
@@ -81,7 +82,7 @@ function table(kind){const items=rowsFor(kind);if(!items.length)return empty(sho
  'ip-review':[['复盘',r=>rowLink(r)],['日期',r=>dateText(r.body.date)],['负责人',r=>esc(r.body.owner||'未指定')],['行动状态',r=>badge(r.body.status)]],
  'ip-deal':[['合作',r=>rowLink(r)+`<small>${esc(r.body.counterparty)}</small>`],['合同金额',r=>r.body.amount?`${esc(r.body.currency)} ${money(BigInt(cents(r.body.amount)))}`:'未确认'],['交付 / 回款',r=>dateText(r.body.due)+`<small>回款 ${dateText(r.body.paymentDue)}</small>`],['状态',r=>badge(r.body.status)]],
  'ip-profile':[['资料',r=>rowLink(r)+`<small>${esc(r.body.category)}</small>`],['确认状态',r=>badge(r.body.status)],['确认 / 查阅日期',r=>dateText(r.body.verifiedAt)],['附件',r=>r.body.fileId?esc(files.find(f=>f.id===r.body.fileId)?.name||'已关联原件'):'—']]
- }[kind];return `<div class="table-scroll"><table><thead><tr>${cols.map(([c])=>`<th>${c}</th>`).join('')}<th>操作</th></tr></thead><tbody>${items.map(r=>`<tr>${cols.map(([,get])=>`<td>${get(r)}</td>`).join('')}<td class="table-actions">${actionsFor(r)}</td></tr>`).join('')}</tbody></table></div>`;
+ }[kind];return `<div class="table-scroll"><table><thead><tr>${cols.map(([c])=>`<th>${c}</th>`).join('')}<th>操作</th></tr></thead><tbody>${items.map(r=>`<tr${markedKind(r.kind)?` class="schedule-record-row ${emphasis(r)?'is-emphasis':''}" style="${markStyle(r)}"`:''}>${cols.map(([,get])=>`<td>${get(r)}</td>`).join('')}<td class="table-actions">${actionsFor(r)}</td></tr>`).join('')}</tbody></table></div>`;
 }
 function compactList(items,small,limit=6){return items.length?items.slice(0,limit).map(r=>`<div class="list-row"><div>${rowLink(r)}<small>${esc(small(r))}</small></div>${badge(r.body.status)}</div>`).join(''):empty('暂时没有','有新的安排后，会在这里显示。','',true);}
 function deskTabs(){const tabs=CREATOR_DESKS[route]||[];return tabs.length?`<nav class="creator-tabs" aria-label="当前板块工具">${tabs.map(([page,label])=>`<a href="#${route}${page?'~'+page:''}"${page===deskPage?' aria-current="page"':''}>${esc(label)}</a>`).join('')}</nav>`:'';}
@@ -96,9 +97,9 @@ function renderToday(){
 }
 function renderCalendar(){
  const [y,m]=calendarMonth.split('-').map(Number),days=new Date(y,m,0).getDate(),offset=(new Date(y,m-1,1).getDay()+6)%7;
- const all=calendarRecords(records).filter(r=>r.body.start.slice(0,7)<=calendarMonth&&r.body.end.slice(0,7)>=calendarMonth);
+ const all=calendarEvents().filter(r=>r.body.start.slice(0,7)<=calendarMonth&&r.body.end.slice(0,7)>=calendarMonth);
  const conflictIds=new Set();for(let i=0;i<all.length;i++)for(let j=i+1;j<all.length;j++){if(all[i].body.start<all[j].body.end&&all[j].body.start<all[i].body.end){conflictIds.add(all[i].id);conflictIds.add(all[j].id);}}
- return `<section class="panel"><div class="panel-head"><h2>工作日历</h2><div class="actions"><button data-action="month-prev" aria-label="上个月">‹</button><span>${y} 年 ${m} 月</span><button data-action="month-next" aria-label="下个月">›</button>${button('month-today','本月','','subtle')}</div></div><div class="panel-body"><div class="calendar-week">${['一','二','三','四','五','六','日'].map(d=>`<span>周${d}</span>`).join('')}</div><div class="calendar-days">${'<div class="calendar-day blank"></div>'.repeat(offset)}${Array.from({length:days},(_,i)=>{const d=calendarMonth+'-'+String(i+1).padStart(2,'0'),events=all.filter(r=>r.body.start.slice(0,10)<=d&&r.body.end.slice(0,10)>=d),tasks=active('ip-task').filter(r=>r.body.due===d&&!['完成','取消'].includes(r.body.status));return `<button class="calendar-day ${d===localDate()?'today':''}" data-action="calendar-day" data-day="${d}">${i+1}${events.slice(0,2).map(r=>`<span>${conflictIds.has(r.id)?'⚑ ':''}${esc(r.title)}</span>`).join('')}${tasks.length?`<span>${tasks.length} 件任务到期</span>`:''}${events.length>2?`<span>另有 ${events.length-2} 项</span>`:''}</button>`;}).join('')}</div>${conflictIds.size?'<p class="fine conflict">⚑ 时间重叠提示：日程与拍摄存在重叠，请打开当天记录确认参与人是否冲突。</p>':''}</div></section>`;
+ return `<section class="panel"><div class="panel-head"><h2>工作日历</h2><div class="actions"><button data-action="month-prev" aria-label="上个月">‹</button><span>${y} 年 ${m} 月</span><button data-action="month-next" aria-label="下个月">›</button>${button('month-today','本月','','subtle')}</div></div><div class="panel-body"><div class="schedule-legend"><span><i style="--swatch:#789bd7"></i>选题 / 准备</span><span><i style="--swatch:#a18bd3"></i>写稿 / 分镜</span><span><i style="--swatch:#67ac98"></i>拍摄</span><span><i style="--swatch:#d8a364"></i>后期</span><span><i style="--swatch:#d083a4"></i>发布</span><small>编辑安排可自选颜色，★ 表示重点</small></div><div class="calendar-week">${['一','二','三','四','五','六','日'].map(d=>`<span>周${d}</span>`).join('')}</div><div class="calendar-days">${'<div class="calendar-day blank"></div>'.repeat(offset)}${Array.from({length:days},(_,i)=>{const d=calendarMonth+'-'+String(i+1).padStart(2,'0'),events=all.filter(r=>r.body.start.slice(0,10)<=d&&r.body.end.slice(0,10)>=d).sort((a,b)=>Number(emphasis(b))-Number(emphasis(a))||a.body.start.localeCompare(b.body.start)),tasks=active('ip-task').filter(r=>r.body.due===d&&!['完成','取消'].includes(r.body.status));return `<button class="calendar-day ${d===localDate()?'today':''}" data-action="calendar-day" data-day="${d}">${i+1}${events.slice(0,2).map(r=>`<span class="schedule-calendar-item ${emphasis(r)?'is-emphasis':''}" style="${markStyle(r)}">${emphasis(r)?'★ ':''}${conflictIds.has(r.id)?'⚑ ':''}${esc(r.title)}</span>`).join('')}${tasks.length?`<span>${tasks.length} 件任务到期</span>`:''}${events.length>2?`<span>另有 ${events.length-2} 项</span>`:''}</button>`;}).join('')}</div>${conflictIds.size?'<p class="fine conflict">⚑ 时间重叠提示：日程与拍摄存在重叠，请打开当天记录确认参与人是否冲突。</p>':''}</div></section>`;
 }
 function money(n){const b=BigInt(n),a=b/100n,c=(b%100n).toString().padStart(2,'0');return a.toLocaleString('zh-CN')+'.'+c;}
 function resources(){return `<h2 class="section-title">可选工作提纲 · 附来源</h2><p class="fine">公开方法已查阅，下面是为工作台整理的原创提纲。加入后可编辑；不会作为这个 IP 已确认的事实。</p><div class="resource-grid" style="margin-top:18px">${window.IPResources.map(r=>`<article class="resource"><span class="eyebrow">${esc(r.category)}</span><h3>${esc(r.title)}</h3><p>${esc(r.summary)}</p><div class="actions">${writable()?button('use-template','加入资料库',r.id):''}${r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">${esc(r.source)} ↗</a>`:'<small>原创清单</small>'}</div></article>`).join('')}</div>`;}
@@ -131,6 +132,8 @@ function render(){
 function fieldHTML(f,value){
  const v=value??(f.type==='select'?f.options[0]:''),required=f.required?' required':'';
  let input;
+ if(f.type==='color')return colorField(v,esc);
+ if(f.type==='checkbox')return `<label><input type="checkbox" name="${f.key}" value="1"${v==='1'?' checked':''}>${esc(f.label)}</label>`;
  if(f.type==='final-checks')return `<div class="wide"><input type="hidden" name="checks" value="${esc(v||emptyChecks())}">${finalChecksHTML(v||emptyChecks(),{esc,editable:true})}</div>`;
  if(f.type==='datetime-local')input=`<input name="${f.key}" type="text" data-date-time value="${esc(v)}" autocomplete="off" placeholder="选择日期和时间"${required}>`;
  else if(f.type==='textarea')input=`<textarea name="${f.key}" maxlength="100000"${required}>${esc(v)}</textarea>`;
@@ -141,10 +144,16 @@ function fieldHTML(f,value){
  }else{const type=['date','datetime-local','url'].includes(f.type)?f.type:['count','percent','money'].includes(f.type)?'number':'text';input=`<input name="${f.key}" type="${type}" value="${esc(v)}"${required}${['count','percent','money'].includes(f.type)?` min="0" step="${f.type==='count'?'1':f.type==='money'?'0.01':'any'}"${f.type==='percent'?' max="100"':''}`:' maxlength="100000"'}>`;}
  return `<label class="${f.type==='textarea'?'wide':''}"><span>${esc(f.label)}${f.required?' <span class="required">*</span>':''}</span>${input}</label>`;
 }
+function scheduleMarkEditor(r){
+ if(!r||!markedKind(r.kind)||!writable())return;
+ modal('颜色与重点',`<form id="schedule-mark-form"><h2>${esc(recordName(r))}</h2>${colorField(r.body.color,esc)}<label class="knowledge-check"><input name="highlight" type="checkbox"${emphasis(r)?' checked':''}>标为重点事项</label><p class="fine">只调整视觉标记，原时间、进度与正文保留。</p><p id="mark-error" role="alert"></p><div class="actions"><button class="primary" type="submit">保存标记</button></div></form>`);
+ const form=$('#schedule-mark-form');mountMarkColors(form);
+ form.onsubmit=async event=>{event.preventDefault();if(saving)return;saving=true;const submit=form.querySelector('[type=submit]');submit.disabled=true;try{const body={...r.body,color:form.elements.color.value.trim(),highlight:form.elements.highlight.checked?'1':'0'};validate(r.kind,body);await api(path()+'/records/'+r.id,{method:'PATCH',body:{kind:r.kind,title:r.title,body,revision:r.revision,visibility:r.visibility}});await reload();dirty=false;$('#dialog').close();render();toast('颜色与重点已保存');}catch(error){$('#mark-error').textContent=error.message;}finally{saving=false;submit.disabled=false;}};
+}
 function editor(kind,r=null,seed={}){
  if(!ip)return ipForm();if(!writable())return toast('当前账号只有查看权限');const def=D[kind];if(!def)throw Error('记录类型无效');const initial={...r?.body,...seed};
  modal(`${r?'编辑':'新建'}${def.name}`,`<form id="record-form"><div class="form-grid"><label class="wide"><span>标题 <span class="required">*</span></span><input name="title" required maxlength="500" value="${esc(r?.title||seed.title||'')}"></label>${def.fields.map(f=>fieldHTML(f,initial[f.key])+(kind==='ip-content'&&f.key==='script'?riskPanelHTML(rulebookRecord(records),esc):'')).join('')}${def.fields.some(f=>f.type==='file')?'<label class="wide">或者上传一个新附件（最大32 MiB）<input name="upload" type="file"><small>上传后保留原文件，并随完整IP备份导出。</small></label>':''}</div><p id="form-error" role="alert"></p><div class="form-actions"><small>${r?'保存会生成新版本。':'资料保存到当前 IP：'+esc(ip.title)} · ${r?.visibility==='private'?'仅创建者可见':'工作空间内可见'}</small><div class="actions">${button('download-draft','下载未保存草稿','','subtle')}${!r?.body.archived?'<button type="submit" name="saveMode" value="archive">保存并归档</button>':''}<button class="primary" type="submit">保存${def.name}</button></div></div></form>`);
- const form=$('#record-form');mountDateTimes(form);let uploaded='';
+ const form=$('#record-form');mountDateTimes(form);mountMarkColors(form);let uploaded='';
  if(kind==='ip-content')attachRiskPanel(form,rulebookRecord(records),{esc});
  if(kind==='ip-finalcheck'){
   const refreshChecks=()=>{const bits=[...form.querySelectorAll('[data-final-index]')].map(b=>b.checked?'1':'0').join('');form.elements.checks.value=bits;const p=checkProgress(bits);form.querySelector('.review-progress').textContent=`${p.done} / ${p.total} 项已核对`;};
@@ -153,7 +162,7 @@ function editor(kind,r=null,seed={}){
  }
  if(kind==='ip-content'&&r&&IPSchema.approved.has(r.body.status))form.addEventListener('input',e=>{if(['title','hook','outline','script','cta'].includes(e.target.name)){form.elements.status.value='待IP审核';form.elements.reviewer.value='';form.elements.reviewedAt.value='';$('#form-error').textContent='稿件表达已改变，本次保存将回到待IP审核。请先保存，再由IP重新确认。';}});
  form.onsubmit=async e=>{e.preventDefault();if(saving)return;try{syncDateTimes();}catch(err){$('#form-error').textContent=err.message;return;}saving=true;const buttons=[...form.querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);$('#form-error').textContent='';
-  try{const body={...r?.body,...seed};delete body.title;for(const f of def.fields)body[f.key]=String(form.elements[f.key].value).trim();validate(kind,body);if(e.submitter?.value==='archive')body.archived=true;
+  try{const body={...r?.body,...seed};delete body.title;for(const f of def.fields)body[f.key]=f.type==='checkbox'?(form.elements[f.key].checked?'1':'0'):String(form.elements[f.key].value).trim();validate(kind,body);if(e.submitter?.value==='archive')body.archived=true;
    const file=form.elements.upload?.files[0];if(file){if(file.size>32*1024*1024)throw Error('单个附件最大32 MiB，请分开上传');if(!uploaded){const meta=await api(path()+'/files',{method:'POST',body:{name:file.name,type:file.type||'application/octet-stream',data:await base64(file),visibility:r?.visibility||'team'}});uploaded=meta.id;}body.fileId=uploaded;}
    const payload={title:form.elements.title.value.trim(),kind,body,...(r?{revision:r.revision,visibility:r.visibility}:{visibility:'team'})};
    const saved=await api(path()+'/records'+(r?'/'+r.id:''),{method:r?'PATCH':'POST',body:payload});dirty=false;await reload();view(byId(saved.id));render();toast(body.archived?'已保存至档案库，可新建下一份':def.name+'已保存');
@@ -164,6 +173,8 @@ function detailFields(r){return D[r.kind].fields.filter(f=>r.body[f.key]!==''&&r
  if(['content','topic','account'].includes(f.type))v=byId(v)?`<button class="record-link" data-action="view" data-id="${esc(v)}">${esc(relatedTitle(v))} ↗</button>`:'关联记录未找到';
  else if(f.type==='file'){const file=files.find(x=>x.id===v);v=file?`<a href="/api/p/files/${encodeURIComponent(v)}" data-file-id="${esc(v)}">下载原件：${esc(file.name)} ↗</a>`:'关联原件未找到';}
  else if(f.type==='datetime-local')v=esc(String(v).replace('T',' '));
+ else if(f.type==='color')v=`<span class="schedule-detail-color" style="${markStyle(r)}"><i></i>${v?esc(v):'自动按环节'}</span>`;
+ else if(f.type==='checkbox')v=v==='1'?'已标记':'未标记';
  else if(f.type==='url')v=`<a href="${esc(v)}" target="_blank" rel="noopener noreferrer">${esc(v)} ↗</a>`;
  else if(f.type==='final-checks')v=finalChecksHTML(v,{esc,id:r.id,editable:writable()&&!r.body.archived});
  else if(r.kind==='ip-shoot'&&f.key==='checklist')v=String(v).split('\n').filter(Boolean).map((line,i)=>{const done=/^\s*\[x\]/i.test(line);return `<label class="check-item ${done?'done':''}"><input type="checkbox" data-check-id="${esc(r.id)}" data-check-index="${i}"${done?' checked':''}${!writable()?' disabled':''}><span>${esc(line.replace(/^\s*\[[ x]\]\s*/i,''))}</span></label>`;}).join('');
@@ -212,6 +223,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-action]')
  if(action==='feishu-adopt'){const seed=cloudTopic(cloudSource.records[Number(el.dataset.index)],cloudSource);return editor('ip-topic',null,seed);}
  if(action==='new')return editor(el.dataset.kind);
  if(action==='view')return view(r);
+ if(action==='mark-schedule')return scheduleMarkEditor(r);
  if(action==='edit')return editor(r.kind,r);
  if(action==='new-ip')return ipForm();
  if(action==='rename-ip')return ipForm(true);

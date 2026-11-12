@@ -16,6 +16,7 @@
     'ip-profile':{name:'IP资料',route:'library',fields:[f('category','分类','select',true,['IP定位','个人经历','观点故事','产品服务','常见问题','素材授权','工作方法']),f('summary','内容','textarea',true),f('audience','适用受众 / 场景'),f('sourceUrl','来源链接','url'),f('verifiedAt','确认 / 查阅日期','date'),f('status','状态','select',true,['待确认','已确认','可复用','已过期']),f('fileId','照片、视频或文档原件','file'),f('notes','使用边界、出处与待确认项','textarea')]}
   };
   D['ip-finalcheck']={name:'成片核对单',route:'final-check',fields:[f('contentId','关联稿件（可稍后补充）','content'),f('cutVersion','成片文件名 / 剪辑版本','text',true),f('checks','成片核对','final-checks',true),f('notes','发现的问题与处理记录','textarea')]};
+  for(const kind of ['ip-event','ip-task','ip-shoot'])D[kind].fields.push(f('color','标记颜色','color'),f('highlight','重点事项','checkbox'));
   const approved=new Set(['已确认','已拍摄','已发布']);
   function day(s){if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;const d=new Date(s+'T00:00:00Z');return Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===s&&!s.startsWith('0000');}
   function cents(s){if(!/^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/.test(String(s)))throw Error('金额须为非负数，最多两位小数和十位整数');const [a,b='']=String(s).split('.');return Number(a)*100+Number(b.padEnd(2,'0'));}
@@ -26,6 +27,8 @@
     for(const [k,v]of Object.entries(b)){if(!allowed.has(k))throw Error('不支持的字段：'+k);if(k==='archived'){if(typeof v!=='boolean')throw Error('归档状态无效');continue;}if(typeof v!=='string'||v.length>100000)throw Error('字段格式无效或过长');}
     for(const x of def.fields){const v=b[x.key]??'';if(!v.trim()){if(x.required)throw Error(x.label+'不能为空');continue;}
       if(x.type==='select'&&!x.options.includes(v))throw Error(x.label+'不在允许范围');
+      if(x.type==='checkbox'&&!['0','1'].includes(v))throw Error(x.label+'状态无效');
+      if(x.type==='color'&&!/^#[0-9a-f]{6}$/i.test(v))throw Error(x.label+'须为六位HEX颜色');
       if(x.type==='date'&&!day(v))throw Error(x.label+'须为真实日期');
       if(x.type==='datetime-local'){const m=v.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})$/);if(!m||!day(m[1])||+m[2]>23||+m[3]>59)throw Error(x.label+'须为真实日期和时间');}
       if(x.type==='url'){let u;try{u=new URL(v);}catch{throw Error(x.label+'无效');}if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error(x.label+'须为不含凭据的HTTP/HTTPS链接');}
