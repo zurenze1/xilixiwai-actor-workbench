@@ -2,7 +2,7 @@ import {syncCloudCompetitors} from '../modules/creator-workbench/server/comment-
 import test from 'node:test';import assert from 'node:assert/strict';import {mkdtemp,mkdir,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import path from 'node:path';
 import {Store} from '../modules/creator-workbench/server/store.mjs';
 import {saveCreator} from '../modules/creator-workbench/server/discovery.mjs';
-import {setReplyTarget,ingestCommentScan,researchPool,generateCommentReplies,replyRows,changeReply,claimReply,finishReply} from '../modules/creator-workbench/server/comment-workflow.mjs';
+import {setReplyTarget,ingestCommentScan,researchPool,generateCommentReplies,replyRows,changeReply,claimReply,finishReply,manualReplySession} from '../modules/creator-workbench/server/comment-workflow.mjs';
 async function fixture(fn){const dir=await mkdtemp(path.join(tmpdir(),'ip-comments-'));await mkdir(path.join(dir,'staging'));await mkdir(path.join(dir,'blobs'));const s=new Store(path.join(dir,'workbench.sqlite'));try{await fn(s,dir);}finally{s.close();await rm(dir,{recursive:true,force:true});}}
 const url=i=>'https://www.douyin.com/video/'+i;
 const scan=(accountId,extra={})=>({accountId,purpose:'research',observedAt:new Date().toISOString(),videos:[{url:url(1),title:'实际衣服细节'}],origin:'隔离测试',scope:'测试夹具，未访问外网',status:'成功',comments:[],...extra});
@@ -51,4 +51,29 @@ test('生成未完成先显示评论，人工改稿后迟到模型结果不覆�
 
 test('采集任务拟回复直接进入待审核，重采不覆盖已批准版本',()=>fixture(async(s,dir)=>{
  const a=s.account({name:'本人',role:'自有'});setReplyTarget(s,{accountId:a.id,name:'本人',douyinId:'12345678',url:'https://www.douyin.com/user/selfA'});const b=scan(a.id,{purpose:'inbox',identity:{douyinId:'12345678'},comments:[{...comment('想了解细节',0),replyDraft:'下期可以讲讲这个细节。'}]});await ingestCommentScan(s,dir,b);let r=replyRows(s)[0];assert.equal(r.state,'待审核');r=changeReply(s,r.id,{revision:r.revision,action:'approve'});await ingestCommentScan(s,dir,{...b,comments:[{...b.comments[0],replyDraft:'后来的另一版'}]});assert.equal(replyRows(s)[0].body,'下期可以讲讲这个细节。');assert.equal(replyRows(s)[0].state,'已批准');
+}));
+
+test('本人回复窗口只接审核稿；重复打开不重复领取，关闭后不自动重发',()=>fixture(async(s,dir)=>{
+ const a=s.account({name:'本人',role:'自有'});setReplyTarget(s,{accountId:a.id,name:'本人',douyinId:'12345678',url:'https://www.douyin.com/user/selfA'});
+ await ingestCommentScan(s,dir,scan(a.id,{purpose:'inbox',identity:{douyinId:'12345678'},comments:[{...comment('想了解细节',0),replyDraft:'这个细节可以再展开聊。'}]}));
+ let r=replyRows(s)[0];assert.throws(()=>manualReplySession(s,r.id,{action:'start'}),/审核|确认/);
+ r=changeReply(s,r.id,{revision:r.revision,action:'approve'});const again=changeReply(s,r.id,{revision:r.revision,action:'approve'});assert.equal(again.revision,r.revision);assert.equal(again.approved_at,r.approved_at);
+ const pane=manualReplySession(s,r.id,{action:'start'});assert.equal(pane.reply.state,'本人回复中');assert.equal(pane.reply.dispatch_token,'');assert.equal(pane.reply.approved_body,r.approved_body);
+ assert.equal(manualReplySession(s,r.id,{action:'start'}).session,pane.session);assert.throws(()=>claimReply(s,r.id),/批准/);
+ assert.throws(()=>changeReply(s,r.id,{revision:r.revision,body:'覆盖'}),/不能改写/);
+ assert.throws(()=>manualReplySession(s,r.id,{action:'reported',session:'wrong'}),/窗口已变化/);
+ const closed=manualReplySession(s,r.id,{action:'closed',session:pane.session});assert.equal(closed.state,'需核对');assert.equal(closed.reply.sent_at,'');assert.throws(()=>claimReply(s,r.id),/批准/);
+ const resumed=manualReplySession(s,r.id,{action:'start'});assert.equal(resumed.resumed,true);assert.equal(resumed.reply.state,'需核对');
+ const reported=manualReplySession(s,r.id,{action:'reported',session:pane.session});assert.equal(reported.state,'需核对');assert.equal(reported.reply.sent_at,'');
+ const back=manualReplySession(s,r.id,{action:'cancel',session:pane.session});assert.equal(back.state,'待审核');assert.equal(back.reply.body,r.body);assert.equal(back.reply.approved_at,'');assert.equal(back.reply.approved_body,'');assert.throws(()=>manualReplySession(s,r.id,{action:'start'}),/审核/);
+}));
+
+test('本人回复窗口不重开已发送记录，不借用改变后的目标账号',()=>fixture(async(s,dir)=>{
+ const a=s.account({name:'本人',role:'自有'});setReplyTarget(s,{accountId:a.id,name:'本人',douyinId:'12345678',url:'https://www.douyin.com/user/selfA'});
+ await ingestCommentScan(s,dir,scan(a.id,{purpose:'inbox',identity:{douyinId:'12345678'},comments:[{...comment('问题',0),replyDraft:'收到这个问题。'}]}));
+ let r=replyRows(s)[0];r=changeReply(s,r.id,{revision:r.revision,action:'approve'});
+ setReplyTarget(s,{accountId:a.id,name:'其他',douyinId:'87654321',url:'https://www.douyin.com/user/selfB'});assert.throws(()=>manualReplySession(s,r.id,{action:'start'}),/目标/);
+ setReplyTarget(s,{accountId:a.id,name:'本人',douyinId:'12345678',url:'https://www.douyin.com/user/selfA'});
+ const claimed=claimReply(s,r.id);assert.throws(()=>manualReplySession(s,r.id,{action:'start'}),/重新打开/);
+ finishReply(s,r.id,{dispatchToken:claimed.dispatchToken,body:r.body,state:'已发送',videoUrl:url(1),identity:{douyinId:'12345678'},proof:'隔离测试回执，没有平台发送'});assert.throws(()=>manualReplySession(s,r.id,{action:'start'}),/重新打开/);
 }));

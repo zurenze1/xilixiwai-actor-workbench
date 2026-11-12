@@ -2,7 +2,7 @@ import Cocoa
 import WebKit
 import Darwin
 
-final class IPWorkbench: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDelegate, WKDownloadDelegate {
+final class IPWorkbench: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDelegate, WKDownloadDelegate, WKScriptMessageHandler {
     var window: NSWindow!
     var web: WKWebView!
     var message: NSTextField!
@@ -10,6 +10,7 @@ final class IPWorkbench: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     var serviceLog: FileHandle?
     var starting = false
     var stopping = false
+    var replyWindows: [String: CommentReplyWindow] = [:]
     var downloads: [ObjectIdentifier: WKDownload] = [:]
     var downloadFiles: [ObjectIdentifier: (temporary: URL, destination: URL)] = [:]
     let bundle = Bundle.main
@@ -32,7 +33,10 @@ final class IPWorkbench: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         window.minSize = NSSize(width: 820, height: 580)
         window.isReleasedWhenClosed = false
         window.setFrameAutosaveName("IPWorkbenchMain")
-        web = WKWebView(frame: window.contentView!.bounds, configuration: WKWebViewConfiguration())
+        let webConfig = WKWebViewConfiguration()
+        webConfig.userContentController.add(self, name: "ipCommentReply")
+        webConfig.userContentController.addUserScript(WKUserScript(source: "if(location.protocol==='http:'&&location.hostname==='127.0.0.1'){window.ipWorkbenchNativeReplies=true;}", injectionTime: .atDocumentStart, forMainFrameOnly: false))
+        web = WKWebView(frame: window.contentView!.bounds, configuration: webConfig)
         web.autoresizingMask = [.width, .height]
         web.navigationDelegate = self; web.uiDelegate = self
         window.contentView!.addSubview(web)
@@ -150,6 +154,20 @@ final class IPWorkbench: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         message.isHidden = false; message.stringValue = "连接暂时中断，按 ⌘R 重试。"
     }
     func localURL(_ url: URL) -> Bool { url.scheme == "http" && url.host == "127.0.0.1" && url.port == port }
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        let origin = message.frameInfo.securityOrigin
+        guard message.name == "ipCommentReply", origin.protocol == "http", origin.host == "127.0.0.1", origin.port == port,
+              let b = message.body as? [String: String], let project = b["project"], let draft = b["draft"] else { return }
+        openReply(project: project, draft: draft)
+    }
+    func openReply(project: String, draft: String) {
+        guard project.range(of: "^[a-f0-9-]{36}$", options: .regularExpression) != nil, draft.range(of: "^[a-f0-9-]{36}$", options: .regularExpression) != nil else { return }
+        let key = project + "/" + draft
+        if let prior = replyWindows[key] { prior.show(); return }
+        let pane = CommentReplyWindow(port: port, project: project, draft: draft)
+        pane.onClose = { [weak self] in self?.replyWindows.removeValue(forKey: key) }
+        replyWindows[key] = pane
+    }
     func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = action.request.url else { decisionHandler(.cancel); return }
         if action.shouldPerformDownload { decisionHandler(.download); return }
@@ -207,7 +225,13 @@ final class IPWorkbench: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     }
 }
 
-let application = NSApplication.shared
-let delegate = IPWorkbench()
-application.delegate = delegate
-application.run()
+@main
+struct IPWorkbenchMain {
+    static func main() {
+        let application = NSApplication.shared
+        let delegate = IPWorkbench()
+        application.delegate = delegate
+        application.run()
+        withExtendedLifetime(delegate) {}
+    }
+}

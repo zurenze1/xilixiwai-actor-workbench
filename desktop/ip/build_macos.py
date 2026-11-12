@@ -64,7 +64,7 @@ def main():
     info = {
         'CFBundleName':'IP工作台','CFBundleDisplayName':'IP工作台','CFBundleExecutable':'IPWorkbench',
         'CFBundleIdentifier':'com.zurenze.ip-workbench','CFBundlePackageType':'APPL',
-        'CFBundleShortVersionString':'1.4.0','CFBundleVersion':'10',
+        'CFBundleShortVersionString':'1.6.3','CFBundleVersion':'19',
         'CFBundleIconFile':'IPWorkbench','LSMinimumSystemVersion':'13.5',
         'LSMultipleInstancesProhibited':True,'NSHighResolutionCapable':True,
         'NSAppTransportSecurity':{'NSAllowsLocalNetworking':True},
@@ -72,7 +72,7 @@ def main():
     (app / 'Contents/Info.plist').write_bytes(plistlib.dumps(info))
     compiler = ['swiftc','-swift-version','5','-O','-target',platform.machine()+'-apple-macos13.5']
     if args.sdk: compiler += ['-sdk', args.sdk.resolve()]
-    run(compiler + [HERE / 'IPWorkbench.swift','-framework','Cocoa','-framework','WebKit','-o',macos / 'IPWorkbench'])
+    run(compiler + [HERE / 'IPWorkbench.swift',HERE / 'CommentReplyWindow.swift','-framework','Cocoa','-framework','WebKit','-o',macos / 'IPWorkbench'])
     run(['codesign','--force','--deep','--sign','-',app])
     run(['codesign','--verify','--deep','--strict',app])
     # The bundle whitelist above deliberately excludes runtime-ip, SQLite files,
