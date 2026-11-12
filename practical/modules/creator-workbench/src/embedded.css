@@ -55,3 +55,5 @@ html[data-ip-theme="tide"] .execution-table thead th{background:#30374d;color:va
 html[data-ip-theme="tide"] .execution-table tbody>tr>th{background:#303344}
 html[data-ip-theme="tide"] .execution-table tbody>tr:nth-child(even)>td{background:#2b2e37}
 html[data-ip-theme="tide"] .execution-table :is(input,textarea,select){background:var(--field);color:var(--text);border-color:var(--line)}
+
+.module-return-bar{position:sticky;top:0;z-index:35;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;margin:0 0 18px;background:var(--paper);border:1px solid var(--line);border-radius:8px;box-shadow:0 4px 12px #0002}.module-return-bar>span{flex:1;color:var(--muted);font-size:13px}.module-return-bar>button{white-space:nowrap}@media(max-width:600px){.module-return-bar{gap:8px;padding:8px}.module-return-bar>span{display:none}}

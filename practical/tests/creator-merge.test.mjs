@@ -10,9 +10,9 @@ test('整合页签只接受所在板块的工具，旧入口和未知片段有�
  const routes=['today','library','topics','replies','content','execution','radar','operations'];
  assert.deepEqual(creatorRoute('#operations~review',routes),{route:'operations',page:'review'});
  assert.deepEqual(creatorRoute('#library~transcripts',routes),{route:'library',page:'transcripts'});
- assert.deepEqual(creatorRoute('#topics~comments',routes),{route:'topics',page:'comments'});
+ assert.deepEqual(creatorRoute('#topics~comments',routes),{route:'radar',page:'comments'});
  assert.deepEqual(creatorRoute('#replies',routes),{route:'replies',page:'comment-inbox'});
- assert.deepEqual(creatorRoute('#radar~comments',routes),{route:'topics',page:'comments'});
+ assert.deepEqual(creatorRoute('#radar~comments',routes),{route:'radar',page:'comments'});
  assert.deepEqual(creatorRoute('#execution',routes),{route:'execution',page:'edit-plan'});
  assert.deepEqual(creatorRoute('#content~javascript:alert(1)',routes),{route:'content',page:''});
  assert.deepEqual(creatorRoute('#unknown~assets',routes),{route:'today',page:''});

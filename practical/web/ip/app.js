@@ -6,7 +6,7 @@ import {finalChecksHTML,emptyChecks,checkProgress} from './final-review.js?v=202
 import {rulebookRecord,riskPanelHTML,attachRiskPanel} from './content-risk.js?v=20261103-red';
 import {archiveName,archiveFilename} from './archive-model.mjs';
 import {calendarRecords} from './calendar-model.mjs';
-import {CREATOR_DESKS,creatorRoute} from './creator-navigation.mjs';
+import {CREATOR_DESKS,creatorRoute} from './creator-navigation.mjs?v=20261112-navigation';
 const $=s=>document.querySelector(s);
 const recordName=r=>archiveName(r.title,r.created_at,r.revision);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -253,3 +253,5 @@ document.addEventListener('change',e=>{const box=e.target.closest('[data-final-i
 document.addEventListener('change',e=>{const box=e.target.closest('[data-check-id]');if(!box)return;guarded(async()=>{const r=byId(box.dataset.checkId);if(saving){box.checked=!box.checked;return;}const lines=r.body.checklist.split('\n').filter(Boolean),i=Number(box.dataset.checkIndex);lines[i]=(box.checked?'[x] ':'[ ] ')+lines[i].replace(/^\s*\[[ x]\]\s*/i,'');try{await update(r,{...r.body,checklist:lines.join('\n')},'准备清单已保存');}catch(err){box.checked=!box.checked;throw err;}});});
 document.addEventListener('click',e=>{const a=e.target.closest('[data-file-id]');if(!a)return;e.preventDefault();guarded(async()=>{const r=await api('files/'+a.dataset.fileId,{raw:true});const meta=files.find(f=>f.id===a.dataset.fileId);download(meta?.name||'原始附件',await r.blob());});});
 await boot();
+
+window.addEventListener('message',e=>{const frame=document.querySelector('.creator-module-frame');if(e.origin!==location.origin||e.source!==frame?.contentWindow||e.data?.type!=='ip-module-home')return;if(dirty||saving||creatorDirty){toast('还有修改未保存，请先保存再返回。');return;}location.hash='today';});
