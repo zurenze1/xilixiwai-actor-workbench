@@ -1,0 +1,28 @@
+{
+  "name": "macro-chart-film-v1",
+  "version": "3.0.0",
+  "private": true,
+  "description": "可编辑工资、工时与时薪数据动画，保留既有宏观图表",
+  "scripts": {
+    "studio": "remotion studio src/index_V1.tsx --port=4965",
+    "check": "tsc --noEmit",
+    "build:v3": "node scripts/build_V3.mjs",
+    "start:v3": ".venv/bin/python scripts/server_V2.py",
+    "test:v3": ".venv/bin/python scripts/test_work_data_V3.py"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.533",
+    "@remotion/cli": "4.0.533",
+    "@remotion/player": "4.0.533",
+    "@remotion/renderer": "4.0.533",
+    "esbuild": "0.28.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.533"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,8 @@
+node_modules/
+.venv/
+state/
+outputs/
+evidence/
+upstream/
+ui/V3/app.js
+__pycache__/
