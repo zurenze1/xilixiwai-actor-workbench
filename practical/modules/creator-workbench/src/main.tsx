@@ -74,6 +74,7 @@ return <div className={"shell"+(view==='edit-plan'?' execution-shell':'')}><asid
 
 {view==='daily'&&<DailyFeed assessHot={assessHot} openTopic={openTopic}/>}
 {view==='comments'&&<CommentDesk refresh={refresh} openSource={openSource} boot={boot}/>}
+{view==='comment-inbox'&&<CommentDesk key="own-replies" mode="replies" refresh={refresh} openSource={openSource} boot={boot}/>}
 {view==='events'&&<PublicCalendar openTopic={openTopic} openSource={openSource}/>}
 
 {view==='today'&&<OperationsHome boot={boot} go={nav} openTopic={openTopic} newTopic={()=>beginTopic()}/>}

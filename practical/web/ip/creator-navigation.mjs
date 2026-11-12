@@ -1,6 +1,7 @@
 export const CREATOR_DESKS={
  library:[['','IP资料'],['assets','全部创作素材'],['library','原文与证据'],['transcripts','逐字稿'],['videos','完整作品'],['process','制作过程']],
  topics:[['','IP选题池'],['comments','博主与评论'],['board','制作项目']],
+ replies:[['comment-inbox','评论回复箱']],
  content:[['','写稿与平台提醒'],['topics','项目稿件与版本']],
  execution:[['edit-plan','逐句分镜'],['board','制作项目']],
  radar:[['daily','人物线索'],['culture','时尚界与文化'],['othernews','服装与其他'],['ai','AI资讯'],['events','公开活动']],

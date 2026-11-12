@@ -4,12 +4,13 @@ import {renderMatrix,matrixConnectionInfo} from './matrix.js?v=20261102';
 import {finalChecksHTML,emptyChecks,checkProgress} from './final-review.js?v=20261103';
 import {rulebookRecord,riskPanelHTML,attachRiskPanel} from './content-risk.js?v=20261103-red';
 import {archiveName,archiveFilename} from './archive-model.mjs';
+import {calendarRecords} from './calendar-model.mjs';
 import {CREATOR_DESKS,creatorRoute} from './creator-navigation.mjs';
 const $=s=>document.querySelector(s);
 const recordName=r=>archiveName(r.title,r.created_at,r.revision);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const {D,validate,cents}=window.IPSchema;
-const NAV=[['today','今日工作台','把今天最重要的事，放在眼前。'],['schedule','日程与任务','每个安排，都有时间、负责人和完成标准。'],['library','IP资料库','积累经历、观点与素材，让表达有根有据。'],['radar','热点雷达','按日期查看人物、文化、AI与观众反馈。'],['topics','选题库','让灵感有出处，让选题有明确的受众。'],['content','内容创作','从第一句，到IP确认的那一版。'],['execution','分镜执行台','把文案、画面、声音和执行要求放在一起。'],['shoots','拍摄准备','把稿件变成镜头，把现场准备到位。'],['final-check','成片核对','剪完以后，逐项看过，再放心进入发布。'],['operations','账号矩阵与复盘','把多个平台放在一起看，把下一步放进工作里。'],['business','商务合作','从第一次沟通，到交付和回款。']];
+const NAV=[['today','今日工作台','把今天最重要的事，放在眼前。'],['schedule','日程与任务','每个安排，都有时间、负责人和完成标准。'],['library','IP资料库','积累经历、观点与素材，让表达有根有据。'],['radar','热点雷达','按日期查看人物、文化、AI与观众反馈。'],['topics','选题库','让灵感有出处，让选题有明确的受众。'],['replies','评论回复箱','查看本人评论，逐条审核回复。'],['content','内容创作','从第一句，到IP确认的那一版。'],['execution','分镜执行台','把文案、画面、声音和执行要求放在一起。'],['shoots','拍摄准备','把稿件变成镜头，把现场准备到位。'],['final-check','成片核对','剪完以后，逐项看过，再放心进入发布。'],['operations','账号矩阵与复盘','把多个平台放在一起看，把下一步放进工作里。'],['business','商务合作','从第一次沟通，到交付和回款。']];
 let ctx=null,ips=[],ip=null,records=[],files=[],route='today',search='',status='',showArchived=false,saving=false,dirty=false,calendarMonth='',toastTimer;
 let creatorDirty=false,feishuState=null,cloudSource=null,deskPage='',creatorStats=null;
 window.addEventListener('message',e=>{const f=document.querySelector('.creator-module-frame');if(e.origin===location.origin&&e.source===f?.contentWindow&&e.data?.type==='creator-dirty')creatorDirty=e.data.dirty===true;});
@@ -95,7 +96,7 @@ function renderToday(){
 }
 function renderCalendar(){
  const [y,m]=calendarMonth.split('-').map(Number),days=new Date(y,m,0).getDate(),offset=(new Date(y,m-1,1).getDay()+6)%7;
- const all=[...active('ip-event'),...active('ip-shoot')].filter(r=>r.body.status!=='取消'&&r.body.start.slice(0,7)<=calendarMonth&&r.body.end.slice(0,7)>=calendarMonth);
+ const all=calendarRecords(records).filter(r=>r.body.start.slice(0,7)<=calendarMonth&&r.body.end.slice(0,7)>=calendarMonth);
  const conflictIds=new Set();for(let i=0;i<all.length;i++)for(let j=i+1;j<all.length;j++){if(all[i].body.start<all[j].body.end&&all[j].body.start<all[i].body.end){conflictIds.add(all[i].id);conflictIds.add(all[j].id);}}
  return `<section class="panel"><div class="panel-head"><h2>工作日历</h2><div class="actions"><button data-action="month-prev" aria-label="上个月">‹</button><span>${y} 年 ${m} 月</span><button data-action="month-next" aria-label="下个月">›</button>${button('month-today','本月','','subtle')}</div></div><div class="panel-body"><div class="calendar-week">${['一','二','三','四','五','六','日'].map(d=>`<span>周${d}</span>`).join('')}</div><div class="calendar-days">${'<div class="calendar-day blank"></div>'.repeat(offset)}${Array.from({length:days},(_,i)=>{const d=calendarMonth+'-'+String(i+1).padStart(2,'0'),events=all.filter(r=>r.body.start.slice(0,10)<=d&&r.body.end.slice(0,10)>=d),tasks=active('ip-task').filter(r=>r.body.due===d&&!['完成','取消'].includes(r.body.status));return `<button class="calendar-day ${d===localDate()?'today':''}" data-action="calendar-day" data-day="${d}">${i+1}${events.slice(0,2).map(r=>`<span>${conflictIds.has(r.id)?'⚑ ':''}${esc(r.title)}</span>`).join('')}${tasks.length?`<span>${tasks.length} 件任务到期</span>`:''}${events.length>2?`<span>另有 ${events.length-2} 项</span>`:''}</button>`;}).join('')}</div>${conflictIds.size?'<p class="fine conflict">⚑ 时间重叠提示：日程与拍摄存在重叠，请打开当天记录确认参与人是否冲突。</p>':''}</div></section>`;
 }

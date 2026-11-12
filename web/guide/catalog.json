@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "044bbed2354e776f70ed590b1532aa4bb13bb639964df70ada9a27fd38d1efc7",
+  "sourceHash": "6cfb5a22efe993a1b8ed654ab5c0c9c25116c4adc9a4457e9f76c99964d25273",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -40,11 +40,15 @@
     },
     {
       "path": "practical/web/ip/app.js",
-      "sha256": "72b41a50df07ee4e63bf6eb9ba62aa8d942317c8101dff1f18549216ddbaa803"
+      "sha256": "2e5697460f9302fae33db4db0a42bf465d866c83535377471f3bf87057f9d747"
     },
     {
       "path": "practical/web/ip/archive-model.mjs",
-      "sha256": "91837670503419a3d79e0b42828126ac382ecc677da06b1f03208abba8f39a0b"
+      "sha256": "6f5914013a64878616faf111719efa8594ea2a0466102ff539851df31f3ccc09"
+    },
+    {
+      "path": "practical/web/ip/calendar-model.mjs",
+      "sha256": "4e6a6d171ba74ea9859a98f48589c3f512eaa80db79ed89d6051e79d9cc3824d"
     },
     {
       "path": "practical/web/ip/content-risk.js",
@@ -52,7 +56,7 @@
     },
     {
       "path": "practical/web/ip/creator-navigation.mjs",
-      "sha256": "355c99fc2af8f2d177fde67974226671d82d92b73036c48ddad8553a264c19c7"
+      "sha256": "db4420837e8385524668874691844c4b171a4de1f4e7843ca47a977d7af6292b"
     },
     {
       "path": "practical/web/ip/date-time.css",
@@ -76,7 +80,7 @@
     },
     {
       "path": "practical/web/ip/index.html",
-      "sha256": "66e0046b304fba6acfc98ea910e68a9b687dfd08256d3345d1dad025f85acd3f"
+      "sha256": "6554d99b38e8f37a395474c1ad42a1d9c336e10a54dad5dd8b4f3fcb3190c61b"
     },
     {
       "path": "practical/web/ip/matrix.css",
@@ -3045,6 +3049,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "316761c69691b0d30e571f10269000c9b8941a9edb731c38b88de86844cf4186",
-  "generatedAt": "2026-11-03T14:34:15.686Z"
+  "contentHash": "4c5fcab39965d011efa1f1df13bfa1fc16b6cbe89a0be09838cc3bcdd0344f7d",
+  "generatedAt": "2026-11-12T03:34:25.151Z"
 }

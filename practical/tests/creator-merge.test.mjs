@@ -7,10 +7,11 @@ import {Store,hash} from '../modules/creator-workbench/server/store.mjs';
 import {mergeCreatorContent} from '../../scripts/merge-creator-content.mjs';
 import {creatorRoute} from '../web/ip/creator-navigation.mjs';
 test('整合页签只接受所在板块的工具，旧入口和未知片段有稳定回退',()=>{
- const routes=['today','library','topics','content','execution','radar','operations'];
+ const routes=['today','library','topics','replies','content','execution','radar','operations'];
  assert.deepEqual(creatorRoute('#operations~review',routes),{route:'operations',page:'review'});
  assert.deepEqual(creatorRoute('#library~transcripts',routes),{route:'library',page:'transcripts'});
  assert.deepEqual(creatorRoute('#topics~comments',routes),{route:'topics',page:'comments'});
+ assert.deepEqual(creatorRoute('#replies',routes),{route:'replies',page:'comment-inbox'});
  assert.deepEqual(creatorRoute('#radar~comments',routes),{route:'topics',page:'comments'});
  assert.deepEqual(creatorRoute('#execution',routes),{route:'execution',page:'edit-plan'});
  assert.deepEqual(creatorRoute('#content~javascript:alert(1)',routes),{route:'content',page:''});
