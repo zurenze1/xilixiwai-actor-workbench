@@ -1,6 +1,6 @@
 {
   "name": "xilixiwai-actor-workbench",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -19,7 +19,7 @@
     "build:demo-previs": "node scripts/build-demo-previs.mjs",
     "build:demo-tools": "node scripts/build-demo-tools.mjs",
     "start:ip": "npm run build:creator-modules && node practical/server/ip-start.mjs",
-    "test:ip": "node --test practical/tests/ip.test.mjs practical/tests/ip-matrix.test.mjs practical/tests/ip-final-review.test.mjs practical/tests/ip-feishu-archive.test.mjs",
+    "test:ip": "node --test practical/tests/ip.test.mjs practical/tests/ip-matrix.test.mjs practical/tests/ip-final-review.test.mjs practical/tests/ip-feishu-archive.test.mjs practical/tests/ip-comment-insights.test.mjs",
     "build:creator-modules": "node scripts/build-creator-modules.mjs",
     "test:creator-modules": "node --test practical/tests/creator-modules.test.mjs practical/tests/creator-merge.test.mjs practical/tests/creator-flow.test.mjs practical/tests/ip-execution-generation.test.mjs practical/tests/ip-comment-workflow.test.mjs practical/tests/ip-review-cycle.test.mjs"
   },

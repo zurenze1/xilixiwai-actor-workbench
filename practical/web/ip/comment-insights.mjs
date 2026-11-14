@@ -1,0 +1,12 @@
+const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export function commentReports(records){return records.filter(r=>r.kind==='ip-profile'&&r.body.templateId?.startsWith('comment-insights-')&&!r.body.archived).sort((a,b)=>(b.body.verifiedAt||'').localeCompare(a.body.verifiedAt||'')||b.created_at.localeCompare(a.created_at));}
+const open=(r,label,primary=false)=>`<button data-action="view" data-id="${esc(r.id)}"${primary?' class="primary"':''}>${esc(label)}</button>`;
+export function commentInsightPanel(records){
+ const latest=commentReports(records)[0];
+ return `<section class="comment-insight-home" aria-labelledby="comment-insight-heading"><div><span class="eyebrow">从评论到选题${latest?' · '+esc(latest.body.verifiedAt):''}</span><h2 id="comment-insight-heading">评论选题解读</h2><p>${latest?esc(latest.body.audience||'查看观众原话、点赞依据、切入角度和待核事项。'):'先看竞品高赞评论；有新证据支持的解读会保存在这里。'}</p></div><div class="comment-insight-actions"><a class="button primary" href="#radar~comments">打开高赞评论 →</a>${latest?open(latest,'阅读最新解读'):''}<a href="#topics~insights">全部评论选题 →</a></div></section>`;
+}
+export function commentInsightsPage(records,{writable=false}={}){
+ const reports=commentReports(records),topics=records.filter(r=>r.kind==='ip-topic'&&r.body.templateId?.startsWith('comment-topic-')&&!r.body.archived).sort((a,b)=>b.created_at.localeCompare(a.created_at));
+ const edit=r=>writable?`<button class="subtle" data-action="edit" data-id="${esc(r.id)}">编辑</button>`:'';
+ return `<section class="comment-insights-library"><div class="panel-head"><div><h2>评论选题解读</h2><p class="fine">先看观众在问什么，再决定拍什么。候选题可编辑，保留证据与待核事项。</p></div><a href="#radar~comments">查看原始高赞评论 →</a></div><h3>每日解读 · ${reports.length} 份</h3><div class="comment-insight-grid">${reports.map(r=>`<article class="comment-insight-card"><span class="eyebrow">${esc(r.body.verifiedAt)}</span><h3>${open(r,r.title)}</h3><p>${esc(r.body.audience)}</p><div class="actions">${open(r,'查看解读')}${edit(r)}</div></article>`).join('')||'<p class="fine">尚无解读，原始高赞评论仍可查看。</p>'}</div><h3>由评论产生的候选题 · ${topics.length} 条</h3><div class="comment-insight-grid">${topics.map(r=>`<article class="comment-insight-card"><span class="eyebrow">${esc(r.body.status)}</span><h3>${open(r,r.title)}</h3><p>${esc(r.body.question)}</p><div class="actions">${open(r,'原话与切入角度')}${edit(r)}</div></article>`).join('')||'<p class="fine">有新证据支持时再加入候选，不自动记为已确认。</p>'}</div></section>`;
+}

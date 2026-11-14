@@ -1,3 +1,4 @@
+import {commentInsightPanel,commentInsightsPage} from './comment-insights.mjs?v=20261114';
 import {markedKind,scheduleColor,emphasis,markStyle,colorField,mountMarkColors} from './schedule-marks.mjs';
 import {mountDateTimes,clearDateTimes,syncDateTimes} from './date-time.mjs';
 import {feishuPanel,cloudSourceHTML,cloudTopic} from './feishu.js';
@@ -6,7 +7,7 @@ import {finalChecksHTML,emptyChecks,checkProgress} from './final-review.js?v=202
 import {rulebookRecord,riskPanelHTML,attachRiskPanel} from './content-risk.js?v=20261103-red';
 import {archiveName,archiveFilename} from './archive-model.mjs';
 import {calendarRecords} from './calendar-model.mjs';
-import {CREATOR_DESKS,creatorRoute} from './creator-navigation.mjs?v=20261112-navigation';
+import {CREATOR_DESKS,creatorRoute} from './creator-navigation.mjs?v=20261114-insights';
 const $=s=>document.querySelector(s);
 const recordName=r=>archiveName(r.title,r.created_at,r.revision);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -92,7 +93,7 @@ function renderToday(){
  const approvals=active('ip-content').filter(r=>r.body.status==='待IP审核');
  const upcoming=[...active('ip-event'),...active('ip-shoot')].filter(r=>!['完成','拍摄完成','取消'].includes(r.body.status)&&r.body.end>=localTime()).sort((a,b)=>a.body.start.localeCompare(b.body.start));
  const pending=active('ip-release').filter(r=>r.body.status==='待发布');const overdue=tasks.filter(r=>r.body.due<localDate()).length;
- return heading(`<span class="date-label">${new Date().toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'})}</span>${add('ip-task','记一件待办')}`)+visualShortcuts()+creatorHome()+
+ return heading(`<span class="date-label">${new Date().toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'})}</span>${add('ip-task','记一件待办')}`)+commentInsightPanel(records)+visualShortcuts()+creatorHome()+
  `<section class="kpis">${[[tasks.length,'待跟进任务','schedule'],[approvals.length,'待IP确认稿件','content'],[upcoming.filter(r=>r.body.start.slice(0,10)<=localDate()&&r.body.end.slice(0,10)>=localDate()).length,'今天的日程与拍摄','schedule'],[pending.length,'待发布作品','operations']].map(([num,label,key])=>`<div class="kpi"><strong>${num}</strong><span>${label}</span><a href="#${key}" aria-label="打开${label}">↗</a></div>`).join('')}</section>${overdue?`<div class="note warm">有 ${overdue} 件任务已过截止日期，请确认进度或重新安排。</div>`:''}<div class="dashboard-columns"><div><section class="panel"><div class="panel-head"><h2>接下来要推进的事</h2><a href="#schedule">查看全部 →</a></div><div class="panel-body">${compactList(tasks,r=>`${r.body.owner} · ${r.body.due}`)}</div></section><section class="panel"><div class="panel-head"><h2>内容制作进度</h2><a href="#content">进入创作 →</a></div><div class="panel-body"><div class="steps">${[['topics','选题',active('ip-topic').length],['content','稿件',active('ip-content').length],['shoots','拍摄',active('ip-shoot').length],['final-check','成片核对',active('ip-finalcheck').length],['operations','发布',active('ip-release').filter(r=>r.body.status==='已发布').length]].map(([key,name,n])=>`<a class="step" href="#${key}"><b>${n}</b><span>${name}</span></a>`).join('')}</div><p class="fine">选题确认后转为稿件，再安排拍摄与发布；每一步保留关联。</p></div></section></div><div><section class="panel"><div class="panel-head"><h2>等待 IP 确认</h2><a href="#content">查看稿件 →</a></div><div class="panel-body">${compactList(approvals,r=>`${r.body.owner||'负责人待定'} · 第 ${r.revision} 版`)}</div></section><section class="panel"><div class="panel-head"><h2>接下来的安排</h2><a href="#schedule">打开日历 →</a></div><div class="panel-body">${compactList(upcoming,r=>`${dateText(r.body.start)} · ${r.body.location||'地点待定'}`)}</div></section></div></div>`;
 }
 function renderCalendar(){
@@ -108,10 +109,11 @@ function render(){
  if(!ip){$('#main').innerHTML=heading()+`<section class="panel">${empty('先创建你的 IP 工作空间','填一个你自己辨认的名称即可。资料、稿件和商务都会保存在这个 IP 下，不会预填虚构经历。',writable()?button('new-ip','＋ 新建第一个 IP','','primary'):'请管理员先创建 IP。')}</section>`;return;}
  if(route==='today'){$('#main').innerHTML=renderToday();return;}
  const tabs=deskTabs();
+ if(route==='topics'&&deskPage==='insights'){$('#main').innerHTML=heading()+tabs+commentInsightsPage(records,{writable:writable()});return;}
  if(deskPage){
   const src='/api/p/projects/'+encodeURIComponent(ip.id)+'/creator/app/#page='+deskPage;
   const label=(CREATOR_DESKS[route]||[]).find(x=>x[0]===deskPage)?.[1]||'制作项目';
-  $('#main').innerHTML=heading()+`${tabs}<section class="creator-module-shell"><div class="creator-module-bar"><h2>${esc(label)}</h2><a href="${src}" target="_blank" rel="noopener noreferrer">展开 ↗</a><a href="/api/p/projects/${encodeURIComponent(ip.id)}/creator/app/#page=settings" target="_blank" rel="noopener noreferrer">创作资料备份与恢复 ↗</a></div><iframe class="creator-module-frame" title="${esc(label)}" src="${src}"></iframe></section>`;return;
+  $('#main').innerHTML=heading()+`${tabs}${route==='radar'&&deskPage==='comments'?commentInsightPanel(records):''}<section class="creator-module-shell"><div class="creator-module-bar"><h2>${esc(label)}</h2><a href="${src}" target="_blank" rel="noopener noreferrer">展开 ↗</a><a href="/api/p/projects/${encodeURIComponent(ip.id)}/creator/app/#page=settings" target="_blank" rel="noopener noreferrer">创作资料备份与恢复 ↗</a></div><iframe class="creator-module-frame" title="${esc(label)}" src="${src}"></iframe></section>`;return;
  }
 
  const kind={topics:'ip-topic',content:'ip-content',shoots:'ip-shoot','final-check':'ip-finalcheck',schedule:'ip-task',operations:'ip-release',business:'ip-deal',library:'ip-profile'}[route];
