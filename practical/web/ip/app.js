@@ -1,4 +1,4 @@
-import {commentInsightPanel,commentInsightsPage} from './comment-insights.mjs?v=20261114';
+import {commentInsightPanel,commentInsightsPage} from './comment-insights.mjs?v=20261115-comments-finance';
 import {markedKind,scheduleColor,emphasis,markStyle,colorField,mountMarkColors} from './schedule-marks.mjs';
 import {mountDateTimes,clearDateTimes,syncDateTimes} from './date-time.mjs';
 import {feishuPanel,cloudSourceHTML,cloudTopic} from './feishu.js';
@@ -7,12 +7,12 @@ import {finalChecksHTML,emptyChecks,checkProgress} from './final-review.js?v=202
 import {rulebookRecord,riskPanelHTML,attachRiskPanel} from './content-risk.js?v=20261103-red';
 import {archiveName,archiveFilename} from './archive-model.mjs';
 import {calendarRecords} from './calendar-model.mjs';
-import {CREATOR_DESKS,creatorRoute} from './creator-navigation.mjs?v=20261114-insights';
+import {CREATOR_DESKS,creatorRoute} from './creator-navigation.mjs?v=20261115-comments-finance';
 const $=s=>document.querySelector(s);
 const recordName=r=>archiveName(r.title,r.created_at,r.revision);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const {D,validate,cents}=window.IPSchema;
-const NAV=[['today','今日工作台','把今天最重要的事，放在眼前。'],['schedule','日程与任务','每个安排，都有时间、负责人和完成标准。'],['library','IP资料库','积累经历、观点与素材，让表达有根有据。'],['radar','热点雷达','按日期查看人物、文化、AI与观众反馈。'],['topics','选题库','让灵感有出处，让选题有明确的受众。'],['replies','评论回复箱','查看本人评论，逐条审核回复。'],['content','内容创作','从第一句，到IP确认的那一版。'],['execution','分镜执行台','把文案、画面、声音和执行要求放在一起。'],['shoots','拍摄准备','把稿件变成镜头，把现场准备到位。'],['final-check','成片核对','剪完以后，逐项看过，再放心进入发布。'],['operations','账号矩阵与复盘','把多个平台放在一起看，把下一步放进工作里。'],['business','商务合作','从第一次沟通，到交付和回款。']];
+const NAV=[['today','今日工作台','把今天最重要的事，放在眼前。'],['schedule','日程与任务','每个安排，都有时间、负责人和完成标准。'],['library','IP资料库','积累经历、观点与素材，让表达有根有据。'],['radar','热点早报','先看财经与民生，再按日期查看全部热点。'],['comments','竞品评论洞察','从竞品观众的问题里，找到下一期。'],['topics','选题库','让灵感有出处，让选题有明确的受众。'],['replies','评论回复箱','查看本人评论，逐条审核回复。'],['content','内容创作','从第一句，到IP确认的那一版。'],['execution','分镜执行台','把文案、画面、声音和执行要求放在一起。'],['shoots','拍摄准备','把稿件变成镜头，把现场准备到位。'],['final-check','成片核对','剪完以后，逐项看过，再放心进入发布。'],['operations','账号矩阵与复盘','把多个平台放在一起看，把下一步放进工作里。'],['business','商务合作','从第一次沟通，到交付和回款。']];
 let ctx=null,ips=[],ip=null,records=[],files=[],route='today',search='',status='',showArchived=false,saving=false,dirty=false,calendarMonth='',toastTimer;
 let creatorDirty=false,feishuState=null,cloudSource=null,deskPage='',creatorStats=null;
 window.addEventListener('message',e=>{const f=document.querySelector('.creator-module-frame');if(e.origin===location.origin&&e.source===f?.contentWindow&&e.data?.type==='creator-dirty')creatorDirty=e.data.dirty===true;});
@@ -43,7 +43,7 @@ async function reload(){
  $('#sync').textContent='已读取 '+new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
 }
 async function boot(){
- try{ctx=await api('context');$('#shell').hidden=false;$('#startup-error').hidden=true;$('#identity').textContent='无需登录 · 当前电脑使用';$('#nav').innerHTML=NAV.map(([key,title],i)=>`<a href="#${key}" data-route="${key}"><span>${String(i+1).padStart(2,'0')}</span><span>${title}</span></a>`).join('');await reload();navigate();}
+ try{ctx=await api('context');$('#shell').hidden=false;$('#startup-error').hidden=true;$('#identity').textContent='无需登录 · 当前电脑使用';$('#nav').innerHTML=NAV.map(([key,title],i)=>`<a href="#${key}${key==='radar'?'~finance':''}" data-route="${key}"><span>${String(i+1).padStart(2,'0')}</span><span>${title}</span></a>`).join('');await reload();navigate();}
  catch(e){$('#startup-error').hidden=false;$('#startup-error').textContent=e.message+'\n请重新打开 IP 工作台，再刷新页面。';}
 }
 $('#ip-select').onchange=async e=>{if(creatorDirty){e.target.value=ip.id;toast('分镜还有修改未保存，请先保存。');return;}ip=ips.find(p=>p.id===e.target.value);search='';status='';showArchived=false;matrixFilters={platform:'',accountId:'',metric:'likes',from:'',to:'',page:1};await guarded(async()=>{await reload();render();});};
@@ -109,11 +109,11 @@ function render(){
  if(!ip){$('#main').innerHTML=heading()+`<section class="panel">${empty('先创建你的 IP 工作空间','填一个你自己辨认的名称即可。资料、稿件和商务都会保存在这个 IP 下，不会预填虚构经历。',writable()?button('new-ip','＋ 新建第一个 IP','','primary'):'请管理员先创建 IP。')}</section>`;return;}
  if(route==='today'){$('#main').innerHTML=renderToday();return;}
  const tabs=deskTabs();
- if(route==='topics'&&deskPage==='insights'){$('#main').innerHTML=heading()+tabs+commentInsightsPage(records,{writable:writable()});return;}
+ if(['topics','comments'].includes(route)&&deskPage==='insights'){$('#main').innerHTML=heading()+tabs+commentInsightsPage(records,{writable:writable()});return;}
  if(deskPage){
   const src='/api/p/projects/'+encodeURIComponent(ip.id)+'/creator/app/#page='+deskPage;
   const label=(CREATOR_DESKS[route]||[]).find(x=>x[0]===deskPage)?.[1]||'制作项目';
-  $('#main').innerHTML=heading()+`${tabs}${route==='radar'&&deskPage==='comments'?commentInsightPanel(records):''}<section class="creator-module-shell"><div class="creator-module-bar"><h2>${esc(label)}</h2><a href="${src}" target="_blank" rel="noopener noreferrer">展开 ↗</a><a href="/api/p/projects/${encodeURIComponent(ip.id)}/creator/app/#page=settings" target="_blank" rel="noopener noreferrer">创作资料备份与恢复 ↗</a></div><iframe class="creator-module-frame" title="${esc(label)}" src="${src}"></iframe></section>`;return;
+  $('#main').innerHTML=heading()+`${tabs}<section class="creator-module-shell"><div class="creator-module-bar"><h2>${esc(label)}</h2><a href="${src}" target="_blank" rel="noopener noreferrer">展开 ↗</a><a href="/api/p/projects/${encodeURIComponent(ip.id)}/creator/app/#page=settings" target="_blank" rel="noopener noreferrer">创作资料备份与恢复 ↗</a></div><iframe class="creator-module-frame" title="${esc(label)}" src="${src}"></iframe></section>`;return;
  }
 
  const kind={topics:'ip-topic',content:'ip-content',shoots:'ip-shoot','final-check':'ip-finalcheck',schedule:'ip-task',operations:'ip-release',business:'ip-deal',library:'ip-profile'}[route];

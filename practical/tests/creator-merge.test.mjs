@@ -6,6 +6,16 @@ import {tmpdir} from 'node:os';
 import {Store,hash} from '../modules/creator-workbench/server/store.mjs';
 import {mergeCreatorContent} from '../../scripts/merge-creator-content.mjs';
 import {creatorRoute} from '../web/ip/creator-navigation.mjs';
+test('竞品评论有独立导航，旧书签进入同一页，财经为首次早报默认页',()=>{
+ const routes=['today','radar','comments','topics','replies'];
+ for(const hash of ['#comments','#radar~comments','#topics~comments'])assert.deepEqual(creatorRoute(hash,routes),{route:'comments',page:'comments'});
+ assert.deepEqual(creatorRoute('#comments~insights',routes),{route:'comments',page:'insights'});
+ assert.deepEqual(creatorRoute('#comments~comment-inbox',routes),{route:'comments',page:'comments'});
+ assert.deepEqual(creatorRoute('#radar',routes),{route:'radar',page:'finance'});
+ assert.deepEqual(creatorRoute('#radar',routes,{radarPage:'people'}),{route:'radar',page:'people'});
+ assert.deepEqual(creatorRoute('#radar~finance',routes,{radarPage:'people'}),{route:'radar',page:'finance'});
+ assert.deepEqual(creatorRoute('#replies',routes),{route:'replies',page:'comment-inbox'});
+});
 test('整合页签只接受所在板块的工具，旧入口和未知片段有稳定回退',()=>{
  const routes=['today','library','topics','replies','content','execution','radar','operations'];
  assert.deepEqual(creatorRoute('#operations~review',routes),{route:'operations',page:'review'});

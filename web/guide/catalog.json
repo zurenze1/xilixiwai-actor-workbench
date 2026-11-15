@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sourceHash": "4f15c0740f83b27eae9469d067d88b3a267751c70975e482ca982b7601001c41",
+  "sourceHash": "595b5a470847b4b8a2be5853fd26a0ba492e3fee4afcf8918661a63484a26456",
   "sourceFiles": [
     {
       "path": "practical/web/app.js",
@@ -40,7 +40,7 @@
     },
     {
       "path": "practical/web/ip/app.js",
-      "sha256": "df2eeb4ade9330f0bf205ddd24404aecbcdee780606056578dfc9b1988d9c5ef"
+      "sha256": "32728d96f705f42f8fb67059fcfb0f6194a976e3cc08841f9b1bb5b4531ed832"
     },
     {
       "path": "practical/web/ip/archive-model.mjs",
@@ -56,7 +56,7 @@
     },
     {
       "path": "practical/web/ip/comment-insights.mjs",
-      "sha256": "2f92a7c28a45d753314f0393fc889863b288e701a6f8052e584558738e2a8f78"
+      "sha256": "06cee31ed4e061546c5aaa989941e6713d279fff25b2c2f31c8da622ea50648a"
     },
     {
       "path": "practical/web/ip/content-risk.js",
@@ -64,7 +64,7 @@
     },
     {
       "path": "practical/web/ip/creator-navigation.mjs",
-      "sha256": "84cd05d5975282e29b5e02d56c1df29d3d8a459a2dfb44534a03bb939bc66c5d"
+      "sha256": "98ae82d4bd7e7b9125edb6f0e060cfe02bbb3c7544f732c5db2fd7f48409782b"
     },
     {
       "path": "practical/web/ip/date-time.css",
@@ -84,11 +84,11 @@
     },
     {
       "path": "practical/web/ip/illustrations.css",
-      "sha256": "cca8de22c7aac15f660c71cfa936bc1ade007d8fbe2b4e76f8db72701cb44025"
+      "sha256": "63f86575c9d6777013a65e0bb2e1703dc944179e6cb567d01bea7628600ecef2"
     },
     {
       "path": "practical/web/ip/index.html",
-      "sha256": "3a80954219c6a6456ee23a5aa5f3eaea214ccc64e31a41a174a8b1e69bc94006"
+      "sha256": "65716d42390759d7dcb9aff33b699fa1fdd5be4ad17a22413e22f30782cb2f56"
     },
     {
       "path": "practical/web/ip/matrix.css",
@@ -3065,6 +3065,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "dfd18dcdd5fb98dcd787404e509039168d4daeca9ed27c2852af117a63f6d0ad",
-  "generatedAt": "2026-11-14T06:31:48.668Z"
+  "contentHash": "39c6f74468af9da4cd1fbf6b1406907947bb57b344a3f54f71fcb211009d8bd9",
+  "generatedAt": "2026-11-15T04:47:20.337Z"
 }

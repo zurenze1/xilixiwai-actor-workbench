@@ -66,6 +66,10 @@ return <div className={"shell"+(view==='edit-plan'?' execution-shell':'')}><asid
 {view==='recycle'&&<TrashDesk refresh={refresh}/>}
 {view==='allarchive'&&<ArchiveDesk key="allarchive" bucket="" boot={boot} openSource={openSource} refresh={refresh}/>}
 {view==='culture'&&<DailyFeed lane="culture" assessHot={assessHot} openTopic={openTopic}/>}
+{view==='people'&&<DailyFeed lane="people" assessHot={assessHot} openTopic={openTopic}/>}
+{view==='apparel'&&<DailyFeed lane="apparel" assessHot={assessHot} openTopic={openTopic}/>}
+{view==='finance'&&<DailyFeed lane="finance" assessHot={assessHot} openTopic={openTopic}/>}
+
 {view==='othernews'&&<DailyFeed lane="other" assessHot={assessHot} openTopic={openTopic}/>}
 {view==='ai'&&<DailyFeed lane="ai" assessHot={assessHot} openTopic={openTopic}/>}
 {view==='transcripts'&&<MediaDesk boot={boot} openSource={openSource} refresh={refresh}/>}

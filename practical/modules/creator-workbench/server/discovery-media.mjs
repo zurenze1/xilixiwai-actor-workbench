@@ -3,15 +3,9 @@ import {sourceUrl,fetchPublic} from './security.mjs';
 import {saveBuffer} from './files.mjs';
 import {hash,now} from './store.mjs';
 import {shanghaiDay} from './hot.mjs';
+import {newsChannel} from './news-channels.mjs';
+export {newsChannel} from './news-channels.mjs';
 
-export function newsChannel(n){
-  if(['people','culture','ai','other'].includes(n.channel))return n.channel;
-  const c=n.category||'';
-  if(/^AI(?:[\s/·]|$)|人工智能|大模型/i.test(c))return 'ai';
-  if(/人物/.test(c))return 'people';
-  if(/文化|文学|阅读|历史|艺术|非遗/.test(c))return 'culture';
-  return 'other';
-}
 export function dateWindow(q={}){
   const valid=s=>/^\d{4}-\d{2}-\d{2}$/.test(s)&&shanghaiDay(new Date(s+'T12:00:00+08:00'))===s;
   const from=String(q.from||q.day||''),to=String(q.to||q.day||'');

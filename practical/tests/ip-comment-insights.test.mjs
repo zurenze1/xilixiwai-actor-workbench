@@ -19,7 +19,7 @@ test('imports stay within one project; retries retain edits and archives',()=>{
 });
 test('home and topic page use current project records, escape text, and exclude archives',()=>{
  const records=prepareInsights({...sample,summary:'<script>bad</script>'}).map((r,i)=>({...r,id:String(i),created_at:'2026-11-14'}));
- assert.equal(commentReports(records).length,1);const html=commentInsightPanel(records);assert.ok(html.includes('href="#radar~comments"'));assert.ok(html.includes('href="#topics~insights"'));assert.ok(html.includes('&lt;script&gt;'));assert.ok(!html.includes('<script>'));
+ assert.equal(commentReports(records).length,1);const html=commentInsightPanel(records);assert.ok(html.includes('href="#comments"'));assert.ok(html.includes('href="#comments~insights"'));assert.ok(html.includes('&lt;script&gt;'));assert.ok(!html.includes('<script>'));
  assert.ok(commentInsightsPage(records).includes('待讨论'));assert.ok(!commentInsightsPage(records).includes('data-action="edit"'));assert.ok(commentInsightsPage(records,{writable:true}).includes('data-action="edit"'));
  records[0].body.archived=true;assert.equal(commentReports(records).length,0);assert.ok(!commentInsightPanel(records).includes('阅读最新解读'));
  assert.throws(()=>prepareInsights({...sample,date:'2026-02-30'}));assert.throws(()=>prepareInsights({...sample,sourceUrl:'javascript:alert(1)'}));
