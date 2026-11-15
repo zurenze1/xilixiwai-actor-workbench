@@ -8,7 +8,7 @@ const args=process.argv.slice(2);
 if(!args.includes('--data')||!args[args.indexOf('--data')+1])throw Error('必须用 --data 指定当前IP的创作目录，未写入默认旧库');
 const cfg=config(args),store=new Store(cfg.db);
 try{
- if(args[0]==='context')console.log(JSON.stringify({creators:creators(store).filter(a=>a.follow),collector:store.get('discovery.collector')||null,automation:dailyStatus(store),dailyRequirements:{peopleTarget:10,channels:['people','culture','apparel','ai','finance','other'],targets:{people:10,culture:10,apparel:10,ai:5,finance:10},peopleUniqueBy:'person',image:'imageUrl must be the actual source image; unavailable stays empty'},existingEvents:events(store).slice(-200)},null,2));
+ if(args[0]==='context')console.log(JSON.stringify({creators:creators(store).filter(a=>a.follow),collector:store.get('discovery.collector')||null,automation:dailyStatus(store),dailyRequirements:{peopleTarget:10,channels:['people','culture','apparel','ai','finance','other'],targets:{people:10,culture:5,apparel:5,ai:5,finance:10},peopleUniqueBy:'person',image:'imageUrl must be the actual source image; unavailable stays empty'},existingEvents:events(store).slice(-200)},null,2));
  else if(args[0]==='import'){
   const p=args.indexOf('--file');if(p<0||!args[p+1])throw Error('请指定 --file 日报.json');
   if((await fsp.stat(args[p+1])).size>2*1024*1024)throw Error('日报文件超过2MB');
