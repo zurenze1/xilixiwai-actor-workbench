@@ -22,3 +22,14 @@ node scripts/workbench-daily.mjs import --data '/本机IP创作目录' --file '/
 竞品评论研究独立放在左栏“竞品评论洞察”（`#comments`），页内为“高赞评论 / 选题解读”；与“评论回复箱”分开。旧`#radar~comments`、`#topics~comments`书签继续进入同一竞品页。既有观众需求分类用于整理评论，不是财经题材的上限。
 
 国内受众关联优先：优先中国政策、产业与民生；国际事件须有明确传导关系，不以单一海外来源凑满十条。
+
+
+## 2026-11-16 财经编辑思考
+
+当前目标为人物10、时尚界5、服装5、AI5、财经50，共75条；保留历史原数。财经覆盖八方向，教育升学、就业、住房、养老医疗均在范围内，不把所有话题转成劳动收入。完整日报最多100条，为历史补充留余地。
+
+每条财经可携带 `editorial`：`judgement`、`audience`、`angle`、`opening`、`outline`（1–6项）、`needs`（1–6项）、`priority`（优先/备选/待补资料）、`reason`、`reviewedAt`。全日报最多3条优先。当前Codex任务逐条形成判断；不新增模型调用或收费API。新闻原文与推断分列，不把标题改写当作思考。没有该字段的旧条目正常读取。
+
+工作台热点卡显示判断摘要和切口；详情支持编辑、保存和带切口转选题，日期工具可看最近3天。编辑保存需匹配最新 `baseDigestId` 与原 `eventId`+首来源；冲突时刷新，不能静默覆盖。补充思考只追加日报版本，不重放评论、博主核查或图片抓取。
+
+历史补充脚本：`node scripts/workbench-editorial.mjs --data 明确创作库目录 --file 编辑思考JSON`。输入为对象或数组，包含 `day,baseDigestId,retrospective,items:[{eventId,sourceUrl,editorial}]`。使用 `--append` 时接收 `news` 新增数组，逐来源/标题去重并追加，不改旧事实、时间和其他栏目。回看分析记录真实整理时间；不得充作历史工作痕迹。

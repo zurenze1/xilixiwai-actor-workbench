@@ -4,6 +4,7 @@ import {saveBuffer} from './files.mjs';
 import {shanghaiDay,Hot} from './hot.mjs';
 import {normalizeEvent,saveEvent} from './public-events.mjs';
 import {dateWindow,decorateDigest,newsChannel} from './discovery-media.mjs';
+import {normalizeEditorial,saveDailyEditorial,dailyRow} from './daily-editorial.mjs';
 
 const date=v=>{const d=new Date(v);if(!v||!Number.isFinite(d.getTime())||d.getTime()>Date.now()+300000)throw new Error('请提供实际采集时间，不能填写未来时间');return d.toISOString();};
 export function creators(store){
@@ -50,13 +51,14 @@ export function dailyStatus(store){
 }
 function newsItem(n){
   if(!Array.isArray(n.sources)||!n.sources.length||n.sources.length>10)throw new Error('每条热点必须有真实来源');
-  return {channel:newsChannel(n),person:text(n.person,100),imageUrl:n.imageUrl?sourceUrl(n.imageUrl):'',title:text(n.title,300,true),category:text(n.category,80)||'公共热点',facts:text(n.facts,10000,true),analysis:text(n.analysis,5000),publishedAt:text(n.publishedAt,100),readScope:text(n.readScope,2000,true),sources:n.sources.map(s=>({name:text(s.name,200,true),url:sourceUrl(s.url)}))};
+  return {channel:newsChannel(n),person:text(n.person,100),imageUrl:n.imageUrl?sourceUrl(n.imageUrl):'',title:text(n.title,300,true),category:text(n.category,80)||'公共热点',facts:text(n.facts,10000,true),analysis:text(n.analysis,5000),...(n.editorial?{editorial:normalizeEditorial(n.editorial)}:{}),publishedAt:text(n.publishedAt,100),readScope:text(n.readScope,2000,true),sources:n.sources.map(s=>({name:text(s.name,200,true),url:sourceUrl(s.url)}))};
 }
 export async function ingestDaily(store,dir,body){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(body.day)||body.day>shanghaiDay()||shanghaiDay(new Date(body.day+'T12:00:00+08:00'))!==body.day)throw new Error('日报日期无效');
   const generatedAt=date(body.generatedAt),model=text(body.model,100,true);
-  if(!Array.isArray(body.news)||body.news.length>50)throw new Error('热点最多50条');
+  if(!Array.isArray(body.news)||body.news.length>100)throw new Error('热点最多100条');
   const news=body.news.map(newsItem),checks=(body.creatorChecks||[]).map(c=>{store.row('accounts',c.accountId);return {accountId:c.accountId,status:text(c.status,80,true),note:text(c.note,3000,true),url:sourceUrl(c.url),observedAt:date(c.observedAt)};});
+  if(news.filter(n=>n.editorial?.priority==='优先').length>3)throw Error('每天最多突出3个优先题');
   if(checks.length>200)throw new Error('单次最多200个博主检查记录');
   const normalized=(body.comments||[]).map(normalizeComment);if(normalized.length>1000)throw new Error('评论数量超限');for(const c of normalized)if(c.accountId)store.row('accounts',c.accountId);
   const eventItems=(body.events||[]).map(normalizeEvent);if(eventItems.length>100)throw new Error('单次最多100条活动');
@@ -75,6 +77,27 @@ export async function ingestDaily(store,dir,body){
   });
   queueDigestImages(store,latestDigest(store,body.day));
   return delivery;
+}
+export async function appendDailyNews(store,dir,body){
+  const prior=dailyRow(store,text(body.day,10,true));
+  if(!Array.isArray(body.news)||!body.news.length||body.news.length>100)throw Error('补充热点应为1至100条');
+  const existingUrls=new Set(),existingTitles=new Set();
+  for(const row of store.db.prepare('SELECT payload FROM daily_digests WHERE rowid IN (SELECT max(rowid) FROM daily_digests GROUP BY day)').all())for(const n of parse(row.payload).news){existingTitles.add(n.title);for(const s of n.sources||[])existingUrls.add(s.url);}
+  const fresh=[];
+  for(const input of body.news){const n=newsItem(input);if(existingTitles.has(n.title)||n.sources.some(s=>existingUrls.has(s.url)))continue;existingTitles.add(n.title);for(const s of n.sources)existingUrls.add(s.url);if(n.editorial)n.editorial={...n.editorial,reviewedAt:now(),retrospective:body.retrospective===true};fresh.push(n);}
+  if(!fresh.length)return {id:prior.id,day:prior.day,added:0,duplicate:true};
+  if(prior.id!==body.baseDigestId)throw Object.assign(Error('早报已有新版本，请重新读取后补充'),{statusCode:409});
+  if(prior.payload.news.length+fresh.length>100)throw Error('同一日报合计最多100条');
+  if([...prior.payload.news,...fresh].filter(n=>n.editorial?.priority==='优先').length>3)throw Error('每天最多突出3个优先题');
+  const raw=await saveBuffer(store,dir,Buffer.from(JSON.stringify(body,null,2)),'财经热点补充原始记录.json');
+  return store.transaction(()=>{
+    if(dailyRow(store,prior.day).id!==prior.id)throw Object.assign(Error('早报已有新版本，请重新读取后补充'),{statusCode:409});
+    const hot=new Hot(store),at=now();
+    const items=fresh.map(n=>{const e=hot.manualEvent({title:n.title,summary:n.facts,lane:'我的赛道',eventTime:body.day});store.db.prepare('UPDATE hot_events SET origin=?,notes=? WHERE id=?').run('财经早报补充',JSON.stringify({verified:n.readScope,whyRelevant:n.editorial?.judgement||n.analysis}),e.id);store.db.prepare('INSERT INTO hot_items(id,event_id,dedup_key,url,title,summary,published_at,first_seen_at,last_seen_at) VALUES(?,?,?,?,?,?,?,?,?)').run(uid(),e.id,'codex-news:'+hash(n.sources[0].url+'|'+n.title),n.sources[0].url,n.title,n.facts,n.publishedAt,at,at);return {...n,eventId:e.id};});
+    const payload={...prior.payload,news:[...prior.payload.news,...items],editorialUpdatedAt:at,previousDigestId:prior.id},id=uid();
+    store.db.prepare('INSERT INTO daily_digests VALUES(?,?,?,?,?,?)').run(id,prior.day,hash(JSON.stringify(payload)),raw.hash,JSON.stringify(payload),at);
+    return {id,day:prior.day,added:items.length,duplicate:false};
+  });
 }
 export async function collectPublicComments(store,dir,input,signal){
   const url=sourceUrl(text(input.url,4000,true)),response=await fetchPublic(url,{signal,maxBytes:10*1024*1024});
@@ -97,10 +120,17 @@ export function registerDiscovery(app,store,cfg){
     const history=store.db.prepare('SELECT day,max(created_at) delivered_at FROM daily_digests GROUP BY day ORDER BY day DESC LIMIT 90').all();
     const days=q.from||q.to?history.filter(h=>(!q.from||h.day>=q.from)&&(!q.to||h.day<=q.to)).map(h=>h.day):[day];
     const editions=days.map(d=>decorateDigest(store,latestDigest(store,d))).filter(Boolean);
-    return {day,digest:decorateDigest(store,latestDigest(store,day)),items:editions.flatMap(d=>d.payload.news.map(n=>({...n,day:d.day,generatedAt:d.payload.generatedAt}))).filter(n=>!q.channel||n.channel===q.channel),history,automation:dailyStatus(store),target:10};
+    return {day,digest:decorateDigest(store,latestDigest(store,day)),items:editions.flatMap(d=>d.payload.news.map(n=>({...n,day:d.day,digestId:d.id,generatedAt:d.payload.generatedAt}))).filter(n=>!q.channel||n.channel===q.channel),history,automation:dailyStatus(store),target:10};
   });
   app.post('/api/discovery/daily/images',async req=>({jobs:queueDigestImages(store,latestDigest(store,req.body?.day||shanghaiDay()))}));
   app.post('/api/discovery/daily',async req=>ingestDaily(store,cfg.dir,req.body));
+  app.post('/api/discovery/daily/editorial',async req=>saveDailyEditorial(store,cfg.dir,req.body));
+  app.post('/api/discovery/daily/editorial/topic',async req=>{
+    const d=dailyRow(store,text(req.body.day,10,true)),n=d.payload.news.find(n=>n.eventId===req.body.eventId);
+    if(!n?.editorial)throw Error('请先保存这条热点的编辑思考');
+    const e=n.editorial;
+    return new Hot(store).toTopic(n.eventId,{title:e.angle,angle:[e.judgement,'受众：'+e.audience,'开场：'+e.opening,'展开：'+e.outline.join('；'),'待补：'+e.needs.join('；'),'编辑思考整理于：'+e.reviewedAt].join('\n')});
+  });
   app.get('/api/discovery/comments',async req=>comments(store,req.query));
   app.post('/api/discovery/comments/import',async req=>importComments(store,cfg.dir,req.body));
   app.post('/api/discovery/comments/fetch',async req=>store.jobView(store.job('comments-fetch',{url:sourceUrl(text(req.body.url,4000,true)),accountId:req.body.accountId||null,title:text(req.body.title,300)})));
