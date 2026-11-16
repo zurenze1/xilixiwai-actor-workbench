@@ -116,11 +116,11 @@ export function registerDiscovery(app,store,cfg){
   app.post('/api/discovery/creators',async req=>saveCreator(store,req.body));
   app.patch('/api/discovery/creators/:id',async req=>saveCreator(store,req.body,req.params.id));
   app.get('/api/discovery/daily',async req=>{
-    const q=req.query;dateWindow(q);const day=q.day||shanghaiDay();
+    const q=req.query;dateWindow(q);const day=q.day||shanghaiDay(),schedule=dailyStatus(store),receipts=store.get('discovery.deliveryReceipts')||{};
     const history=store.db.prepare('SELECT day,max(created_at) delivered_at FROM daily_digests GROUP BY day ORDER BY day DESC LIMIT 90').all();
     const days=q.from||q.to?history.filter(h=>(!q.from||h.day>=q.from)&&(!q.to||h.day<=q.to)).map(h=>h.day):[day];
     const editions=days.map(d=>decorateDigest(store,latestDigest(store,d))).filter(Boolean);
-    return {day,digest:decorateDigest(store,latestDigest(store,day)),items:editions.flatMap(d=>d.payload.news.map(n=>({...n,day:d.day,digestId:d.id,generatedAt:d.payload.generatedAt}))).filter(n=>!q.channel||n.channel===q.channel),history,automation:dailyStatus(store),target:10};
+    return {day,digest:decorateDigest(store,latestDigest(store,day)),items:editions.flatMap(d=>d.payload.news.map(n=>({...n,day:d.day,digestId:d.id,generatedAt:d.payload.generatedAt,scheduleTime:schedule.time||'09:00',uiTimezone:schedule.timezone||'Asia/Shanghai',delivery:receipts[d.day]||null}))).filter(n=>!q.channel||n.channel===q.channel),history,automation:dailyStatus(store),target:10};
   });
   app.post('/api/discovery/daily/images',async req=>({jobs:queueDigestImages(store,latestDigest(store,req.body?.day||shanghaiDay()))}));
   app.post('/api/discovery/daily',async req=>ingestDaily(store,cfg.dir,req.body));

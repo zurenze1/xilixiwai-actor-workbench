@@ -22,7 +22,7 @@
     "test:ip": "node --test practical/tests/ip.test.mjs practical/tests/ip-matrix.test.mjs practical/tests/ip-final-review.test.mjs practical/tests/ip-feishu-archive.test.mjs practical/tests/ip-comment-insights.test.mjs",
     "build:creator-modules": "node scripts/build-creator-modules.mjs",
     "test:creator-modules": "node --test practical/tests/creator-modules.test.mjs practical/tests/creator-merge.test.mjs practical/tests/creator-flow.test.mjs practical/tests/ip-execution-generation.test.mjs practical/tests/ip-comment-workflow.test.mjs practical/tests/ip-review-cycle.test.mjs practical/tests/news-channels.test.mjs",
-    "test:daily-editorial": "node --test practical/tests/daily-editorial.test.mjs"
+    "test:daily-editorial": "node --test practical/tests/daily-editorial.test.mjs practical/tests/daily-timing.test.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.131.0",
