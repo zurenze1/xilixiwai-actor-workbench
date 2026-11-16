@@ -1,4 +1,20 @@
-# 戏里戏外 · 演员与工作室工作台
+# IP工作台（现用） · 含原戏里戏外演示
+
+## 这个仓库里有什么
+
+祖仁泽当前使用的是这里的 **IP工作台**。仓库英文名称沿用早期项目名，因此也保留演员与工作室的历史演示和实战版。
+
+| 想看什么 | 入口 |
+| --- | --- |
+| 现用IP工作台的功能与操作 | [IP工作台说明](practical/docs/IP工作台.md) |
+| Mac应用启动、构建和数据位置 | [IP工作台.app说明](desktop/ip/README.md) |
+| 热点雷达、分镜等创作模块源码 | [creator-workbench](practical/modules/creator-workbench/) |
+| 本机服务与启动逻辑 | [practical/server](practical/server/) |
+| 早期演员演示网站 | [在线演示](https://zurenze1.github.io/xilixiwai-actor-workbench/) |
+
+**GitHub页面用于查看代码；在线演示是早期演员版，不能代替本机IP工作台。** 私人数据库、素材、密钥和运行资料不随源码公开。IP工作台已随仓库保留创作模块，启动和构建使用本仓库内的代码，不需要从已停用的独立 `content-workbench` 仓库在线下载源码。
+
+---
 
 ## 老板个人 IP 版（v1.7.1）
 
