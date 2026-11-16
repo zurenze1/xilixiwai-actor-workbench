@@ -387,7 +387,7 @@ function renderSide() {
   const currentStation = D.stations[S.st];
   const publicDemo = isPublicDemo(), demoHost = !publicDemo && location.pathname.startsWith('/demo/'), brandTag = publicDemo ? 'button' : demoHost ? 'a' : 'div';
   $('#side').innerHTML = `
-  <${brandTag} class="brand" ${publicDemo ? 'type="button" data-act="deployment-info" title="实战部署说明"' : demoHost ? `href="/practical/?theme=${encodeURIComponent(S.theme)}#today" data-act="switch-practical" title="切换到实战版"` : 'data-act="settings" title="点击更换名称"'}>
+  <${brandTag} class="brand" ${publicDemo ? 'type="button" data-act="deployment-info" title="独立演示说明"' : demoHost ? `href="/practical/?theme=${encodeURIComponent(S.theme)}#today" data-act="switch-practical" title="切换到实战版"` : 'data-act="settings" title="点击更换名称"'}>
     <div class="brand-mark">${name().name[0]}</div>
     <div><b data-elastic>${name().name}</b><small>${name().en}</small></div>
   </${brandTag}>
@@ -439,7 +439,7 @@ function renderTop() {
   <div class="prog" title="已完成站数"><i><em style="width:${done / 8 * 100}%"></em></i><span>完整站点 ${done}/8</span></div>
   <button class="btn sm" data-act="parity-map">20板块操作入口</button>
   <button class="btn sm" data-act="exp-resume">${S.experience.active?'继续引导':'带我体验'} ↗</button>
-  <button class="chip" data-act="${publicDemo ? 'deployment-info' : demoHost ? 'switch-practical' : 'settings'}" title="${publicDemo ? '查看实战版使用与部署说明' : demoHost ? '保存当前草稿并切换实战版' : '连接模型'}"><span class="led ${!publicDemo && aiConnected ? 'live' : ''}"></span>${publicDemo ? '演示版 · 实战部署说明' : demoHost ? '演示版 · 切换实战' : S.provider === 'demo' ? '演示模式 · 示例结果' : providerName() + (aiConnected?' · 已测试连接':' · 待配置')}</button>
+  <button class="chip" data-act="${publicDemo ? 'deployment-info' : demoHost ? 'switch-practical' : 'settings'}" title="${publicDemo ? '查看独立演示使用说明' : demoHost ? '保存当前草稿并切换实战版' : '连接模型'}"><span class="led ${!publicDemo && aiConnected ? 'live' : ''}"></span>${publicDemo ? '独立演示版 · 使用说明' : demoHost ? '演示版 · 切换实战' : S.provider === 'demo' ? '演示模式 · 示例结果' : providerName() + (aiConnected?' · 已测试连接':' · 待配置')}</button>
   <div class="themes" title="切换主题">${[['tide', '#2e3a6b', '深蓝潮汐'], ['butter', '#e7dcc3', '奶油便签'], ['moss', '#34541f', '山野片场']].map(([k, c, n]) => `<button data-act="theme" data-v="${k}" title="${n}" class="${S.theme === k ? 'on' : ''}" style="background:${c}"></button>`).join('')}</div>
   <button class="icon-btn folder-toggle" data-act="folder">资料夹 ${S.folder.length}</button>`;
 }
@@ -1447,13 +1447,14 @@ function exportMd() {
 // The recipient owns the account. Credentials are intentionally never persisted or backed up.
 let aiConnection={model:'',apiKey:'',baseUrl:''},aiConnected=false,aiTask='自由分析',aiBusy=false,aiText='';
 function isPublicDemo() {
- return !['localhost','127.0.0.1','[::1]','::1'].includes(location.hostname);
+ return true;
 }
 function deploymentDialog() {
  const dlg=$('#dlg');
- dlg.innerHTML=`<div class="dlg deployment-info"><h2>实战版怎么使用<button data-act="close" aria-label="关闭">×</button></h2><p class="mt8">当前是演示版，可体验主线、业务资料实验室和肉肉模块。</p>${modelOrbitPreview()}<div class="note mt"><b>在演员自己的电脑上</b><p>启动本机实战版，使用自己的账号保存资料、连接模型。</p></div><div class="note mt"><b>团队跨设备使用</b><p>需要云服务器或支持后台的全栈托管，并配置持久存储与 HTTPS。</p></div><div class="row mt"><a class="btn" href="https://github.com/zurenze1/xilixiwai-actor-workbench/blob/main/README.md" target="_blank" rel="noopener">查看源码与启动说明 ↗</a><a class="btn" href="https://github.com/zurenze1/xilixiwai-actor-workbench/blob/main/practical/docs/部署与演员交接.md" target="_blank" rel="noopener">查看部署与交接文档 ↗</a></div><p class="small muted mt">此演示入口不接收密码或模型密钥。</p></div>`;
+ dlg.innerHTML=`<div class="dlg deployment-info"><h2>戏里戏外 · 独立演示<button data-act="close" aria-label="关闭">×</button></h2><p class="mt8">这里是演员与工作室的交互演示。示例人物、项目与分析均为虚构；你在演示中填写的资料保存在当前浏览器。</p><div class="note mt"><b>可以体验什么</b><p>八阶段路线、20板块、资料编辑、分镜预演、工作室经营与账号运营演练，以及各模块自己的备份和导出。</p></div><p class="mt">本项目不提供账号后台或模型调用，也不会连接祖仁泽本机的IP工作台。</p><div class="row mt"><a class="btn" href="https://github.com/zurenze1/xilixiwai-actor-workbench#readme" target="_blank" rel="noopener">查看源码与使用说明 ↗</a></div><p class="small muted mt">重要演示资料请使用各模块的导出或备份功能保留。</p></div>`;
  if(!dlg.open)dlg.showModal();
 }
+
 function aiDialog(task) {
  if(isPublicDemo()){deploymentDialog();return;}
  if(location.pathname.startsWith('/demo/')){

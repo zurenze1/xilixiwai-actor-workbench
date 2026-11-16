@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {runInThisContext} from 'node:vm';
-import * as contract from '../practical/server/analysis.mjs';
+import * as contract from '../demo-source/server/analysis.mjs';
 runInThisContext(await readFile(new URL('../web/demo-settings/schema.js',import.meta.url),'utf8'));
 runInThisContext(await readFile(new URL('../web/demo-tools/schema.js',import.meta.url),'utf8'));
 const config=()=>({version:1,active:'member-owner',members:[{id:'member-owner',name:'虚构演员',role:'owner'}],connections:[{id:'plan',name:'虚构计划',provider:'deepseek',model:'fictional',baseUrl:'',visibility:'private',owner:'member-owner',purpose:'',checked:false,revision:1}],invites:[{id:'invite',name:'虚构成员',role:'editor',accepted:false}],activity:[{id:'event',text:'虚构演练',who:'虚构演员',at:'2026-10-24T01:00:00Z'}],passwordDrills:0});

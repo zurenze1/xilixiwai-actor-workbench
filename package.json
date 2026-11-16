@@ -1,63 +1,34 @@
 {
-  "name": "xilixiwai-actor-workbench",
-  "version": "3.1.3",
+  "name": "xilixiwai-demo",
+  "version": "4.0.0",
   "private": true,
   "type": "module",
+  "license": "UNLICENSED",
+  "description": "Standalone actor and studio demo; no IP workbench backend or data.",
   "scripts": {
-    "build:store": "esbuild src/reliable-store.js --bundle --format=iife --global-name=ActorStore --minify --outfile=web/reliable-store.js",
+    "start": "node scripts/serve.mjs",
     "test": "node --test tests/*.test.mjs",
-    "start": "node server/index.mjs",
-    "start:practical": "node practical/server/index.mjs",
-    "test:practical": "node --test practical/tests/analysis.test.mjs practical/tests/business.test.mjs practical/tests/files.test.mjs practical/tests/jobs.test.mjs practical/tests/server.test.mjs practical/tests/review-actor4.test.mjs practical/tests/previs.schema.test.cjs practical/tests/cli.test.mjs practical/tests/pet-state.test.mjs practical/tests/review-file-cleanup.test.mjs practical/tests/forms-workflows.test.mjs practical/tests/social-model.test.mjs practical/tests/social-backup.test.mjs practical/tests/social-server.test.mjs",
-    "test:browser": "node practical/tests/browser.mjs && node practical/tests/pet-browser.mjs",
+    "build:store": "esbuild src/reliable-store.js --bundle --format=iife --global-name=ActorStore --minify --outfile=web/reliable-store.js",
     "build:guide": "node scripts/build-usage-guide.mjs",
     "build:demo-lab": "node scripts/build-demo-lab.mjs",
-    "prestart": "npm run build:demo-lab && npm run build:demo-operations && npm run build:demo-previs && npm run build:demo-tools && npm run build:guide",
-    "prestart:practical": "npm run build:demo-lab && npm run build:demo-operations && npm run build:demo-previs && npm run build:demo-tools && npm run build:guide",
-    "test:social:browser": "node --test --test-concurrency=1 practical/tests/social-browser.test.mjs practical/tests/social-coordination.test.mjs",
     "build:demo-operations": "node scripts/build-demo-operations.mjs",
     "build:demo-previs": "node scripts/build-demo-previs.mjs",
     "build:demo-tools": "node scripts/build-demo-tools.mjs",
-    "start:ip": "npm run build:creator-modules && node practical/server/ip-start.mjs",
-    "test:ip": "node --test practical/tests/ip.test.mjs practical/tests/ip-matrix.test.mjs practical/tests/ip-final-review.test.mjs practical/tests/ip-feishu-archive.test.mjs practical/tests/ip-comment-insights.test.mjs",
-    "build:creator-modules": "node scripts/build-creator-modules.mjs",
-    "test:creator-modules": "node --test practical/tests/creator-modules.test.mjs practical/tests/creator-merge.test.mjs practical/tests/creator-flow.test.mjs practical/tests/ip-execution-generation.test.mjs practical/tests/ip-comment-workflow.test.mjs practical/tests/ip-review-cycle.test.mjs practical/tests/news-channels.test.mjs",
-    "test:daily-editorial": "node --test practical/tests/daily-editorial.test.mjs practical/tests/daily-timing.test.mjs"
+    "build": "npm run build:demo-lab && npm run build:demo-operations && npm run build:demo-previs && npm run build:demo-tools && npm run build:guide && npm run build:store"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "0.131.0",
-    "@fastify/multipart": "10.1.3",
-    "@fastify/static": "10.1.6",
-    "@mozilla/readability": "0.6.0",
-    "@tesseract.js-data/chi_sim": "1.0.0",
-    "better-auth": "1.7.12",
-    "fastify": "5.12.7",
-    "fflate": "0.8.3",
-    "idb-keyval": "6.2.2",
-    "jsdom": "30.1.2",
-    "linkedom": "0.18.14",
-    "mammoth": "^1.11.0",
-    "papaparse": "^5.5.3",
-    "pdf-parse": "2.4.5",
-    "pdfjs-dist": "6.4.299",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "tar-stream": "3.2.2",
-    "tesseract.js": "7.0.0",
-    "undici": "8.12.3",
     "zod": "4.6.7"
   },
   "devDependencies": {
     "esbuild": "0.25.11",
     "fake-indexeddb": "6.2.6",
-    "playwright": "1.62.1"
+    "fflate": "^0.8.3",
+    "idb-keyval": "^6.2.2",
+    "linkedom": "0.18.14",
+    "papaparse": "^5.5.3",
+    "pdfjs-dist": "6.4.299"
   },
   "engines": {
     "node": ">=24.21.0"
-  },
-  "overrides": {
-    "@fastify/static": {
-      "glob": "14.0.3"
-    }
   }
 }

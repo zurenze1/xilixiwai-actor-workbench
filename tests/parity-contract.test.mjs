@@ -5,7 +5,7 @@ import {readFile} from 'node:fs/promises';
 import {validateMain} from '../src/main-schema.js';
 const fresh=()=>({operationModes:{},operationSummaries:{},pendingActions:null,settings:false,dance:false});
 test('every practical navigation route has one unique reachable demo page',async()=>{
- const source=await readFile(new URL('../practical/web/app.js',import.meta.url),'utf8');
+ const source=await readFile(new URL('../demo-source/web/app.js',import.meta.url),'utf8');
  const expression=/const NAV\s*=\s*(\[[\s\S]*?\]);/.exec(source)?.[1];assert.ok(expression);
  const nav=vm.runInNewContext(expression),context={};vm.runInNewContext(await readFile(new URL('../web/parity-map.js',import.meta.url),'utf8'),context);
  const rows=context.ActorParityMap.routes;assert.equal(rows.length,20);assert.equal(new Set(rows.map(x=>x.route)).size,20);assert.equal(new Set(rows.map(x=>x.page)).size,20);

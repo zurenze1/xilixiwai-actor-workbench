@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "sourceHashes": {
-    "practical/server/analysis.mjs": "5a47411ed93426f7aeb5152e041cee26647079432c632437ccb20475443e030d",
-    "src/demo-tools-contract.js": "362c6f72c06e5def4d71d7db30e93f34db64b3dade591f51d4a02d6971db2b9b"
+    "demo-source/server/analysis.mjs": "5a47411ed93426f7aeb5152e041cee26647079432c632437ccb20475443e030d",
+    "src/demo-tools-contract.js": "a41bf8fcdbaa5825ee44bfff517d836f24ff6383263a4e2642287f339f5aaad2"
   },
   "pdfjs": "6.4.299 Apache-2.0",
   "storage": "本机演示资料，不读取实际账号"

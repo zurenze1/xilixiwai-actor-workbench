@@ -10,6 +10,6 @@ await mkdir(path.join(out,'pdf'),{recursive:true});
 for(const file of ['pdf.min.mjs','pdf.worker.min.mjs'])await copyFile(path.join(root,'node_modules/pdfjs-dist/build',file),path.join(out,'pdf',file.replace('.mjs','.js')));
 for(const dir of ['cmaps','standard_fonts'])await cp(path.join(root,'node_modules/pdfjs-dist',dir),path.join(out,'pdf',dir),{recursive:true});
 await copyFile(path.join(root,'node_modules/pdfjs-dist/LICENSE'),path.join(out,'pdf/LICENSE'));
-const files=['practical/server/analysis.mjs','src/demo-tools-contract.js'];const hashes={};for(const f of files)hashes[f]=createHash('sha256').update(await readFile(path.join(root,f))).digest('hex');
+const files=['demo-source/server/analysis.mjs','src/demo-tools-contract.js'];const hashes={};for(const f of files)hashes[f]=createHash('sha256').update(await readFile(path.join(root,f))).digest('hex');
 await writeFile(path.join(out,'sources.json'),JSON.stringify({schemaVersion:1,sourceHashes:hashes,pdfjs:'6.4.299 Apache-2.0',storage:'本机演示资料，不读取实际账号'},null,2)+'\n');
 console.log('剧本演示：实战规则解析/报告引用校验及本地PDF引擎已构建');

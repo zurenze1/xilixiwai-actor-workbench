@@ -5,7 +5,7 @@ import { dirname, resolve } from 'node:path';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const output = resolve(root, 'web/demo-lab');
 await mkdir(output, { recursive: true });
-const sources = ['practical/web/forms.js','practical/web/business/model.js','practical/web/social/model.js'];
+const sources = ['demo-source/web/forms.js','demo-source/web/business/model.js','demo-source/web/social/model.js'];
 await copyFile(resolve(root, sources[0]), resolve(output, 'forms.js'));
 await copyFile(resolve(root, 'node_modules/papaparse/papaparse.min.js'), resolve(output, 'csv.min.js'));
 await copyFile(resolve(root, 'node_modules/papaparse/LICENSE'), resolve(output, 'PAPAPARSE-LICENSE.txt'));

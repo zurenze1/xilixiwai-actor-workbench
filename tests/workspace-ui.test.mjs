@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import '../practical/web/workspace-ui.js';
-import {rowToBody} from '../practical/web/social/importer.js';
+import '../demo-source/web/workspace-ui.js';
+import {rowToBody} from '../demo-source/web/social/importer.js';
 const UI=globalThis.ActorWorkspace;
 test('practical list has meaningful kind-specific summaries and escaped filter text',()=>{
  assert.match(UI.summary('knowledge',{question:'如何处理剧透',answer:'送审后回复'}),/如何处理剧透.*送审后回复/);

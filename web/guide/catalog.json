@@ -1,218 +1,90 @@
 {
   "version": 1,
-  "sourceHash": "595b5a470847b4b8a2be5853fd26a0ba492e3fee4afcf8918661a63484a26456",
+  "sourceHash": "d5da27b412e012cf9d0d5dfcf1dc430caaf09b2989fedd4afaf42193919bb965",
   "sourceFiles": [
     {
-      "path": "practical/web/app.js",
+      "path": "demo-source/web/app.js",
       "sha256": "56026db8ae15e90f90ced2499b2678060ac69861eac70b3c1f059f8020d9804a"
     },
     {
-      "path": "practical/web/auth-reference.css",
-      "sha256": "41baa1dc67b93d7fd2a222e93641d6e78a30562b1b7efe343f7f7148632f2b57"
-    },
-    {
-      "path": "practical/web/bridge.js",
-      "sha256": "c6c846fc3e460ad0a5c76c1c17fdcb9a48d80d52825f662ea3019fff7ab11415"
-    },
-    {
-      "path": "practical/web/business/app.js",
+      "path": "demo-source/web/business/app.js",
       "sha256": "04d37f61186b27b0d3f3f72528010f662fb5c797d4ec23198bd0b993d89d3b05"
     },
     {
-      "path": "practical/web/business/index.html",
+      "path": "demo-source/web/business/index.html",
       "sha256": "9de5e2d52f4aa63ddfd1522e07f3070b3cfaaf283710ccf37157442ef763c271"
     },
     {
-      "path": "practical/web/business/model.js",
+      "path": "demo-source/web/business/model.js",
       "sha256": "8592a5c0ca5a64623dee9e794af5bb4a7d8b4eb7666ad6f187ce7da7afb26c6c"
     },
     {
-      "path": "practical/web/business/style.css",
+      "path": "demo-source/web/business/style.css",
       "sha256": "9980769e680a86966d4acf379bdaa7ef26a58c180422929b35657016a8eec3a5"
     },
     {
-      "path": "practical/web/forms.js",
+      "path": "demo-source/web/forms.js",
       "sha256": "5ded067def271d29527b197df3159cef324a59cd054d87b3382dd4e8b88f3d25"
     },
     {
-      "path": "practical/web/index.html",
-      "sha256": "6aa877501757af5d9899070c22e7d929764aaecf348ddb2d7fc966595a15bad8"
-    },
-    {
-      "path": "practical/web/ip/app.js",
-      "sha256": "32728d96f705f42f8fb67059fcfb0f6194a976e3cc08841f9b1bb5b4531ed832"
-    },
-    {
-      "path": "practical/web/ip/archive-model.mjs",
-      "sha256": "6f5914013a64878616faf111719efa8594ea2a0466102ff539851df31f3ccc09"
-    },
-    {
-      "path": "practical/web/ip/calendar-model.mjs",
-      "sha256": "4e6a6d171ba74ea9859a98f48589c3f512eaa80db79ed89d6051e79d9cc3824d"
-    },
-    {
-      "path": "practical/web/ip/comment-insights.css",
-      "sha256": "461ce71c67ae22d37190790b394605be9cf023247f4bb80247f843b3dfe00f11"
-    },
-    {
-      "path": "practical/web/ip/comment-insights.mjs",
-      "sha256": "06cee31ed4e061546c5aaa989941e6713d279fff25b2c2f31c8da622ea50648a"
-    },
-    {
-      "path": "practical/web/ip/content-risk.js",
-      "sha256": "a2849df9b663745f11659c42bba800cbb91bfbcefdff88fd2b467f24ede75b38"
-    },
-    {
-      "path": "practical/web/ip/creator-navigation.mjs",
-      "sha256": "98ae82d4bd7e7b9125edb6f0e060cfe02bbb3c7544f732c5db2fd7f48409782b"
-    },
-    {
-      "path": "practical/web/ip/date-time.css",
-      "sha256": "215ddcbec865120e5bb9a143f9ae4ceb97e0883c5ad0920c5028194e7458da75"
-    },
-    {
-      "path": "practical/web/ip/date-time.mjs",
-      "sha256": "79a35f6f0bacd1c6c6626927ae817b3d8247dcb5abca0d17f4f16ad9b05f2319"
-    },
-    {
-      "path": "practical/web/ip/feishu.js",
-      "sha256": "88fa68c61b8cec297a58a76dd47bfa96ca5c5cdb219e672eac2c5dede40eed3b"
-    },
-    {
-      "path": "practical/web/ip/final-review.js",
-      "sha256": "ab5ed83ab34e1a19f0f5e9361d570deb95dde87f0cf01b957d12210c77afabfb"
-    },
-    {
-      "path": "practical/web/ip/illustrations.css",
-      "sha256": "63f86575c9d6777013a65e0bb2e1703dc944179e6cb567d01bea7628600ecef2"
-    },
-    {
-      "path": "practical/web/ip/index.html",
-      "sha256": "65716d42390759d7dcb9aff33b699fa1fdd5be4ad17a22413e22f30782cb2f56"
-    },
-    {
-      "path": "practical/web/ip/matrix.css",
-      "sha256": "abf053983bc13a0b7e614625ac4bdbd3adf92fd8b930824f91820c8eff50e925"
-    },
-    {
-      "path": "practical/web/ip/matrix.js",
-      "sha256": "5fa2015ce7b09908f63613a99b48c86e2bce92232470ce507d09e5a7cc3cf856"
-    },
-    {
-      "path": "practical/web/ip/resources.js",
-      "sha256": "733a789cc21fcdb5e8b940501ba821b7d13930ddc3e5a031d3118ff50d1cb298"
-    },
-    {
-      "path": "practical/web/ip/review.css",
-      "sha256": "93c58e11f69d21811d1a1c074a6b6e59abe1e21c80395618d314246945480f16"
-    },
-    {
-      "path": "practical/web/ip/schedule-marks.css",
-      "sha256": "55dad9c8aa92f45827a11313b7b8196a343e97be148bac452f1367af9a1a8588"
-    },
-    {
-      "path": "practical/web/ip/schedule-marks.mjs",
-      "sha256": "a865a15a84d3ee2db8fdeb2f633272c240fb0301f9c3114faeeadfc70026caa3"
-    },
-    {
-      "path": "practical/web/ip/schema.js",
-      "sha256": "7d53bd061ed31353613863c31c14989db7ebb11e1fa661bee694cbb7f4f5f944"
-    },
-    {
-      "path": "practical/web/ip/style.css",
-      "sha256": "2626ff9fff31e637ed43e0fb87ffb34f046b49135e9501aae99ee0d248c15512"
-    },
-    {
-      "path": "practical/web/pet/app.js",
-      "sha256": "3bbac8f8a4ea3d0d4a831e5e45c5e5e3c0a2372ff20a5e9ec2248684fdf7eae9"
-    },
-    {
-      "path": "practical/web/pet/backup.js",
-      "sha256": "9d2950ee71406244e46dc0f8c6ddda2fa1ae002a34b74d87256e27299123fb62"
-    },
-    {
-      "path": "practical/web/pet/companion.css",
-      "sha256": "4d8bb526f519b14e5c3d24fc3535f1ccd8fe28b3ce94bd2d0b9c08ee1ad21db6"
-    },
-    {
-      "path": "practical/web/pet/index.html",
-      "sha256": "3104fdc8a7e83ae0b64a1aedcb720478b101153857edd6a7d48605edca1836f7"
-    },
-    {
-      "path": "practical/web/pet/schema.js",
+      "path": "demo-source/web/pet/schema.js",
       "sha256": "9f1dd225aaf891ca80336440931de148f7fb02eac5c6b045d0fd28f81a699946"
     },
     {
-      "path": "practical/web/pet/sticker.js",
-      "sha256": "09aa44da10a3810b9893be1b1c16c36782bd76f8459205f57cbbdfa03bc0184e"
-    },
-    {
-      "path": "practical/web/previs/app.js",
+      "path": "demo-source/web/previs/app.js",
       "sha256": "83347cda025a450fdbec2d1957750531218ac6a9a2a8c3d72ab59db67cb3dff3"
     },
     {
-      "path": "practical/web/previs/export.js",
+      "path": "demo-source/web/previs/export.js",
       "sha256": "4fdf19bc9e72df693789efe8607492a1ac322c6983ee8d3a8840df0d5ae11687"
     },
     {
-      "path": "practical/web/previs/index.html",
+      "path": "demo-source/web/previs/index.html",
       "sha256": "6167b04f38979538401ac3286bcc72b5e5e98fd34645591dde449dee03e8c510"
     },
     {
-      "path": "practical/web/previs/player.js",
+      "path": "demo-source/web/previs/player.js",
       "sha256": "b7a2d73b4057c3475de8ed38b6a6bf2fe996500d32e492c949de165cca2cac11"
     },
     {
-      "path": "practical/web/previs/schema.js",
+      "path": "demo-source/web/previs/schema.js",
       "sha256": "f3097a4728397319fbc0f0199ce253831524b02c714e220ef17d90422d8c70c1"
     },
     {
-      "path": "practical/web/previs/style.css",
+      "path": "demo-source/web/previs/style.css",
       "sha256": "24d4f18bb046f1a36ee6bf8a50b4efffcb18dd3ab6c0f1f3b49f80b8e3a8fdba"
     },
     {
-      "path": "practical/web/social/app.js",
+      "path": "demo-source/web/social/app.js",
       "sha256": "487dc4316b0b2877ba708565857c87763ab7a18905c7bb09f9392d7f94864538"
     },
     {
-      "path": "practical/web/social/backup.js",
+      "path": "demo-source/web/social/backup.js",
       "sha256": "eb9e6be146f54d8a94530abc0a9c44dc195619f015fc1fd7ac27c5c418af8f30"
     },
     {
-      "path": "practical/web/social/importer.js",
+      "path": "demo-source/web/social/importer.js",
       "sha256": "c70988135a00ef0745b9c9304b925afde103ffd2a4a54759ddda3df3e01a20af"
     },
     {
-      "path": "practical/web/social/index.html",
+      "path": "demo-source/web/social/index.html",
       "sha256": "a47ea50503521d38e15e7db409e7fed1b1d23152aec2084d4470c8d17363044a"
     },
     {
-      "path": "practical/web/social/model.js",
+      "path": "demo-source/web/social/model.js",
       "sha256": "dac5bfeca6fe2b26b22ff651cc8d6d50669c36195d7c43e490af05bf945be752"
     },
     {
-      "path": "practical/web/social/style.css",
+      "path": "demo-source/web/social/style.css",
       "sha256": "2c950bd641d66a2cc37012966f7f2a91bf96dc98535897d9e4a373297cc1bffc"
     },
     {
-      "path": "practical/web/style.css",
-      "sha256": "4c011e117422848ade1f6a0b9648e0ccf6c1c01cf2d4e0ff079165800539d57d"
-    },
-    {
-      "path": "practical/web/themes/tide.css",
-      "sha256": "00aeb0ad2e62311484287dd1230d02136731dd6e85a7de08203bc17beeeaaf4c"
-    },
-    {
-      "path": "practical/web/workspace-ui.css",
-      "sha256": "a6dc0790f9943ba595f47f1a6ffcb4dc7bb80b379018457eec22ed6ba4270831"
-    },
-    {
-      "path": "practical/web/workspace-ui.js",
+      "path": "demo-source/web/workspace-ui.js",
       "sha256": "424e9c538cbd3e6f3b48e643f5d61193635a1232f2ebd23250d1d8e2803bde3c"
     },
     {
       "path": "web/app.js",
-      "sha256": "67ad263f68d338d3a075c54c436f868fbbc4454136a37c4287c8cb131cac6abe"
+      "sha256": "77b948675015141c5be5901cab7cf8ec97ab693da9dea7211c9948846da6856e"
     },
     {
       "path": "web/data.js",
@@ -3065,6 +2937,6 @@
     "generated": "功能目录、阶段和手工表单字段由当前本地源码提取。已核对各模块前端代码和样式；不包含后台、密钥或用户资料。",
     "curated": "精细操作说明由人工编写；新增板块先生成基础操作卡，仍需核对完整步骤。"
   },
-  "contentHash": "39c6f74468af9da4cd1fbf6b1406907947bb57b344a3f54f71fcb211009d8bd9",
-  "generatedAt": "2026-11-15T04:47:20.337Z"
+  "contentHash": "770efbde15ab21e6e1c031526d24a0e7cd0f942cd6d64813b3af645c9bdb64b8",
+  "generatedAt": "2026-11-16T17:53:51.903Z"
 }

@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import '../web/radar-goals.js';
 import {mainSchema,validateMain} from '../src/main-schema.js';
-import {validateRecord} from '../practical/server/validation.mjs';
+import {validateRecord} from '../demo-source/server/validation.mjs';
 import {parseHTML} from 'linkedom';
 const R=globalThis.ActorRadar;
 const plan=()=>{const p=R.blank();p.owner='虚构演员与工作室';p.reviewDate='2027-02-28';p.axes[0].current=0;p.axes[0].target=20;return p;};
